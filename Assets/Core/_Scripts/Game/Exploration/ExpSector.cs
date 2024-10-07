@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 public class ExpSector
@@ -6,6 +5,7 @@ public class ExpSector
     private readonly string m_identifier;
     private ResourceType m_resourceType;
     private int m_amount = 0;
+    private bool m_isLooted;
 
     public ExpSector(string identifier)
     {
@@ -17,6 +17,18 @@ public class ExpSector
         return (m_resourceType, m_amount);
     }
 
+    public bool IsLooted() { return m_isLooted; }
+
+    public void Loot()
+    {
+        if (m_isLooted)
+            return;
+
+        m_resourceType = ResourceType.NONE;
+        m_amount = 0;
+        m_isLooted = true;
+    }
+
     public static ExpSector Generate(string identifier)
     {
         var sector = new ExpSector(identifier);
@@ -24,9 +36,42 @@ public class ExpSector
         var rng = GameManager.RNG;
 
         // Select resource type
-        Array values = Enum.GetValues(typeof(ResourceType));
-        int randomResourceType = rng.Next(values.Length);
-        sector.m_resourceType = (ResourceType)values.GetValue(randomResourceType);
+        (ResourceType type, int chance)[] values = {
+            (ResourceType.NONE, 90),
+            (ResourceType.RATIONS, 20),
+            (ResourceType.MEDS, 10),
+            (ResourceType.SCRAPS, 20),
+        };
+
+        int weightedSum = 0;
+        foreach (var (_, chance) in values)
+        {
+            weightedSum += chance;
+        }
+
+        int r = rng.Next(weightedSum);
+        foreach (var (type, chance) in values)
+        {
+            if (r < chance && r > 0)
+            {
+                sector.m_resourceType = type;
+                break;
+            }
+
+            r -= chance;
+        }
+
+        //float weight = (float)(weightedSum * rng.NextDouble());
+        //float cumulativeWeight = 0;
+        //foreach (var (type, chance) in values)
+        //{
+        //    cumulativeWeight += chance;
+        //    if (weight < cumulativeWeight)
+        //    {
+        //        sector.m_resourceType = type;
+        //        break;
+        //    }
+        //}
 
         // Generate resource amount
         if (sector.m_resourceType != ResourceType.NONE)

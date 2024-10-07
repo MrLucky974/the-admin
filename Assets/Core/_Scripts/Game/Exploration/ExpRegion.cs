@@ -10,13 +10,15 @@ public class ExpRegion
 
     public static ExpRegion Generate()
     {
-        var size = GameManager.RNG.Next(0, MAX_SIZE);
-        var region = new ExpRegion(size);
+        //var size = GameManager.RNG.Next(0, MAX_SIZE);
+        var region = new ExpRegion(5);
 
         for (int i = 0; i < region.m_sectors.Length; i++)
         {
             region.m_sectors[i] = ExpSector.Generate(region.GetIdentifier(i));
         }
+
+        region.m_sectors.Print();
 
         return region;
     }
@@ -33,6 +35,11 @@ public class ExpRegion
     public int GetSize()
     {
         return m_size * m_size;
+    }
+
+    public ExpSector[] GetSectors()
+    {
+        return m_sectors;
     }
 
     public ExpSector GetSector(string identifier)
