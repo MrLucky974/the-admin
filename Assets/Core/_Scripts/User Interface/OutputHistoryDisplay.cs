@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -29,9 +27,9 @@ public class OutputHistoryDisplay : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
         var history = m_commandLog.GetCommandHistory();
-        foreach ( var item in history )
+        foreach (var item in history)
         {
-            sb.AppendLine( item.ToString() );
+            sb.AppendLine(item.ToString());
         }
         m_historyTextField.text = sb.ToString();
     }

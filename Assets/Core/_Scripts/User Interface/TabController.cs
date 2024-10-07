@@ -1,12 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 public class TabController : MonoBehaviour
 {
     [SerializeField] private List<TabOption> m_options;
+
+    [Space]
+
+    [SerializeField] private UnityEvent m_onTabSelected;
 
     private TabOption m_selectedTab;
     private PlayerInputActions m_inputActions;
@@ -52,5 +55,7 @@ public class TabController : MonoBehaviour
             option.Toggle(isSelected);
             if (isSelected) m_selectedTab = option;
         }
+
+        m_onTabSelected?.Invoke();
     }
 }
