@@ -1,0 +1,56 @@
+{
+    "name": "PlayerInputActions",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "038a7001-e1c7-4d1b-8813-6c75ac0b29a9",
+            "actions": [
+                {
+                    "name": "SwitchTab",
+                    "type": "Button",
+                    "id": "b79b2d41-5ac1-4e85-a09c-d3effe7a5dc1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c4b8ef59-19af-409a-a243-92039adea895",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "Scale",
+                    "groups": "",
+                    "action": "SwitchTab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "37f8cf41-d6aa-49f9-a078-8239203e54ed",
+                    "path": "<Keyboard>/f2",
+                    "interactions": "",
+                    "processors": "Scale(factor=2)",
+                    "groups": "",
+                    "action": "SwitchTab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c766ea2e-d6e3-4484-830e-7fddf822ea42",
+                    "path": "<Keyboard>/f3",
+                    "interactions": "",
+                    "processors": "Scale(factor=3)",
+                    "groups": "",
+                    "action": "SwitchTab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
