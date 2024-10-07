@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 
 public class ExpSector
 {
@@ -15,6 +12,11 @@ public class ExpSector
         m_identifier = identifier;
     }
 
+    public (ResourceType resourceType, int amount) GetResourceData()
+    {
+        return (m_resourceType, m_amount);
+    }
+
     public static ExpSector Generate(string identifier)
     {
         var sector = new ExpSector(identifier);
@@ -25,7 +27,7 @@ public class ExpSector
         Array values = Enum.GetValues(typeof(ResourceType));
         int randomResourceType = rng.Next(values.Length);
         sector.m_resourceType = (ResourceType)values.GetValue(randomResourceType);
-        
+
         // Generate resource amount
         if (sector.m_resourceType != ResourceType.NONE)
         {
@@ -39,7 +41,7 @@ public class ExpSector
     {
         const int rollCount = 6;
         var rolls = new int[rollCount];
-        
+
         int count = 0;
         for (int i = 0; i < rollCount; i++)
         {

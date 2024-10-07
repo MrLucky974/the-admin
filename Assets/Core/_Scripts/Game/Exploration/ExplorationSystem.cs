@@ -24,7 +24,7 @@ public class ExplorationSystem : MonoBehaviour
 
         var commandSystem = GameManager.Instance.GetCommands();
         m_commandLog = GameManager.Instance.GetCommandLog();
-        
+
         commandSystem.AddCommand(new CommandDefinition<Action>("region", () =>
         {
             // TODO : Open modal box when region is not explored at 100%
@@ -57,7 +57,7 @@ public class ExplorationSystem : MonoBehaviour
 
                 m_currentSectorScan = selectedSector;
                 m_scanCoroutine = StartCoroutine(ScanSector(3));
-            } 
+            }
             else
             {
                 m_commandLog.AddLog($"error: invalid sector {identifier}", GameManager.RED);
@@ -95,7 +95,17 @@ public class ExplorationSystem : MonoBehaviour
 
         Debug.Log($"Scan completed for sector {m_currentSectorScan.GetIdentifier()}...");
         m_commandLog.AddLog($"scan: completed sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
-        
+
+        var resourceData = m_currentSectorScan.GetResourceData();
+        if (resourceData.resourceType == ResourceType.NONE)
+        {
+            m_commandLog.AddLog("Found nothing.", GameManager.ORANGE);
+        }
+        else
+        {
+            m_commandLog.AddLog($"Found {resourceData.amount} {resourceData.resourceType}!", GameManager.ORANGE);
+        }
+
         m_scannedSectors.Add(m_currentSectorScan);
         m_currentSectorScan = null;
     }
