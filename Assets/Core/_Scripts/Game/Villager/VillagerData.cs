@@ -109,9 +109,19 @@ public class VillagerData
         Identifiant = newID;
     }
 
+    public string GetID()
+    {
+        return Identifiant;
+    }
+
     public void SetPersonality (Personality typeToSet)
     {
         personality = typeToSet;
+    }
+
+    public Personality GetPersonality()
+    {
+        return personality;
     }
 
     public void AddHealthStatus(HealthStatus statusToSet)
