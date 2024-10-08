@@ -23,6 +23,6 @@ public class VillagerDataDisplay : MonoBehaviour
         m_ageLabel.text = string.Format("Age: {0}", data.GetAgeStage());
         m_healthLabel.text = string.Format("Health Status: {0}", "PIPI");
         m_workingStatusLabel.text = string.Format("Working Status: {0}", "CACA");
-        m_fatigueLabel.text = string.Format("Fatigue: {0}", 0);
+        m_fatigueLabel.text = string.Format("Fatigue: {0}", data.GetFatigue());
     }
 }

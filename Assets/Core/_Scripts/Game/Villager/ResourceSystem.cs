@@ -21,11 +21,6 @@ public class ResourceSystem : MonoBehaviour
         waitingVillagers = new List<VillagerData>();
         InitPopulation(3);
         ListingPopulation();
-        CreateWaitingVillagers(2);
-        AddWaitingVillagerToPopulation(1);
-        ListingPopulation();
-        villagerManager.GetPregnant();
-        ListingPopulation();
 
 
 
