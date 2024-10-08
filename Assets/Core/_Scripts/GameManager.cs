@@ -73,7 +73,6 @@ public class GameManager : Singleton<GameManager>
         m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
         {
             m_roomManager.UpgradeRoom(roomId);
-            
         }));
 
 #endif
@@ -87,6 +86,7 @@ public class GameManager : Singleton<GameManager>
         m_timeManager.Initialize();
         m_resourceHandler.Initialize();
         m_explorationSystem.Initialize();
+        m_roomManager.Initialize();
     }
 
     private void Update()

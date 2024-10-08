@@ -7,7 +7,7 @@ public class UpRoomData : RoomData
 {
 
     [SerializeField] UpgradeState m_upgradeState = UpgradeState.NONE;
-    int m_upgradeCost = 0;
+    [SerializeField] int m_upgradeCost = 5;
 
     public enum UpgradeState
     {

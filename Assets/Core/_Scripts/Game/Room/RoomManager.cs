@@ -26,7 +26,7 @@ public class RoomManager : MonoBehaviour
     const int DEGRADATION = 5;
 
 
-    void Start()
+    public void Initialize()
     {
         m_roomArray = FindObjectsOfType<RoomData>();//GetComponentsInChildren<RoomData>(); 
         m_resourceHandler = FindObjectOfType<ResourceHandler>();
@@ -71,10 +71,15 @@ public class RoomManager : MonoBehaviour
         foreach (UpRoomData room in ressRooms) {
             if (room.roomId == roomId)
             {
-                room.Upgrade();
+                GameManager gm = FindObjectOfType<GameManager>();
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost))
                 {
+                    room.Upgrade();
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
+                    gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
+                }
+                else{  
+                    gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed not enough resources", GameManager.RED);
                 }
             } 
         }
@@ -91,8 +96,9 @@ public class RoomManager : MonoBehaviour
         }
         yield return new WaitForSeconds(1);
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
-
     }
+
+
 
     IEnumerator GenerateRessources()
     {
