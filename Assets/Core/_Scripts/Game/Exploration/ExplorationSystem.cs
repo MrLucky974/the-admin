@@ -11,6 +11,7 @@ public class ExplorationSystem : MonoBehaviour
     private ExpRegion m_region;
 
     // Scanning
+    private bool m_updateScanProgress = true;
     private ExpSector m_currentSectorScan;
     private Coroutine m_scanCoroutine;
 
@@ -25,13 +26,27 @@ public class ExplorationSystem : MonoBehaviour
         m_squads = new List<ExpSquad>();
 
         var commandSystem = GameManager.Instance.GetCommands();
+        var modalBox = GameManager.Instance.GetModal();
         m_commandLog = GameManager.Instance.GetCommandLog();
 
         // This command generates a new region (grid) of sectors (cells) for exploration
         commandSystem.AddCommand(new CommandDefinition<Action>("region", () =>
         {
+            // TODO : Check for on-going expeditions before authorizing region scan
             // TODO : Open modal box when region is not explored at 100%
-            m_region = ExpRegion.Generate();
+            modalBox.Init("TEST", (modal) =>
+            {
+                m_region = ExpRegion.Generate();
+                modal.Close();
+            })
+            .SetBody("Are you sure you want to scan for a new region?")
+            .SetDismissAction((modal) =>
+            {
+                modal.Close();
+            })
+            .Open();
+
+            //m_region = ExpRegion.Generate();
         }));
 
         // This command starts a scanning operation that will give information to the player
@@ -59,12 +74,44 @@ public class ExplorationSystem : MonoBehaviour
                 // Stop the sector being currently scanned
                 // TODO : Open modal box to confirm this action
                 if (m_scanCoroutine != null)
-                    StopCoroutine(m_scanCoroutine);
+                {
+                    m_updateScanProgress = false;
+                    modalBox.Init("CANCEL PREVIOUS SCAN", (modal) =>
+                    {
+                        StopCoroutine(m_scanCoroutine);
+
+                        // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
+                        // Begin coroutine and mark sector as being scanned
+                        m_currentSectorScan = selectedSector;
+                        m_scanCoroutine = StartCoroutine(ScanSector(3));
+                        m_updateScanProgress = true;
+
+                        modal.Close();
+                    })
+                    .SetBody("Are you sure you want to scan another sector? The current progress will be lost.")
+                    .SetDismissAction((modal) =>
+                    {
+                        m_updateScanProgress = true;
+                        modal.Close();
+                    })
+                    .Open();
+                }
+                else
+                {
+                    // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
+                    // Begin coroutine and mark sector as being scanned
+                    m_currentSectorScan = selectedSector;
+                    m_scanCoroutine = StartCoroutine(ScanSector(3));
+                    m_updateScanProgress = true;
+                }
+
+                //if (m_scanCoroutine != null)
+                //    StopCoroutine(m_scanCoroutine);
 
                 // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
                 // Begin coroutine and mark sector as being scanned
-                m_currentSectorScan = selectedSector;
-                m_scanCoroutine = StartCoroutine(ScanSector(3));
+                //m_currentSectorScan = selectedSector;
+                //m_scanCoroutine = StartCoroutine(ScanSector(3));
             }
             else
             {
@@ -148,7 +195,7 @@ public class ExplorationSystem : MonoBehaviour
         while (time < totalTime)
         {
             yield return null;
-            time += Time.deltaTime;
+            if (m_updateScanProgress) time += Time.deltaTime;
         }
 
         // Send a message on the command log to signal the player a scan was completed
@@ -169,5 +216,6 @@ public class ExplorationSystem : MonoBehaviour
         // Mark the sector as scanned
         m_scannedSectors.Add(m_currentSectorScan);
         m_currentSectorScan = null;
+        m_scanCoroutine = null;
     }
 }
