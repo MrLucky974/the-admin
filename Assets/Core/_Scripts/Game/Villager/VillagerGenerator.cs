@@ -4,19 +4,19 @@ using System.IO;
 
 public class VillagerGenerator
 {
-    // Start is called before the first frame update
     string[] _names;
     string[] _surnames;
-    public string GetName()
+    
+    public string GenerateName()
     {
         string fileName = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_01.txt";
         string fileSurname = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_02.txt";
         _names = File.ReadAllLines(fileName);
         _surnames = File.ReadAllLines(fileSurname);
+        
         //Giving the full name and surname
         string nameToSet = _names[GetRandomID(_names.Length)] + " " + _surnames[GetRandomID(_surnames.Length)];
         return nameToSet;
-
     }
 
     int GetRandomID(int size)
@@ -31,19 +31,21 @@ public class VillagerGenerator
         return age;
     }
 
-    public int SetGender()
+    public VillagerData.Gender SelectRandomGender()
     {
-        int genderset = Random.Range(1, 3);
-        return genderset;
+        var rng = GameManager.RNG;
+        return VillagerData.ALL_GENDERS.PickRandom(rng);
     }
-    public string SetVillagerID(string firstLetterOfName, int PopulationNumber)
+
+    public VillagerData.Personality SelectRandomPersonality()
     {
-        string ID = firstLetterOfName[0] + PopulationNumber.ToString();
+        var rng = GameManager.RNG;
+        return VillagerData.ALL_PERSONALITIES.PickRandom(rng);
+    }
+
+    public string GenerateID(string name, int populationCount)
+    {
+        string ID = name[0] + populationCount.ToString();
         return ID;
-    }
-    public int SetPersonality()
-    {
-        int choosenPersonality = Random.Range(0, 4);
-        return choosenPersonality;
     }
 }

@@ -1,50 +1,52 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.IO.Pipes;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
+using System.Collections.ObjectModel;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ResourceSystem : MonoBehaviour
 {
-    [SerializeField] VillagerManager villagerManager;
-    [SerializeField] VillagerGenerator villagerGenerator = new VillagerGenerator();
-    public List<VillagerData> population;
-    VillagerData currentVillager;
-    List<VillagerData> waitingVillagers;
+    private VillagerGenerator m_villagerGenerator = new VillagerGenerator();
+    private List<VillagerData> m_population;
+    private VillagerData m_currentVillager;
+    private List<VillagerData> m_villagerQueue;
+
+    public ReadOnlyCollection<VillagerData> GetPopulation()
+    {
+        return m_population.AsReadOnly();
+    }
 
     private void Start()
     {
-        population = new List<VillagerData>();
-        waitingVillagers = new List<VillagerData>();
+        m_population = new List<VillagerData>();
+        m_villagerQueue = new List<VillagerData>();
         InitPopulation(3);
-        ListingPopulation();
-
-
-
+        ListPopulation();
     }
+    
     void AddVillagerToPopulation()
     {
-        if (population == null)
+        if (m_population == null)
         {
-            population = new List<VillagerData>();
+            m_population = new List<VillagerData>();
         }
-        population.Add(currentVillager);
-        GiveVillagerAnID();
+        m_population.Add(m_currentVillager);
+        AssignVillagerID();
     }
 
     void CreateVillager()
     {
-        VillagerData villager = new VillagerData();
-        villager.UpdateName(villagerGenerator.GetName());
-        villager.NewAge(villagerGenerator.SetAge());
-        villager.UpdateAgeStatus();
-        villager.SetGender(villagerGenerator.SetGender());
-        villager.SetPersonality((VillagerData.Personality)villagerGenerator.SetPersonality());
-        currentVillager = villager;
-        Debug.Log($"villager created : {currentVillager}");
+        var name = m_villagerGenerator.GenerateName();
+        var age = m_villagerGenerator.SetAge();
+        var gender = m_villagerGenerator.SelectRandomGender();
+        var personality = m_villagerGenerator.SelectRandomPersonality();
+
+        var villager = new VillagerData.Builder(name)
+            .SetAge(age)
+            .SetGender(gender)
+            .SetPersonality(personality)
+            .Build();
+
+        m_currentVillager = villager;
+        Debug.Log($"villager created: {m_currentVillager}");
     }
 
     void InitPopulation(int numberToCreate)
@@ -53,11 +55,8 @@ public class ResourceSystem : MonoBehaviour
         {
             CreateVillager();
             AddVillagerToPopulation();
-            GiveVillagerAnID();
             numberToCreate--;
-
         }
-        
     }
 
     void CreateWaitingVillagers(int numberToCreate)
@@ -65,42 +64,45 @@ public class ResourceSystem : MonoBehaviour
         while (numberToCreate > 0)
         {
             CreateVillager();
-            waitingVillagers.Add(currentVillager);
-            Debug.Log(waitingVillagers.Count);
+            m_villagerQueue.Add(m_currentVillager);
+            Debug.Log(m_villagerQueue.Count);
             numberToCreate--;
         }
-
-
     }
     void AddWaitingVillagerToPopulation(int villagerToAdd)
     {
-        VillagerData newCommer = waitingVillagers[villagerToAdd];
-        waitingVillagers.Remove(waitingVillagers[villagerToAdd]);
-        population.Add(newCommer);
-        GiveVillagerAnID();
+        VillagerData visitor = m_villagerQueue[villagerToAdd];
+        
+        m_villagerQueue.Remove(visitor);
+
+        m_currentVillager = visitor;
+        m_population.Add(visitor);
+        
+        AssignVillagerID();
     }
 
     void KillVillagers(int numberToKill)
     {
-        if (numberToKill <= population.Count)
+        if (numberToKill <= m_population.Count)
         {
-            Debug.Log($"is getting killed {population[numberToKill]})");
-            population.Remove(population[numberToKill]);
+            Debug.Log($"is getting killed {m_population[numberToKill]})");
+            m_population.Remove(m_population[numberToKill]);
         }
     }
-    void GiveVillagerAnID()
+    
+    void AssignVillagerID()
     {
-        currentVillager.SetID(villagerGenerator.SetVillagerID(currentVillager.GetName(), population.Count - 1));
+        var name = m_currentVillager.GetName();
+        var index = m_population.Count - 1;
+        m_currentVillager.SetID(m_villagerGenerator.GenerateID(name, index));
     }
+    
     //DEBUG
-
-    void ListingPopulation()
+    void ListPopulation()
     {
-        int currentlyListed = 0;
-        foreach (var villager in population)
+        foreach (var villager in m_population)
         {
-            Debug.Log($"Population is composed by : { population[currentlyListed]}");
-            currentlyListed++;
+            Debug.Log($"Population is composed by : {villager}");
         }
     }
 }

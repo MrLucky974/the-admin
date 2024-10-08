@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct JRandom
+public static class JRandom
 {
     public static int RollDice(int n, int l, int s, System.Random random)
     {
@@ -28,5 +28,21 @@ public struct JRandom
     public static int RollDice(int n, int s)
     {
         return RollDice(n, s, 0);
+    }
+
+    public static T PickRandom<T>(this T[] array, System.Random random)
+    {
+        int index = random.Next(array.Length);
+        return array[index];
+    }
+
+    public static T PickRandom<T>(this T[] array, int seed)
+    {
+        return PickRandom<T>(array, new System.Random(seed));
+    }
+
+    public static T PickRandom<T>(this T[] array)
+    {
+        return PickRandom<T>(array, 0);
     }
 }

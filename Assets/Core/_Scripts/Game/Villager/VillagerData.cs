@@ -1,167 +1,248 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
-using Unity.VisualScripting;
-using static System.Math;
+using UnityEngine;
+
 public class VillagerData
 {
-    string Identifiant = "None";
-    string Name;
-    int Age;
-    int Fatigue = 0;
-    int RecoverySpeed = 5;
-    int Hunger = 0;
-    const int workingSpeed = 5;
-    public enum AgeStage { KID, ADULT, ELDER };
-    public enum Genre { MALE, FEMALE };
+    public enum AgeStage 
+    { 
+        KID, 
+        ADULT, 
+        ELDER 
+    };
+    
+    public enum Gender 
+    { 
+        MALE, 
+        FEMALE 
+    };
 
-    [Flags] public enum HealthStatus { 
-        HEALTHY = 0, 
+    public static Gender[] ALL_GENDERS =
+    {
+        Gender.MALE,
+        Gender.FEMALE
+    };
+
+    [Flags]
+    public enum HealthStatus
+    {
+        HEALTHY = 0,
         SICK = 1 << 0,
         INJURED = 1 << 1,
         HUNGRY = 1 << 2,
         PREGNANT = 1 << 3
     };
-    public enum Personality { NORMAL, HARDWORKER,  LAZY, UNSTABLE }
-    public enum WorkingStatus { ONBASE, ONEXPEDITION, WORKINGONBASE, RESTING}
 
+    public enum Personality
+    {
+        NORMAL,
+        HARDWORKER,
+        LAZY,
+        UNSTABLE
+    }
+    
+    public static Personality[] ALL_PERSONALITIES =
+    {
+        Personality.NORMAL,
+        Personality.HARDWORKER,
+        Personality.LAZY,
+        Personality.UNSTABLE
+    };
 
-    Genre genre;
-    HealthStatus healthStatus;
-    Personality personality;
-    AgeStage ageStage;
+    public enum WorkingStatus
+    {
+        ON_BASE,
+        ON_EXPEDITION,
+        WORKING_ON_BASE,
+        RESTING
+    }
+
+    #region Default Values
+    private const int DEFAULT_AGE = 7;
+    private const Gender DEFAULT_GENDER = Gender.MALE;
+    private const Personality DEFAULT_PERSONALITY = Personality.NORMAL;
+    #endregion
+
+    public const int MIN_FATIGUE = 0;
+    public const int MAX_FATIGUE = 10;
+    public const int DEFAULT_RECOVERY_SPEED = 5;
+
+    public const int DEFAULT_WORKING_SPEED = 5;
+    
+    string m_identifier = "None";
+    string m_name;
+    int m_age = DEFAULT_AGE;
+    int m_fatigue = 0;
+    int m_hunger = 0;
+
+    Gender m_gender = DEFAULT_GENDER;
+    HealthStatus m_healthStatus = HealthStatus.HEALTHY;
+    Personality m_personality = DEFAULT_PERSONALITY;
+    AgeStage m_ageStage;
+
+    public VillagerData(string name)
+    {
+        m_name = name;
+    }
 
     public void UpdateAgeStatus()
     {
-        Age += 1;
+        m_age += 1;
 
-        if (Age >= 0 && Age <= 7)
+        if (m_age >= 0 && m_age <= 7)
         {
-            ageStage = AgeStage.KID;
+            m_ageStage = AgeStage.KID;
         }
-        else if (Age > 7 && Age <= 14)
+        else if (m_age > 7 && m_age <= 14)
         {
-            ageStage = AgeStage.ADULT;
+            m_ageStage = AgeStage.ADULT;
         }
         else
         {
-            ageStage = AgeStage.ELDER;
-            if (Age >= 21)
+            m_ageStage = AgeStage.ELDER;
+            if (m_age >= 21)
             {
                 //the vilager will die
             }
         }
 
     }
-    public AgeStage CheckAgeStage()
-    {
-        AgeStage currentAgeSatge = ageStage;
-        return currentAgeSatge;
-    }
 
+    #region Age Checking
     public bool IsChild()
     {
-        return ageStage == AgeStage.KID;
+        return m_ageStage == AgeStage.KID;
     }
 
     public bool IsAdult()
     {
-        return ageStage == AgeStage.ADULT;
+        return m_ageStage == AgeStage.ADULT;
     }
 
     public bool IsElder()
     {
-        return ageStage == AgeStage.ELDER;
+        return m_ageStage == AgeStage.ELDER;
     }
+    #endregion
 
     public AgeStage GetAgeStage()
     {
-        return ageStage;
-    }
-    public void UpdateName(string newName)
-    {
-        Name = newName;
-    }
-    public void NewAge(int newAge)
-    {
-        Age = newAge;
-    }
-    public void SetGender(int gender)
-    {
-        if (gender == 1)
-        {
-            genre = Genre.MALE;
-        }
-        else
-        {
-            genre = Genre.FEMALE;
-        }
-    }
-    public Genre GetGender()
-    {
-        return genre;
-    }
-    public string GetName()
-    {
-        return Name;
-    }
-    public void SetID(string newID)
-    {
-        Identifiant = newID;
+        return m_ageStage;
     }
 
-    public string GetID()
+    public Gender GetGender()
     {
-        return Identifiant;
-    }
-
-    public void SetPersonality (Personality typeToSet)
-    {
-        personality = typeToSet;
+        return m_gender;
     }
 
     public Personality GetPersonality()
     {
-        return personality;
+        return m_personality;
     }
 
+    public string GetName()
+    {
+        return m_name;
+    }
+
+    public void SetID(string newID)
+    {
+        m_identifier = newID;
+    }
+
+    public string GetID()
+    {
+        return m_identifier;
+    }
+
+    public int GetIDLastDigit()
+    {
+        int lastdigit = m_identifier[1];
+        return lastdigit;
+    }
+
+    #region Handling Fatigue
     public void DecreaseFatigue(int fatigueToRemove)
     {
-        Fatigue = Fatigue - fatigueToRemove;
-        Mathf.Clamp(Fatigue, 0, 10);
+        m_fatigue = m_fatigue - Mathf.Abs(fatigueToRemove);
+        Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
+
     public void IncreaseFatigue(int fatigueToAdd)
     {
-        Fatigue = Fatigue + fatigueToAdd;
-        Mathf.Clamp(Fatigue, 0, 10);
+        m_fatigue = m_fatigue + Mathf.Abs(fatigueToAdd);
+        Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
+
     public int GetFatigue()
     {
-        return Fatigue;
+        return m_fatigue;
     }
-    public void AddHealthStatus(HealthStatus statusToSet)
+    #endregion
+
+    public void Impregnate()
     {
-        healthStatus |= statusToSet;
+        RemoveHealthStatus(HealthStatus.HEALTHY);
+        AddHealthStatus(HealthStatus.PREGNANT);
+    }
+
+    public void AddHealthStatus(HealthStatus status)
+    {
+        m_healthStatus |= status;
+    }
+
+    public void RemoveHealthStatus(HealthStatus status)
+    {
+        m_healthStatus &= ~status;
     }
 
     public bool HasHealthStatus(HealthStatus status)
     {
-        return (healthStatus & status) == status;
+        // Example Code:
+        // if (villager.HasHealthStatus(HealthStatus.PREGNANT)) {
+        // ...
+        // }
+
+        return (m_healthStatus & status) == status;
     }
 
-    // if (villager.HasHealthStatus(HealthStatus.PREGNANT)) {
-    // ...
-    // }
-    public int GetIDLastDigit()
-    {
-        int lastdigit = Identifiant[1];
-        return lastdigit;
-    }
     public override string ToString()
     {
-        return $"ID : {Identifiant} / {Name}(Age: {Age}, {ageStage}), Gender : {genre}, Personality : {personality}, HealthSt" +
-            $"atus {healthStatus}";
+        return $"ID : {m_identifier} / {m_name}(Age: {m_age}, {m_ageStage}), Gender : {m_gender}, Personality : {m_personality}, HealthSt" +
+            $"atus {m_healthStatus}";
+    }
+
+    public class Builder
+    {
+        private readonly VillagerData m_data;
+
+        public Builder(string name)
+        {
+            m_data = new VillagerData(name);
+        }
+
+        public Builder SetAge(int age)
+        {
+            m_data.m_age = age;
+            m_data.UpdateAgeStatus();
+            return this;
+        }
+
+        public Builder SetPersonality(Personality personality)
+        {
+            m_data.m_personality = personality;
+            return this;
+        }
+
+        public Builder SetGender(Gender gender)
+        {
+            m_data.m_gender = gender;
+            return this;
+        }
+
+        public VillagerData Build()
+        {
+            return m_data;
+        }
     }
 }
 

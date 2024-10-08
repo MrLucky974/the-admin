@@ -6,25 +6,25 @@ using UnityEngine;
 
 public class VillagerManager : MonoBehaviour
 {
-    ResourceSystem resourceSystem;
-    [SerializeField] VillagerDataDisplay villagerDataDisplay;
+    ResourceSystem m_resourceSystem;
+    [SerializeField] VillagerDataDisplay m_villagerDataDisplay;
 
     private void Start()
     {
-        resourceSystem = GetComponent<ResourceSystem>();
-        villagerDataDisplay = GetComponent<VillagerDataDisplay>();
-        
+        m_resourceSystem = GetComponent<ResourceSystem>();
+        m_villagerDataDisplay = GetComponent<VillagerDataDisplay>();
 
         var commandLog = GameManager.Instance.GetCommandLog();
         var commandSystem = GameManager.Instance.GetCommands();
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", (string identifier) =>
         {
-            foreach (VillagerData villager in resourceSystem.population)
+            var population = m_resourceSystem.GetPopulation();
+            foreach (VillagerData villager in population)
             {
                 if (identifier == villager.GetID())
                 {
 
-                    villagerDataDisplay.Display(villager);
+                    m_villagerDataDisplay.Display(villager);
                     Debug.Log("villager set");
                     break;
                 }
@@ -32,29 +32,37 @@ public class VillagerManager : MonoBehaviour
 
         }));
     }
-    public void increaseFatigue(int toIncrease, VillagerData villager)
+    
+    public void IncreaseFatigue(int toIncrease, VillagerData villager)
     {
         villager.IncreaseFatigue(toIncrease);
         Debug.Log(villager.GetFatigue());
     }
-    public void decreaseFatigue(int toDecrease, VillagerData villager)
+    
+    public void DecreaseFatigue(int toDecrease, VillagerData villager)
     {
         villager.DecreaseFatigue(toDecrease);
     }
+    
     public void GetPregnant()
     {
-        foreach (VillagerData villager in resourceSystem.population)
+        var population = m_resourceSystem.GetPopulation();
+        foreach (VillagerData villager in population)
         {
-            if (villager.IsAdult() && villager.GetGender() == VillagerData.Genre.FEMALE)
+            if (villager.IsAdult() && villager.GetGender() == VillagerData.Gender.FEMALE)
             {
-                ApplyHealthStatus(villager, VillagerData.HealthStatus.PREGNANT);
+                villager.Impregnate();
             }
         }
-
     }
 
     public void ApplyHealthStatus(VillagerData data, VillagerData.HealthStatus status)
     {
         data.AddHealthStatus(status);
+    }
+
+    public void RemoveHealthStatus(VillagerData data, VillagerData.HealthStatus status)
+    {
+        data.RemoveHealthStatus(status);
     }
 }
