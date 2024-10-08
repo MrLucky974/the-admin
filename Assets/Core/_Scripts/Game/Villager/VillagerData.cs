@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.VisualScripting;
+using static System.Math;
 public class VillagerData
 {
     string Identifiant = "None";
     string Name;
     int Age;
-    int Fatigue = 10;
+    int Fatigue = 0;
     int RecoverySpeed = 5;
     int Hunger = 0;
     const int workingSpeed = 5;
@@ -124,6 +126,20 @@ public class VillagerData
         return personality;
     }
 
+    public void DecreaseFatigue(int fatigueToRemove)
+    {
+        Fatigue = Fatigue - fatigueToRemove;
+        Mathf.Clamp(Fatigue, 0, 10);
+    }
+    public void IncreaseFatigue(int fatigueToAdd)
+    {
+        Fatigue = Fatigue + fatigueToAdd;
+        Mathf.Clamp(Fatigue, 0, 10);
+    }
+    public int GetFatigue()
+    {
+        return Fatigue;
+    }
     public void AddHealthStatus(HealthStatus statusToSet)
     {
         healthStatus |= statusToSet;
@@ -137,7 +153,11 @@ public class VillagerData
     // if (villager.HasHealthStatus(HealthStatus.PREGNANT)) {
     // ...
     // }
-
+    public int GetIDLastDigit()
+    {
+        int lastdigit = Identifiant[1];
+        return lastdigit;
+    }
     public override string ToString()
     {
         return $"ID : {Identifiant} / {Name}(Age: {Age}, {ageStage}), Gender : {genre}, Personality : {personality}, HealthSt" +

@@ -9,8 +9,8 @@ public class VillagerGenerator
     string[] _surnames;
     public string GetName()
     {
-        string fileName = "Assets/TextFiles/The_Administrator.Name_01.txt";
-        string fileSurname = "Assets/TextFiles/The_Administrator.Name_02.txt";
+        string fileName = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_01.txt";
+        string fileSurname = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_02.txt";
         _names = File.ReadAllLines(fileName);
         _surnames = File.ReadAllLines(fileSurname);
         //Giving the full name and surname
