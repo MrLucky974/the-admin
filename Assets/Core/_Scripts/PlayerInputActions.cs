@@ -35,6 +35,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Accept"",
+                    ""type"": ""Button"",
+                    ""id"": ""8636b914-aee8-43ed-b708-300e1ec76982"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dismiss"",
+                    ""type"": ""Button"",
+                    ""id"": ""0f990df0-ccde-4de3-b935-abebde757f4c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -70,6 +88,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SwitchTab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f66b3a1a-3d44-4752-ba6c-deeb65bfda8d"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Accept"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ba32568-640c-419c-924b-86580f061a1b"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dismiss"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -79,6 +119,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_SwitchTab = m_Gameplay.FindAction("SwitchTab", throwIfNotFound: true);
+        m_Gameplay_Accept = m_Gameplay.FindAction("Accept", throwIfNotFound: true);
+        m_Gameplay_Dismiss = m_Gameplay.FindAction("Dismiss", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -141,11 +183,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_SwitchTab;
+    private readonly InputAction m_Gameplay_Accept;
+    private readonly InputAction m_Gameplay_Dismiss;
     public struct GameplayActions
     {
         private @PlayerInputActions m_Wrapper;
         public GameplayActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @SwitchTab => m_Wrapper.m_Gameplay_SwitchTab;
+        public InputAction @Accept => m_Wrapper.m_Gameplay_Accept;
+        public InputAction @Dismiss => m_Wrapper.m_Gameplay_Dismiss;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -158,6 +204,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchTab.started += instance.OnSwitchTab;
             @SwitchTab.performed += instance.OnSwitchTab;
             @SwitchTab.canceled += instance.OnSwitchTab;
+            @Accept.started += instance.OnAccept;
+            @Accept.performed += instance.OnAccept;
+            @Accept.canceled += instance.OnAccept;
+            @Dismiss.started += instance.OnDismiss;
+            @Dismiss.performed += instance.OnDismiss;
+            @Dismiss.canceled += instance.OnDismiss;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -165,6 +217,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchTab.started -= instance.OnSwitchTab;
             @SwitchTab.performed -= instance.OnSwitchTab;
             @SwitchTab.canceled -= instance.OnSwitchTab;
+            @Accept.started -= instance.OnAccept;
+            @Accept.performed -= instance.OnAccept;
+            @Accept.canceled -= instance.OnAccept;
+            @Dismiss.started -= instance.OnDismiss;
+            @Dismiss.performed -= instance.OnDismiss;
+            @Dismiss.canceled -= instance.OnDismiss;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -185,5 +243,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IGameplayActions
     {
         void OnSwitchTab(InputAction.CallbackContext context);
+        void OnAccept(InputAction.CallbackContext context);
+        void OnDismiss(InputAction.CallbackContext context);
     }
 }

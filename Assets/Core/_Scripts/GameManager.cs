@@ -19,6 +19,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private CommandLogManager m_commandLogManager;
     [SerializeField] private ResourceHandler m_resourceHandler;
     [SerializeField] private ExplorationSystem m_explorationSystem;
+    [SerializeField] private ModalBox m_modalBox;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -99,4 +100,5 @@ public class GameManager : Singleton<GameManager>
     public PlayerInputActions GetInputActions() => m_inputActions;
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
+    public ModalBox GetModal() => m_modalBox;
 }

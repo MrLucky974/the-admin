@@ -3,14 +3,8 @@ using UnityEngine;
 
 public class ExpRegion
 {
-    private const int MAX_SIZE = 26; // Limited by alphabet A-Z
-
-    private readonly int m_size;
-    private readonly ExpSector[] m_sectors;
-
     public static ExpRegion Generate()
     {
-        //var size = GameManager.RNG.Next(0, MAX_SIZE);
         var region = new ExpRegion(5);
 
         for (int i = 0; i < region.m_sectors.Length; i++)
@@ -23,7 +17,12 @@ public class ExpRegion
         return region;
     }
 
-    public ExpRegion(int size)
+    private const int MAX_SIZE = 26; // Limited by alphabet A-Z
+
+    private readonly int m_size;
+    private readonly ExpSector[] m_sectors;
+
+    private ExpRegion(int size)
     {
         if (size <= 0 || size > MAX_SIZE)
             throw new ArgumentOutOfRangeException(nameof(size), $"Size must be between 1 and {MAX_SIZE}");

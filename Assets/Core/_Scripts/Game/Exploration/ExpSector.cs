@@ -2,33 +2,6 @@ using System.Text;
 
 public class ExpSector
 {
-    private readonly string m_identifier;
-    private ResourceType m_resourceType;
-    private int m_amount = 0;
-    private bool m_isLooted;
-
-    public ExpSector(string identifier)
-    {
-        m_identifier = identifier;
-    }
-
-    public (ResourceType resourceType, int amount) GetResourceData()
-    {
-        return (m_resourceType, m_amount);
-    }
-
-    public bool IsLooted() { return m_isLooted; }
-
-    public void Loot()
-    {
-        if (m_isLooted)
-            return;
-
-        m_resourceType = ResourceType.NONE;
-        m_amount = 0;
-        m_isLooted = true;
-    }
-
     public static ExpSector Generate(string identifier)
     {
         var sector = new ExpSector(identifier);
@@ -61,18 +34,6 @@ public class ExpSector
             r -= chance;
         }
 
-        //float weight = (float)(weightedSum * rng.NextDouble());
-        //float cumulativeWeight = 0;
-        //foreach (var (type, chance) in values)
-        //{
-        //    cumulativeWeight += chance;
-        //    if (weight < cumulativeWeight)
-        //    {
-        //        sector.m_resourceType = type;
-        //        break;
-        //    }
-        //}
-
         // Generate resource amount
         if (sector.m_resourceType != ResourceType.NONE)
         {
@@ -80,6 +41,33 @@ public class ExpSector
         }
 
         return sector;
+    }
+
+    private readonly string m_identifier;
+    private ResourceType m_resourceType;
+    private int m_amount = 0;
+    private bool m_isLooted;
+
+    private ExpSector(string identifier)
+    {
+        m_identifier = identifier;
+    }
+
+    public (ResourceType resourceType, int amount) GetResourceData()
+    {
+        return (m_resourceType, m_amount);
+    }
+
+    public bool IsLooted() { return m_isLooted; }
+
+    public void Loot()
+    {
+        if (m_isLooted)
+            return;
+
+        m_resourceType = ResourceType.NONE;
+        m_amount = 0;
+        m_isLooted = true;
     }
 
     private static int DistributeResources(System.Random rng)
