@@ -18,26 +18,26 @@ public class ExplorationSystem : MonoBehaviour
 
     // Exploration
     private List<ExpSquad> m_squads;
-    private Queue<ExpSquad> m_completeSquadsQueue;
 
     public void Initialize()
     {
         m_scannedSectors = new List<ExpSector>();
         m_squads = new List<ExpSquad>();
-        m_completeSquadsQueue = new Queue<ExpSquad>();
 
         var commandSystem = GameManager.Instance.GetCommands();
         m_commandLog = GameManager.Instance.GetCommandLog();
 
+        // This command generates a new region (grid) of sectors (cells) for exploration
         commandSystem.AddCommand(new CommandDefinition<Action>("region", () =>
         {
             // TODO : Open modal box when region is not explored at 100%
             m_region = ExpRegion.Generate();
         }));
 
+        // This command starts a scanning operation that will give information to the player
+        // about resources on the specified sector
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("scan", (string identifier) =>
         {
-            // TODO : Open modal box when sector is not yet scanned
             ExpSector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
             {
@@ -56,9 +56,13 @@ public class ExplorationSystem : MonoBehaviour
                     return;
                 }
 
+                // Stop the sector being currently scanned
+                // TODO : Open modal box to confirm this action
                 if (m_scanCoroutine != null)
                     StopCoroutine(m_scanCoroutine);
 
+                // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
+                // Begin coroutine and mark sector as being scanned
                 m_currentSectorScan = selectedSector;
                 m_scanCoroutine = StartCoroutine(ScanSector(3));
             }
@@ -68,6 +72,8 @@ public class ExplorationSystem : MonoBehaviour
             }
         }));
 
+        // This command launch an expedition to the specified sector, with a probability
+        // of coming back with resources
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("send", (string identifier) =>
         {
             ExpSector selectedSector = m_region.GetSector(identifier.ToUpper());
@@ -111,10 +117,9 @@ public class ExplorationSystem : MonoBehaviour
 
                 // Send the squad into expedition
                 // TODO : Add delay before squad arrival
-                int squadIndex = m_squads.Count;
-                ExpSquad newSquad = new ExpSquad(squadIndex, selectedSector);
+                ExpSquad newSquad = ExpSquad.Generate(selectedSector);
                 m_squads.Add(newSquad);
-                m_commandLog.AddLog($"send: squad {squadIndex} sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
+                m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
             }
             else
             {
@@ -122,38 +127,23 @@ public class ExplorationSystem : MonoBehaviour
             }
         }));
 
+        // Generate a starting region on game start
         m_region = ExpRegion.Generate();
     }
 
-    public void UpdateSquads()
-    {
-        // TODO : Add delay before squad return
-        // Remove complete squads
-        ExpSquad toDequeue;
-        while ((toDequeue = m_completeSquadsQueue.Dequeue()) != null)
-        {
-            if (m_squads.Contains(toDequeue))
-            {
-                m_squads.Remove(toDequeue);
-            }
-        }
-
-        // Update each in-going squad
-        foreach (var squad in m_squads)
-        {
-            var status = squad.Update();
-            if (status == ExpSquad.Status.DONE)
-            {
-                m_completeSquadsQueue.Enqueue(squad);
-                m_commandLog.AddLog($"send: squad {squad.GetIdentifier()} completed expedition, initiating return operation", GameManager.ORANGE);
-            }
-        }
-    }
-
+    /// <summary>
+    /// Coroutine that takes care of the scan operation, which is just a delay before displaying
+    /// data to the player on the command log.
+    /// </summary>
+    /// <param name="totalTime">The scan "delay" in seconds</param>
+    /// <returns></returns>
     private IEnumerator ScanSector(float totalTime)
     {
         Debug.Log("Starting scan...");
         m_commandLog.AddLog($"scan: prospecting data on sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
+        
+        // Wait until the time value has reached the total time
+        // Could use WaitForSeconds but me no likey
         float time = 0;
         while (time < totalTime)
         {
@@ -161,6 +151,8 @@ public class ExplorationSystem : MonoBehaviour
             time += Time.deltaTime;
         }
 
+        // Send a message on the command log to signal the player a scan was completed
+        // and display the result
         Debug.Log($"Scan completed for sector {m_currentSectorScan.GetIdentifier()}...");
         m_commandLog.AddLog($"scan: completed sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
 
@@ -174,6 +166,7 @@ public class ExplorationSystem : MonoBehaviour
             m_commandLog.AddLog($"Found {resourceData.amount} {resourceData.resourceType}!", GameManager.ORANGE);
         }
 
+        // Mark the sector as scanned
         m_scannedSectors.Add(m_currentSectorScan);
         m_currentSectorScan = null;
     }
