@@ -28,7 +28,7 @@ public class RessUpRoomData : UpRoomData
     }
     //-----
 
-    void SendRessource(ResourceType ressType, int ressNum)
+    void SendResource(ResourceType ressType, int ressNum)
     {
         OnResourceGenerated?.Invoke(ressType, ressNum);
     }

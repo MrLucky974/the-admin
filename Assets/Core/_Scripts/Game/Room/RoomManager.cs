@@ -15,8 +15,9 @@ public class RoomManager : MonoBehaviour
 
     ResourceHandler m_resourceHandler;
     RoomData[] m_roomArray;
-    ArrayList m_ids = new ArrayList();
 
+
+    ArrayList m_ids = new ArrayList();
     ArrayList m_roomNames = new ArrayList();
 
 
@@ -24,6 +25,7 @@ public class RoomManager : MonoBehaviour
     Coroutine m_ressCoroutine;
 
     const int DEGRADATION = 5;
+    const float TIMEDEGRADE = 2;
 
 
     public void Initialize()
@@ -35,7 +37,6 @@ public class RoomManager : MonoBehaviour
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
         m_ressCoroutine = StartCoroutine(GenerateRessources());
     }
-
 
     void InitIds(int roomNum)
     {
@@ -58,6 +59,18 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public void RepairRoom(string roomId)
+    {
+        GameManager gm = FindObjectOfType<GameManager>();
+        foreach (RoomData room in m_roomArray)
+        {
+            if (room.roomId == roomId)
+            {
+                room.RepairRoom();
+                gm.GetCommandLog().AddLog($"{roomId} repaired", GameManager.ORANGE);
+            }
+        }
+    }
     public void UpgradeRoom(string roomId)
     {
         UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
@@ -65,8 +78,7 @@ public class RoomManager : MonoBehaviour
         foreach (UpRoomData room in ressRooms) {
             if (room.roomId == roomId)
             {
-                if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost))
-                {
+                if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost)){
                     room.Upgrade();
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
@@ -77,30 +89,28 @@ public class RoomManager : MonoBehaviour
                     return;
                 }
             }
-            else
-            {
+            else{
+                if (roomId == ""){
+                    gm.GetCommandLog().AddLog($"specify room id example: upgrade R1", GameManager.RED);
+                    return;
+                }
                 gm.GetCommandLog().AddLog($"upgrade {roomId} failed you cant upgrade this room", GameManager.RED);
                 return;
             }
-   
         }
     }
-
 
     IEnumerator DegradeRoom()
     {
         foreach(RoomData room in m_roomArray){
             if (room.roomState != RoomData.RoomState.DESTROYED){
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(TIMEDEGRADE);
                 room.IncrementDurability(-DEGRADATION);  
             }
         }
         yield return new WaitForSeconds(1);
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
     }
-
-
-
     IEnumerator GenerateRessources()
     {
         RessUpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();

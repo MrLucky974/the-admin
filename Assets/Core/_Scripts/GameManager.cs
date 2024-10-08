@@ -75,6 +75,11 @@ public class GameManager : Singleton<GameManager>
             m_roomManager.UpgradeRoom(roomId);
         }));
 
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("repair", (String roomId) =>
+        {
+            m_roomManager.RepairRoom(roomId);
+        }));
+
 #endif
         #endregion
 
@@ -106,4 +111,5 @@ public class GameManager : Singleton<GameManager>
     public PlayerInputActions GetInputActions() => m_inputActions;
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
+    public RoomManager GetRoomManager() => m_roomManager;
 }

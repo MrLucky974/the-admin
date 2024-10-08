@@ -12,7 +12,6 @@ public class AsciiSliderRoom : AsciiSlider
     {
         base.Start();
         m_owner.OnDurabilityChanged += SetSlider;
-
     }
 
     new void SetSlider(int value)

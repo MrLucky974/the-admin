@@ -69,7 +69,7 @@ public class RoomData : MonoBehaviour
     {
         m_roomState = newState;
     }
-    protected void RepairRoom() // repair the room
+    public void RepairRoom() // repair the room
     {
         OnRoomRepaired?.Invoke(m_repairCost);
         m_durability = m_maxDurability;
