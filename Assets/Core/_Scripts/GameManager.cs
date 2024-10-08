@@ -19,6 +19,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private CommandLogManager m_commandLogManager;
     [SerializeField] private ResourceHandler m_resourceHandler;
     [SerializeField] private ExplorationSystem m_explorationSystem;
+    [SerializeField] private RoomManager m_roomManager;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -67,6 +68,12 @@ public class GameManager : Singleton<GameManager>
         {
             m_resourceHandler.AddScraps(amount);
             m_commandLogManager.AddLog($"Added {amount} scraps", GameManager.ORANGE);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
+        {
+            m_roomManager.UpgradeRoom(roomId);
+            
         }));
 
 #endif

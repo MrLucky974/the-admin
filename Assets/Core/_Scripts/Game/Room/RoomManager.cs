@@ -12,6 +12,8 @@ public class RoomManager : MonoBehaviour
 
     Test m_admin;
 
+
+    ResourceHandler m_resourceHandler;
     RoomData[] m_roomArray;
     ArrayList m_ids = new ArrayList();
 
@@ -27,6 +29,7 @@ public class RoomManager : MonoBehaviour
     void Start()
     {
         m_roomArray = FindObjectsOfType<RoomData>();//GetComponentsInChildren<RoomData>(); 
+        m_resourceHandler = FindObjectOfType<ResourceHandler>();
         InitIds(m_roomArray.Length-1);
         m_admin = FindObjectOfType<Test>();
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
@@ -35,13 +38,14 @@ public class RoomManager : MonoBehaviour
 
     void Update()
     {
-        
+        if (Input.GetButtonDown("Jump")){
+            UpgradeRoom("R2");
+        }
     }
 
 
     void InitIds(int roomNum)
     {
-        Debug.Log(m_ids.Count);
         for (int i = 0; i <= roomNum; i++)
         {
             m_ids.Add(i+1);
@@ -59,7 +63,21 @@ public class RoomManager : MonoBehaviour
             m_ids.RemoveAt(index);
             Debug.Log(room.name+" / "+room.roomId);
         }
-        Debug.Log("fini "+m_ids.Count);
+    }
+
+    public void UpgradeRoom(string roomId)
+    {
+        UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
+        foreach (UpRoomData room in ressRooms) {
+            if (room.roomId == roomId)
+            {
+                room.Upgrade();
+                if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost))
+                {
+                    m_resourceHandler.ConsumeScraps(room.upgradeCost);
+                }
+            } 
+        }
     }
 
 
@@ -78,15 +96,25 @@ public class RoomManager : MonoBehaviour
 
     IEnumerator GenerateRessources()
     {
-        RessRoomData[] ressRooms = FindObjectsOfType<RessRoomData>();
-        foreach (RessRoomData room in ressRooms)
+        RessUpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
+        foreach (RessUpRoomData room in ressRooms)
         {
-            m_admin.AddRessourceSignal(room.ressourceType,room.ressValue);
+            if (room.upgradeState == RessUpRoomData.UpgradeState.UPGRADED) // check if the room is upgraded
+            {
+                switch (room.ressourceType)
+                {
+                    case ResourceType.RATIONS:
+                        m_resourceHandler.AddRations(room.ressValue);
+                        break;
+                    case ResourceType.MEDS:
+                        m_resourceHandler.AddMeds(room.ressValue);
+                        break;
+                }
+            }
             yield return new WaitForSeconds(room.genRessTime);
         }
         yield return new WaitForSeconds(1);
         m_ressCoroutine = StartCoroutine(GenerateRessources());
-
     }
 
 }

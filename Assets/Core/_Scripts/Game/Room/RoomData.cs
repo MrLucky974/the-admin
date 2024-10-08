@@ -17,8 +17,8 @@ public class RoomData : MonoBehaviour
 
     protected RoomState m_roomState = RoomState.FUNCTIONAL;
 
-    public event Action<int> m_roomRepaired;
-    public event Action<int> m_onDurabilityChanged;
+    public event Action<int> OnRoomRepaired;
+    public event Action<int> OnDurabilityChanged;
 
 
 
@@ -47,11 +47,11 @@ public class RoomData : MonoBehaviour
     }
     //--
 
-    private void Start()
+    private void Awake()
     {
         m_durability = m_maxDurability;
         gameObject.name = m_roomName;
-        m_onDurabilityChanged?.Invoke(m_durability);
+        OnDurabilityChanged?.Invoke(m_durability);
     }
     private void Update()
     {
@@ -71,15 +71,15 @@ public class RoomData : MonoBehaviour
     }
     protected void RepairRoom() // repair the room
     {
-        m_roomRepaired?.Invoke(m_repairCost);
+        OnRoomRepaired?.Invoke(m_repairCost);
         m_durability = m_maxDurability;
-        m_onDurabilityChanged?.Invoke(m_durability);
+        OnDurabilityChanged?.Invoke(m_durability);
         SetRoomState(RoomState.FUNCTIONAL);
     }
 
     public void IncrementDurability(int value){ 
         m_durability += value;
-        m_onDurabilityChanged?.Invoke(m_durability);
+        OnDurabilityChanged?.Invoke(m_durability);
         m_durability = Mathf.Clamp(m_durability,0,m_maxDurability);
         CheckIsDamaged();
         CheckIsDestroy();

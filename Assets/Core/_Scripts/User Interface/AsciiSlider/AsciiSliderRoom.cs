@@ -8,13 +8,14 @@ public class AsciiSliderRoom : AsciiSlider
     [SerializeField] RoomData m_owner;
 
 
-    void Start()
+    new void Start()
     {
         base.Start();
-        m_owner.m_onDurabilityChanged += SetSlider;
+        m_owner.OnDurabilityChanged += SetSlider;
+
     }
 
-    void SetSlider(int value)
+    new void SetSlider(int value)
     {
         m_value = value / 10;
         base.SetSlider(m_value);

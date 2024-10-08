@@ -3,23 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RessRoomData : RoomData
+public class RessUpRoomData : UpRoomData
 {
     [SerializeField]  int m_ressValue = 1; // generated ressources value
     [SerializeField] float m_generateRessTime = 5; // time to generate ressources
-    [SerializeField] RessourceType m_ressourceType;
+    [SerializeField] ResourceType m_ressourceType;
 
-
-    public event Action<RessourceType,int> m_ressouceGenerated; 
-
-    public enum RessourceType //TODO REPLACE BY Ressource Type
-    {
-        RATIONS,
-        DRUG,
-    }
+    public event Action<ResourceType, int> OnResourceGenerated;
 
     //----------- SET GET
-
     public int ressValue
     {
         get { return m_ressValue; }
@@ -30,15 +22,14 @@ public class RessRoomData : RoomData
         get { return m_generateRessTime; }
     }
 
-    public RessourceType ressourceType
+    public ResourceType ressourceType
     {
         get { return m_ressourceType; }
     }
-
     //-----
 
-    void SendRessource(RessourceType ressType, int ressNum)
+    void SendRessource(ResourceType ressType, int ressNum)
     {
-        m_ressouceGenerated?.Invoke(ressType, ressNum);
+        OnResourceGenerated?.Invoke(ressType, ressNum);
     }
 }
