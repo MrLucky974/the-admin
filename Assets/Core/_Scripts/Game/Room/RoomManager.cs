@@ -36,13 +36,6 @@ public class RoomManager : MonoBehaviour
         m_ressCoroutine = StartCoroutine(GenerateRessources());
     }
 
-    void Update()
-    {
-        if (Input.GetButtonDown("Jump")){
-            UpgradeRoom("R2");
-        }
-    }
-
 
     void InitIds(int roomNum)
     {
@@ -68,20 +61,28 @@ public class RoomManager : MonoBehaviour
     public void UpgradeRoom(string roomId)
     {
         UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
+        GameManager gm = FindObjectOfType<GameManager>();
         foreach (UpRoomData room in ressRooms) {
             if (room.roomId == roomId)
             {
-                GameManager gm = FindObjectOfType<GameManager>();
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost))
                 {
                     room.Upgrade();
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
+                    return;
                 }
                 else{  
                     gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed not enough resources", GameManager.RED);
+                    return;
                 }
-            } 
+            }
+            else
+            {
+                gm.GetCommandLog().AddLog($"upgrade {roomId} failed you cant upgrade this room", GameManager.RED);
+                return;
+            }
+   
         }
     }
 
