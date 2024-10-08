@@ -1,8 +1,5 @@
 ﻿using LuckiusDev.Utils;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
 
@@ -20,6 +17,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private ResourceHandler m_resourceHandler;
     [SerializeField] private ExplorationSystem m_explorationSystem;
     [SerializeField] private ModalBox m_modalBox;
+    [SerializeField] private VillagerManager m_villagerManager;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -29,7 +27,7 @@ public class GameManager : Singleton<GameManager>
         // TODO : Apply seed
         int seed = 0;
         RNG = new System.Random(seed);
-        
+
         m_inputActions = new PlayerInputActions();
         m_inputActions.Enable();
 
@@ -70,6 +68,12 @@ public class GameManager : Singleton<GameManager>
             m_commandLogManager.AddLog($"Added {amount} scraps", GameManager.ORANGE);
         }));
 
+        m_commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("slider", (int min, int max, int amount) =>
+        {
+            var slider = JUtils.GenerateTextSlider(amount, min, max, 8);
+            m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
+        }));
+
 #endif
         #endregion
 
@@ -81,6 +85,7 @@ public class GameManager : Singleton<GameManager>
         m_timeManager.Initialize();
         m_resourceHandler.Initialize();
         m_explorationSystem.Initialize();
+        m_villagerManager.Initialize();
     }
 
     private void Update()
@@ -101,4 +106,5 @@ public class GameManager : Singleton<GameManager>
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
     public ModalBox GetModal() => m_modalBox;
+    public VillagerManager GetVillagerManager() => m_villagerManager;
 }

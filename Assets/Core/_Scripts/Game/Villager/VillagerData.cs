@@ -3,17 +3,17 @@ using UnityEngine;
 
 public class VillagerData
 {
-    public enum AgeStage 
-    { 
-        KID, 
-        ADULT, 
-        ELDER 
+    public enum AgeStage
+    {
+        KID,
+        ADULT,
+        ELDER
     };
-    
-    public enum Gender 
-    { 
-        MALE, 
-        FEMALE 
+
+    public enum Gender
+    {
+        MALE,
+        FEMALE
     };
 
     public static Gender[] ALL_GENDERS =
@@ -39,7 +39,7 @@ public class VillagerData
         LAZY,
         UNSTABLE
     }
-    
+
     public static Personality[] ALL_PERSONALITIES =
     {
         Personality.NORMAL,
@@ -67,7 +67,7 @@ public class VillagerData
     public const int DEFAULT_RECOVERY_SPEED = 5;
 
     public const int DEFAULT_WORKING_SPEED = 5;
-    
+
     string m_identifier = "None";
     string m_name;
     int m_age = DEFAULT_AGE;
@@ -182,10 +182,10 @@ public class VillagerData
     public void Impregnate()
     {
         RemoveHealthStatus(HealthStatus.HEALTHY);
-        AddHealthStatus(HealthStatus.PREGNANT);
+        ApplyHealthStatus(HealthStatus.PREGNANT);
     }
 
-    public void AddHealthStatus(HealthStatus status)
+    public void ApplyHealthStatus(HealthStatus status)
     {
         m_healthStatus |= status;
     }

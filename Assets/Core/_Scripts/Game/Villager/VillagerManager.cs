@@ -1,53 +1,54 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 public class VillagerManager : MonoBehaviour
 {
-    ResourceSystem m_resourceSystem;
-    [SerializeField] VillagerDataDisplay m_villagerDataDisplay;
+    private VillagerGenerator m_villagerGenerator;
 
-    private void Start()
+    private List<VillagerData> m_population;
+    private VillagerData m_currentVillager;
+    private List<VillagerData> m_villagerQueue;
+
+    public ReadOnlyCollection<VillagerData> GetPopulation()
     {
-        m_resourceSystem = GetComponent<ResourceSystem>();
-        m_villagerDataDisplay = GetComponent<VillagerDataDisplay>();
-
-        var commandLog = GameManager.Instance.GetCommandLog();
-        var commandSystem = GameManager.Instance.GetCommands();
-        commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", (string identifier) =>
-        {
-            var population = m_resourceSystem.GetPopulation();
-            foreach (VillagerData villager in population)
-            {
-                if (identifier == villager.GetID())
-                {
-
-                    m_villagerDataDisplay.Display(villager);
-                    Debug.Log("villager set");
-                    break;
-                }
-            }
-
-        }));
+        return m_population.AsReadOnly();
     }
-    
-    public void IncreaseFatigue(int toIncrease, VillagerData villager)
+
+    public void Initialize()
     {
-        villager.IncreaseFatigue(toIncrease);
-        Debug.Log(villager.GetFatigue());
+        m_villagerGenerator = new VillagerGenerator();
+        m_villagerGenerator.Initialize();
+
+        m_population = new List<VillagerData>();
+        m_villagerQueue = new List<VillagerData>();
     }
-    
-    public void DecreaseFatigue(int toDecrease, VillagerData villager)
+
+    #region Villager Handling Utilities
+
+    public void IncreaseFatigue(VillagerData data, int value)
     {
-        villager.DecreaseFatigue(toDecrease);
+        data.IncreaseFatigue(value);
     }
-    
+
+    public void DecreaseFatigue(VillagerData data, int value)
+    {
+        data.DecreaseFatigue(value);
+    }
+
+    public void ApplyHealthStatus(VillagerData data, VillagerData.HealthStatus status)
+    {
+        data.ApplyHealthStatus(status);
+    }
+
+    public void RemoveHealthStatus(VillagerData data, VillagerData.HealthStatus status)
+    {
+        data.RemoveHealthStatus(status);
+    }
+
     public void GetPregnant()
     {
-        var population = m_resourceSystem.GetPopulation();
-        foreach (VillagerData villager in population)
+        foreach (VillagerData villager in m_population)
         {
             if (villager.IsAdult() && villager.GetGender() == VillagerData.Gender.FEMALE)
             {
@@ -56,13 +57,105 @@ public class VillagerManager : MonoBehaviour
         }
     }
 
-    public void ApplyHealthStatus(VillagerData data, VillagerData.HealthStatus status)
+    #endregion
+
+    #region Villager Setup Utilities
+
+    private void CreateRandomVillager()
     {
-        data.AddHealthStatus(status);
+        var name = m_villagerGenerator.GenerateName();
+        var age = m_villagerGenerator.SetAge();
+        var gender = m_villagerGenerator.SelectRandomGender();
+        var personality = m_villagerGenerator.SelectRandomPersonality();
+
+        var villager = new VillagerData.Builder(name)
+            .SetAge(age)
+            .SetGender(gender)
+            .SetPersonality(personality)
+            .Build();
+
+        m_currentVillager = villager;
+        Debug.Log($"villager created: {m_currentVillager}");
     }
 
-    public void RemoveHealthStatus(VillagerData data, VillagerData.HealthStatus status)
+    private void AssignIdentifierToVillager()
     {
-        data.RemoveHealthStatus(status);
+        var name = m_currentVillager.GetName();
+        var index = m_population.Count - 1;
+        m_currentVillager.SetID(m_villagerGenerator.GenerateID(name, index));
     }
+
+    private void AddVillagerToPopulation()
+    {
+        if (m_currentVillager == null)
+        {
+            Debug.LogError($"No villager created, use {nameof(CreateRandomVillager)} before calling this method");
+            return;
+        }
+
+        if (m_population == null)
+        {
+            m_population = new List<VillagerData>();
+        }
+
+        AssignIdentifierToVillager();
+        m_population.Add(m_currentVillager);
+        m_currentVillager = null;
+    }
+
+    private void CreateRandomVillagers(int amount)
+    {
+        while (amount > 0)
+        {
+            CreateRandomVillager();
+            AddVillagerToPopulation();
+            amount--;
+        }
+    }
+
+    private void CreateRandomVillagersInQueue(int amount)
+    {
+        while (amount > 0)
+        {
+            CreateRandomVillager();
+            m_villagerQueue.Add(m_currentVillager);
+            amount--;
+        }
+    }
+
+    private void AddFromQueueToPopulation(int queueIndex)
+    {
+        if (queueIndex < 0 || queueIndex >= m_population.Count)
+        {
+            Debug.LogError("Index out of queue range");
+            return;
+        }
+
+        VillagerData visitor = m_villagerQueue[queueIndex];
+        m_villagerQueue.Remove(visitor);
+
+        m_currentVillager = visitor;
+        AssignIdentifierToVillager();
+        m_currentVillager = null;
+
+        m_population.Add(visitor);
+    }
+
+    //private void KillVillagers(int numberToKill)
+    //{
+    //    if (numberToKill <= m_population.Count)
+    //    {
+    //        Debug.Log($"is getting killed {m_population[numberToKill]})");
+    //        m_population.Remove(m_population[numberToKill]);
+    //    }
+    //}
+
+#if UNITY_EDITOR
+    private void ListPopulation()
+    {
+        m_population.Print();
+    }
+#endif
+
+    #endregion
 }

@@ -1,22 +1,30 @@
-using System.Collections;
 using UnityEngine;
-using System.IO;
 
 public class VillagerGenerator
 {
-    string[] _names;
-    string[] _surnames;
-    
+    private const string NAMES_LIST_FILE_PATH = "Names";
+    private const string SURNAMES_LIST_FILE_PATH = "Names";
+
+    private string[] m_names;
+    private string[] m_surnames;
+
+    public void Initialize()
+    {
+        // Load assets from Resources folder
+        var namesList = Resources.Load<TextAsset>(NAMES_LIST_FILE_PATH);
+        var surnamesList = Resources.Load<TextAsset>(SURNAMES_LIST_FILE_PATH);
+
+        // Store the names in arrays
+        m_names = namesList.text.Split('\n');
+        m_surnames = surnamesList.text.Split('\n');
+    }
+
     public string GenerateName()
     {
-        string fileName = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_01.txt";
-        string fileSurname = "Assets/Core/_Scripts/Game/Villager/NamesLists/The_Administrator.Name_02.txt";
-        _names = File.ReadAllLines(fileName);
-        _surnames = File.ReadAllLines(fileSurname);
-        
-        //Giving the full name and surname
-        string nameToSet = _names[GetRandomID(_names.Length)] + " " + _surnames[GetRandomID(_surnames.Length)];
-        return nameToSet;
+        //Give the full name and surname
+        var rng = GameManager.RNG;
+        string name = $"{m_names.PickRandom(rng)} {m_surnames.PickRandom(rng)}";
+        return name;
     }
 
     int GetRandomID(int size)

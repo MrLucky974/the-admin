@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +11,25 @@ public class VillagerDataDisplay : MonoBehaviour
     [SerializeField] private TMP_Text m_healthLabel;
     [SerializeField] private TMP_Text m_workingStatusLabel;
     [SerializeField] private TMP_Text m_fatigueLabel;
+
+    private void Start()
+    {
+        var villagerManager = GameManager.Instance.GetVillagerManager();
+        var commandLog = GameManager.Instance.GetCommandLog();
+        var commandSystem = GameManager.Instance.GetCommands();
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", (string identifier) =>
+        {
+            var population = villagerManager.GetPopulation();
+            foreach (VillagerData villager in population)
+            {
+                if (identifier.ToUpper() == villager.GetID())
+                {
+                    Display(villager);
+                    break;
+                }
+            }
+        }));
+    }
 
     public void Display(VillagerData data)
     {

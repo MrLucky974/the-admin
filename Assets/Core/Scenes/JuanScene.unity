@@ -179,7 +179,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 20
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -567,8 +567,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278255427
-  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 1}
+    rgba: 3422617411
+  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 0.8}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -830,7 +830,7 @@ GameObject:
   - component: {fileID: 105141040}
   - component: {fileID: 105141039}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Categories
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4083,8 +4083,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278255427
-  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 1}
+    rgba: 3422617411
+  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 0.8}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4960,8 +4960,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 254.3, y: -16.27}
-  m_SizeDelta: {x: 508.6, y: 0}
+  m_AnchoredPosition: {x: 221.485, y: -16.27}
+  m_SizeDelta: {x: 442.97, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &618345753
 MonoBehaviour:
@@ -4997,7 +4997,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Reputation : [0000------------]'
+  m_text: "Reputation : [\u25A0\u25A0\u25A0\u25A0\u25A1\u25A1\u25A1\u25A1\u25A1\u25A1\u25A1\u25A1]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
   m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
@@ -5007,8 +5007,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278255427
-  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 1}
+    rgba: 3422617411
+  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 0.8}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5157,8 +5157,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278255427
-  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 1}
+    rgba: 3422617411
+  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 0.8}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7071,7 +7071,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 131.255, y: -97.62}
+  m_AnchoredPosition: {x: 131.255, y: -117.62}
   m_SizeDelta: {x: 262.51, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &826011387
@@ -7899,6 +7899,7 @@ MonoBehaviour:
   m_resourceHandler: {fileID: 1015892151}
   m_explorationSystem: {fileID: 1015892150}
   m_modalBox: {fileID: 540376633}
+  m_villagerManager: {fileID: 1015892149}
 --- !u!4 &1015892156
 Transform:
   m_ObjectHideFlags: 0
@@ -11240,8 +11241,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278255427
-  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 1}
+    rgba: 3422617411
+  m_fontColor: {r: 0.26174653, g: 1, b: 0, a: 0.8}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
