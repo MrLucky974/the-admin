@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
@@ -22,6 +23,15 @@ public class VillagerManager : MonoBehaviour
 
         m_population = new List<VillagerData>();
         m_villagerQueue = new List<VillagerData>();
+
+#if UNITY_EDITOR
+        var commandSystem = GameManager.Instance.GetCommands();
+        commandSystem.AddCommand(new CommandDefinition<Action>("initpop", () =>
+        {
+            CreateRandomVillagers(3);
+            ListPopulation();
+        }));
+#endif
     }
 
     #region Villager Handling Utilities
@@ -81,7 +91,7 @@ public class VillagerManager : MonoBehaviour
     private void AssignIdentifierToVillager()
     {
         var name = m_currentVillager.GetName();
-        var index = m_population.Count - 1;
+        var index = m_population.Count + 1;
         m_currentVillager.SetID(m_villagerGenerator.GenerateID(name, index));
     }
 
@@ -139,6 +149,20 @@ public class VillagerManager : MonoBehaviour
         m_currentVillager = null;
 
         m_population.Add(visitor);
+    }
+
+    //checking a villager ID with the input information
+
+    public VillagerData GetVillagerByID(string idInput)
+    {
+        foreach (VillagerData villager in m_population)
+        {
+            if (idInput.ToUpper() == villager.GetID())
+            {
+                return villager;
+            }
+        }
+        return null;
     }
 
     //private void KillVillagers(int numberToKill)
