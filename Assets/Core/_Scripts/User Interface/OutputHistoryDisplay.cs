@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -16,16 +14,20 @@ public class OutputHistoryDisplay : MonoBehaviour
     private void Start()
     {
         m_actions = GameManager.Instance.GetInputActions().Gameplay;
-        
+
         m_commandLog = GameManager.Instance.GetCommandLog();
         m_commandLog.RegisterOnHistoryChanged(OnHistoryChanged);
-        
+
         m_historyTextField.text = "";
     }
 
     private void Update()
     {
-        
+        var deltaTime = Time.deltaTime;
+        var currentValue = m_scrollRect.verticalNormalizedPosition;
+        var input = m_actions.Scroll.ReadValue<float>();
+        currentValue -= input * m_scrollRect.scrollSensitivity * deltaTime;
+        m_scrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentValue);
     }
 
     private void OnDestroy()
