@@ -83,6 +83,20 @@ public class RoomManager : MonoBehaviour
             }
         }
     }
+
+
+    public void AddVillagerInRoom(string villagerID,string roomId)
+    {
+
+        foreach (UpRoomData room in m_roomArray)
+        {
+            if ((room.roomId == roomId))
+            {
+                
+            }
+        }
+    }
+
     public void UpgradeRoom(string roomId)
     {
         UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();

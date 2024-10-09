@@ -134,6 +134,11 @@ public class VillagerData
         return m_gender;
     }
 
+    public HealthStatus GetHealthStatus()
+    {
+        return m_healthStatus;
+    }
+
     public Personality GetPersonality()
     {
         return m_personality;

@@ -82,23 +82,24 @@ public class RoomData : MonoBehaviour
         CheckIsDamaged();
         CheckIsDestroy();
     }
+
     protected void CheckIsDamaged(){ 
         if(m_durability < m_maxDurability / 2)
         {
             SetRoomState(RoomState.DAMAGED);
         }
     }
+
     protected void CheckIsDestroy(){
         if (m_durability <= 0){
             DestroyRoom();           
         }
     }
 
-    protected void AddVillagerInRoom(GameObject villager) // TODO replace gameobject with villager type
+    public void AddVillagerInRoom(VillagerData villager)
     {
         m_villagerInRoom.Add(villager);
     }
-
     protected void DestroyRoom(){
         SetRoomState(RoomState.DESTROYED);
         Debug.Log("BOOM");
