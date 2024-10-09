@@ -368,8 +368,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 103.865, y: -98.225006}
-  m_SizeDelta: {x: 207.73, y: 0}
+  m_AnchoredPosition: {x: 139.455, y: -101.350006}
+  m_SizeDelta: {x: 278.91, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &193703909
 MonoBehaviour:
@@ -407,8 +407,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Scraps: [{0}/999]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -562,7 +563,6 @@ GameObject:
   - component: {fileID: 362050759}
   - component: {fileID: 362050758}
   - component: {fileID: 362050765}
-  - component: {fileID: 362050766}
   m_Layer: 0
   m_Name: '[GAME MANAGER]'
   m_TagString: Untagged
@@ -647,8 +647,6 @@ MonoBehaviour:
   m_commandLogManager: {fileID: 362050760}
   m_resourceHandler: {fileID: 362050759}
   m_explorationSystem: {fileID: 362050758}
-  m_modalBox: {fileID: 0}
-  m_villagerManager: {fileID: 362050766}
   m_roomManager: {fileID: 362050765}
 --- !u!4 &362050764
 Transform:
@@ -675,18 +673,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f4cd178e05c81542a15843c7ee3e1f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &362050766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362050757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6af17d7b4817424d8ee14a7b4bd5b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &362184541
@@ -1360,7 +1346,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: Salle de repos
   m_roomId: 
-  m_roomType: 0
 --- !u!1 &581682248
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,8 +1478,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter command...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1653,7 +1639,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: Cantine
   m_roomId: 
-  m_roomType: 0
   m_upgradeState: 0
   m_upgradeCost: 5
   m_ressValue: 1
@@ -1772,9 +1757,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1944,8 +1928,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: F3
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2065,7 +2050,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: "Salle des g\xE9n\xE9rateurs"
   m_roomId: 
-  m_roomType: 0
 --- !u!1 &988705205
 GameObject:
   m_ObjectHideFlags: 0
@@ -2414,8 +2398,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 94.42, y: -56.935}
-  m_SizeDelta: {x: 188.84, y: 0}
+  m_AnchoredPosition: {x: 123.05, y: -58.81}
+  m_SizeDelta: {x: 246.1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1178014498
 MonoBehaviour:
@@ -2453,8 +2437,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Meds: [{0}/999]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2676,8 +2661,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: F1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2791,8 +2777,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3374,8 +3361,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 107.77, y: -15.645}
-  m_SizeDelta: {x: 215.54, y: 0}
+  m_AnchoredPosition: {x: 147.66, y: -16.27}
+  m_SizeDelta: {x: 295.32, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1480222678
 MonoBehaviour:
@@ -3413,8 +3400,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Rations: [{0}/999]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3619,8 +3607,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[{0}] | {1} (Day {2}) | Week {3}'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3805,8 +3794,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: <color=#FF003A>[01:00pm] Error in machine room!</color>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4198,7 +4188,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: 'Salle commune '
   m_roomId: 
-  m_roomType: 0
 --- !u!1 &1795124981
 GameObject:
   m_ObjectHideFlags: 0
@@ -4282,7 +4271,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: "Station d\u2019\xE9puration "
   m_roomId: 
-  m_roomType: 0
 --- !u!1 &1879339373
 GameObject:
   m_ObjectHideFlags: 0
@@ -4329,7 +4317,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: 'Infirmerie  '
   m_roomId: 
-  m_roomType: 0
   m_upgradeState: 0
   m_upgradeCost: 5
   m_ressValue: 1
@@ -4394,8 +4381,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: F2
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4775,8 +4763,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: The Administrator -
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
+  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4896,7 +4885,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: Couloir
   m_roomId: 
-  m_roomType: 0
 --- !u!1 &2072607932
 GameObject:
   m_ObjectHideFlags: 0
@@ -5426,7 +5414,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_roomName: Entrepot
   m_roomId: 
-  m_roomType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

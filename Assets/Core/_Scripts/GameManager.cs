@@ -107,6 +107,7 @@ public class GameManager : Singleton<GameManager>
     public PlayerInputActions GetInputActions() => m_inputActions;
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
+    public RoomManager GetRoomManager() => m_roomManager;
     public ModalBox GetModal() => m_modalBox;
     public VillagerManager GetVillagerManager() => m_villagerManager;
 }
