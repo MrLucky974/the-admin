@@ -8,6 +8,10 @@ public class ResourceDisplay : MonoBehaviour
 {
     private const string RESOURCE_FORMAT = "{0}: [{1}/{2}]";
 
+    [SerializeField] private PageSwitcher m_pages;
+
+    [Space]
+
     [SerializeField] private TMP_Text m_rationsLabel;
     [SerializeField] private TMP_Text m_medsLabel;
     [SerializeField] private TMP_Text m_scrapsLabel;
@@ -20,6 +24,15 @@ public class ResourceDisplay : MonoBehaviour
         m_resourceHandler.OnRationsChanged += UpdateRationLabel;
         m_resourceHandler.OnMedsChanged += UpdateMedsLabel;
         m_resourceHandler.OnScrapsChanged += UpdateScrapsLabel;
+    }
+
+    private void Start()
+    {
+        var commandSystem = GameManager.Instance.GetCommands();
+        commandSystem.AddCommand(new CommandDefinition<Action>("stock", () =>
+        {
+            m_pages.Select(StatusPageIndex.STOCK);
+        }));
     }
 
     private void OnDestroy()

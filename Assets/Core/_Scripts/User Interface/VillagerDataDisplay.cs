@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class VillagerDataDisplay : MonoBehaviour
 {
+    [SerializeField] private PageSwitcher m_pages;
+
+    [Space]
+
     [SerializeField] private TMP_Text m_identifierLabel;
     [SerializeField] private TMP_Text m_genderLabel;
     [SerializeField] private TMP_Text m_personalityLabel;
@@ -22,6 +26,7 @@ public class VillagerDataDisplay : MonoBehaviour
             var villager = villagerManager.GetVillagerByID(identifier);
             if (villager != null)
             {
+                m_pages.Select(StatusPageIndex.CHECKUP);
                 Display(villager);
             }
         }));
