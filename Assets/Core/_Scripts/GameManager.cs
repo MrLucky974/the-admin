@@ -158,8 +158,17 @@ public class GameManager : Singleton<GameManager>
         #endregion
 
         // Lock player from using the cursor
+#if UNITY_EDITOR
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+#else
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+#endif
 
         // Initialize components
         m_timeManager.Initialize();
