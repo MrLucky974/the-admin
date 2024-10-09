@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private ExplorationSystem m_explorationSystem;
     [SerializeField] private ModalBox m_modalBox;
     [SerializeField] private VillagerManager m_villagerManager;
+    [SerializeField] private RoomManager m_roomManager;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -86,6 +87,7 @@ public class GameManager : Singleton<GameManager>
         m_resourceHandler.Initialize();
         m_explorationSystem.Initialize();
         m_villagerManager.Initialize();
+        m_roomManager.Initialize();
     }
 
     private void Update()
