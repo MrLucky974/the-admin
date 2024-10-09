@@ -311,7 +311,7 @@ MonoBehaviour:
   m_text: Enter command...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1145,7 +1145,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 199855777}
-  - component: {fileID: 199855779}
   - component: {fileID: 199855778}
   - component: {fileID: 199855780}
   m_Layer: 0
@@ -1182,20 +1181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6af17d7b4817424d8ee14a7b4bd5b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  villagerDataDisplay: {fileID: 0}
---- !u!114 &199855779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 199855776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f93d03c3d9bf32149a11c36fca3f8e93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  villagerManager: {fileID: 199855778}
 --- !u!114 &199855780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1395,7 +1380,7 @@ MonoBehaviour:
   m_text: 'HealthStatus:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1680,7 +1665,7 @@ MonoBehaviour:
   m_text: 'Reputation : [100%]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1830,7 +1815,7 @@ MonoBehaviour:
   m_text: 'WorkingStatus : '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2771,7 +2756,7 @@ MonoBehaviour:
   m_text: Id / Name Surname
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -5555,7 +5540,7 @@ MonoBehaviour:
   m_text: The Administrator -
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -5875,7 +5860,7 @@ MonoBehaviour:
   m_text: '[{0}] | {1} (Day {2}) | Week {3}'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -6048,7 +6033,7 @@ MonoBehaviour:
   m_text: F2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -6198,7 +6183,7 @@ MonoBehaviour:
   m_text: 'Gender : '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -7577,6 +7562,8 @@ MonoBehaviour:
   m_commandLogManager: {fileID: 1136861726}
   m_resourceHandler: {fileID: 1136861727}
   m_explorationSystem: {fileID: 1136861728}
+  m_modalBox: {fileID: 0}
+  m_villagerManager: {fileID: 0}
 --- !u!4 &1136861723
 Transform:
   m_ObjectHideFlags: 0
@@ -7727,7 +7714,7 @@ MonoBehaviour:
   m_text: 'Personality :'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -8011,7 +7998,7 @@ MonoBehaviour:
   m_text: 'Population : [total Population]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -9129,7 +9116,7 @@ MonoBehaviour:
   m_text: 'Fatigue :'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -9586,7 +9573,7 @@ MonoBehaviour:
   m_text: F3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -10066,7 +10053,7 @@ MonoBehaviour:
   m_text: <color=#FF003A>[01:00pm] Error in machine room!</color>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -10328,7 +10315,7 @@ MonoBehaviour:
   m_text: F1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -10704,7 +10691,7 @@ MonoBehaviour:
   m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -11728,7 +11715,7 @@ MonoBehaviour:
   m_text: 'AgeStatus : '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -11878,7 +11865,7 @@ MonoBehaviour:
   m_text: 'Elders : [number]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -12162,7 +12149,7 @@ MonoBehaviour:
   m_text: 'Children : [number]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -12604,7 +12591,7 @@ MonoBehaviour:
   m_text: 'Adults : [number]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8bbd6db888289a43ad60cc6cc0c6ad9, type: 2}
-  m_sharedMaterial: {fileID: -7293443437925226760, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
+  m_sharedMaterial: {fileID: 7757449295678837251, guid: c8bbd6db888289a43ad60cc6cc0c6ad9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

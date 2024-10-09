@@ -3,7 +3,7 @@ using UnityEngine;
 public class VillagerGenerator
 {
     private const string NAMES_LIST_FILE_PATH = "Names";
-    private const string SURNAMES_LIST_FILE_PATH = "Names";
+    private const string SURNAMES_LIST_FILE_PATH = "Surnames";
 
     private string[] m_names;
     private string[] m_surnames;
