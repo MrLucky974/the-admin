@@ -91,7 +91,7 @@ public class VillagerManager : MonoBehaviour
     private void AssignIdentifierToVillager()
     {
         var name = m_currentVillager.GetName();
-        var index = m_population.Count - 1;
+        var index = m_population.Count + 1;
         m_currentVillager.SetID(m_villagerGenerator.GenerateID(name, index));
     }
 

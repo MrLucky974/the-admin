@@ -23,8 +23,11 @@ public class VillagerGenerator
     {
         //Give the full name and surname
         var rng = GameManager.RNG;
-        string name = $"{m_names.PickRandom(rng)} {m_surnames.PickRandom(rng)}";
-        return name;
+
+        string name = m_names.PickRandom(rng).Replace("\r", "");
+        string surname = m_surnames.PickRandom(rng);
+        string fullName = $"{name} {surname}";
+        return fullName;
     }
 
     int GetRandomID(int size)
