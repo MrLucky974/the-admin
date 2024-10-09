@@ -28,7 +28,7 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         m_commandAction = command;
         m_parameterInfo = command.GetMethodInfo().GetParameters();
     }
-        
+
 
     public bool CheckIdentifier(string identifier)
     {
@@ -87,7 +87,7 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
             output = input;
             return true;
         }
-        
+
         return false;
     }
 
@@ -105,10 +105,24 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         int index = 0;
         foreach (var param in m_parameterInfo)
         {
-            sb.Append($"{param.ParameterType.FullName}");
+            string type = "error";
+            if (param.ParameterType == typeof(string))
+            {
+                type = "string";
+            }
+            else if (param.ParameterType == typeof(int))
+            {
+                type = "int";
+            }
+            else if (param.ParameterType == typeof(bool))
+            {
+                type = "bool";
+            }
+
+            sb.Append($"{type}");
             if (index < m_parameterInfo.Length - 1)
             {
-                sb.Append(',');
+                sb.Append(", ");
             }
             index++;
         }
