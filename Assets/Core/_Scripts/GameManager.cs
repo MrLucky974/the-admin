@@ -71,22 +71,25 @@ public class GameManager : Singleton<GameManager>
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addmeds", (int amount) =>
         {
+            var trueAmount = Mathf.Min(ResourceHandler.MAX_RESOURCE - m_resourceHandler.Meds, amount);
             m_resourceHandler.AddMeds(amount);
-            m_commandLogManager.AddLog($"Added {amount} meds", GameManager.ORANGE);
+            m_commandLogManager.AddLog($"Added {trueAmount} meds", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addrations", (int amount) =>
         {
+            var trueAmount = Mathf.Min(ResourceHandler.MAX_RESOURCE - m_resourceHandler.Rations, amount);
             m_resourceHandler.AddRations(amount);
-            m_commandLogManager.AddLog($"Added {amount} rations", GameManager.ORANGE);
+            m_commandLogManager.AddLog($"Added {trueAmount} rations", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addscraps", (int amount) =>
         {
+            var trueAmount = Mathf.Min(ResourceHandler.MAX_RESOURCE - m_resourceHandler.Scraps, amount);
             m_resourceHandler.AddScraps(amount);
-            m_commandLogManager.AddLog($"Added {amount} scraps", GameManager.ORANGE);
+            m_commandLogManager.AddLog($"Added {trueAmount} scraps", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
