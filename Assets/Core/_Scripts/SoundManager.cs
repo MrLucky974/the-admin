@@ -47,7 +47,8 @@ public class SoundManager : Singleton<SoundManager>
         if (clips.Length == 0)
             return;
 
-        AudioClip randomClip = clips.PickRandom();
+        var rng = GameManager.RNG;
+        AudioClip randomClip = clips.PickRandom(rng);
         Instance.m_audioSource.PlayOneShot(randomClip, volume);
         Instance.m_audioSource.pitch = 1f;
     }
