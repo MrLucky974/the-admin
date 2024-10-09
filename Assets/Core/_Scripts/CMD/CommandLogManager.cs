@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class CommandLogManager : MonoBehaviour
 {
-    private const string COMMAND_HISTORY_LOG_FORMAT = "<color={0}>[{1}] {2}</color>";
+    private const string COLORED_TEXT_FORMAT = "<color={0}>{1}</color>";
+    private const string COMMAND_HISTORY_LOG_FORMAT = "[{0}] {1}";
 
     private List<string> m_commandHistory = new List<string>();
     private Action m_historyChanged;
@@ -28,14 +29,35 @@ public class CommandLogManager : MonoBehaviour
         return m_commandHistory.AsReadOnly();
     }
 
-    public void AddLog(string message)
+    public void AddLog(string message, bool format = true)
     {
-        AddLog(message, GameManager.GREEN);
+        AddLog(message, GameManager.GREEN, format);
     }
 
-    public void AddLog(string message, Color color)
+    public void AddLog(string message, Color color, bool format = true)
     {
-        m_commandHistory.Add(string.Format(COMMAND_HISTORY_LOG_FORMAT, "#" + ColorUtility.ToHtmlStringRGBA(color), m_timeManager.MapTimeToString(), message));
+        string text = "";
+        if (format is true)
+        {
+            text = string.Format(COMMAND_HISTORY_LOG_FORMAT, m_timeManager.MapTimeToString(), message);
+        } 
+        else
+        {
+            text = message;
+        }
+
+        m_commandHistory.Add(FormatColor(text, color));
+        m_historyChanged?.Invoke();
+    }
+
+    public static string FormatColor(string message, Color color)
+    {
+        return string.Format(COLORED_TEXT_FORMAT, "#" + ColorUtility.ToHtmlStringRGBA(color), message);
+    }
+
+    public void Clear()
+    {
+        m_commandHistory.Clear();
         m_historyChanged?.Invoke();
     }
 

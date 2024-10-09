@@ -53,6 +53,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Scroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""fd5575aa-b769-4302-bd95-469ac15f67d6"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -110,6 +119,39 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Dismiss"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""UP/DOWN"",
+                    ""id"": ""d0633b08-a198-472f-8016-891a82e4901e"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""bbe138f2-b43f-41e1-96b4-7b5eede3e41d"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""28fc8d7e-aba6-4b2f-ad05-3b84c36e1735"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -121,6 +163,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Gameplay_SwitchTab = m_Gameplay.FindAction("SwitchTab", throwIfNotFound: true);
         m_Gameplay_Accept = m_Gameplay.FindAction("Accept", throwIfNotFound: true);
         m_Gameplay_Dismiss = m_Gameplay.FindAction("Dismiss", throwIfNotFound: true);
+        m_Gameplay_Scroll = m_Gameplay.FindAction("Scroll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -185,6 +228,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_SwitchTab;
     private readonly InputAction m_Gameplay_Accept;
     private readonly InputAction m_Gameplay_Dismiss;
+    private readonly InputAction m_Gameplay_Scroll;
     public struct GameplayActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -192,6 +236,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @SwitchTab => m_Wrapper.m_Gameplay_SwitchTab;
         public InputAction @Accept => m_Wrapper.m_Gameplay_Accept;
         public InputAction @Dismiss => m_Wrapper.m_Gameplay_Dismiss;
+        public InputAction @Scroll => m_Wrapper.m_Gameplay_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -210,6 +255,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Dismiss.started += instance.OnDismiss;
             @Dismiss.performed += instance.OnDismiss;
             @Dismiss.canceled += instance.OnDismiss;
+            @Scroll.started += instance.OnScroll;
+            @Scroll.performed += instance.OnScroll;
+            @Scroll.canceled += instance.OnScroll;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -223,6 +271,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Dismiss.started -= instance.OnDismiss;
             @Dismiss.performed -= instance.OnDismiss;
             @Dismiss.canceled -= instance.OnDismiss;
+            @Scroll.started -= instance.OnScroll;
+            @Scroll.performed -= instance.OnScroll;
+            @Scroll.canceled -= instance.OnScroll;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -245,5 +296,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnSwitchTab(InputAction.CallbackContext context);
         void OnAccept(InputAction.CallbackContext context);
         void OnDismiss(InputAction.CallbackContext context);
+        void OnScroll(InputAction.CallbackContext context);
     }
 }

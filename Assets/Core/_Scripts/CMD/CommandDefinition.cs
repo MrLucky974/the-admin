@@ -73,6 +73,15 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
                 return true;
             }
         }
+        else if (type == typeof(bool))
+        {
+            regex = new Regex("^(?i)(true|false)$");
+            if (regex.IsMatch(input))
+            {
+                output = input.Equals("true", StringComparison.OrdinalIgnoreCase);
+                return true;
+            }
+        }
         else if (type == typeof(string))
         {
             output = input;

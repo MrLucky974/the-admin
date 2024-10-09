@@ -28,6 +28,7 @@ public class VillagerDataDisplay : MonoBehaviour
             {
                 m_pages.Select(StatusPageIndex.CHECKUP);
                 Display(villager);
+                SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
             }
         }));
     }

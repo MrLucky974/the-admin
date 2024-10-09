@@ -9,11 +9,15 @@ public enum SoundType
     ERROR,
     MODAL_CONFIRM,
     MODAL_CANCEL,
+    ACTION_CONFIRM,
 }
 
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
 public class SoundManager : Singleton<SoundManager>
 {
+    public const float MIN_PITCH = -3f;
+    public const float MAX_PITCH = 3f;
+
     [SerializeField] private AudioSource m_audioSource;
 
     [Space]
@@ -30,11 +34,18 @@ public class SoundManager : Singleton<SoundManager>
         }
     }
 
+    public static void SetPitch(float pitch = 1f)
+    {
+        pitch = Mathf.Clamp(pitch, MIN_PITCH, MAX_PITCH);
+        Instance.m_audioSource.pitch = pitch;
+    }
+
     public static void PlaySound(SoundType type, float volume = 1f)
     {
         AudioClip[] clips = Instance.m_sounds[(int)type].Sounds;
         AudioClip randomClip = clips.PickRandom();
         Instance.m_audioSource.PlayOneShot(randomClip, volume);
+        Instance.m_audioSource.pitch = 1f;
     }
 
     private void OnEnable()

@@ -32,6 +32,7 @@ public class ResourceDisplay : MonoBehaviour
         commandSystem.AddCommand(new CommandDefinition<Action>("stock", () =>
         {
             m_pages.Select(StatusPageIndex.STOCK);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
     }
 

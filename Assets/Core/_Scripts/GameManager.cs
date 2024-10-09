@@ -32,20 +32,27 @@ public class GameManager : Singleton<GameManager>
         m_inputActions.Enable();
 
         #region Initialize Commands
+        m_commandSystem.AddCommand(new CommandDefinition<Action>("clear", () =>
+        {
+            m_commandLogManager.Clear();
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("gettime", (int a) =>
         {
             m_commandLogManager.AddLog($"day {m_timeManager.GetCurrentDay() + 1} of week {m_timeManager.GetCurrentWeek()}");
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action>("help", () =>
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Commands: ");
+            m_commandLogManager.AddLog("Commands: ", GameManager.ORANGE);
             foreach (var element in m_commandSystem.GetCommandHelp())
             {
-                sb.AppendLine($"- {element.identifier}: {element.description}");
+                var text = $"- {element.identifier}: {element.description}";
+                m_commandLogManager.AddLog(text, GameManager.ORANGE, format: false);
             }
-            m_commandLogManager.AddLog(sb.ToString(), GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
 #if UNITY_EDITOR
@@ -54,24 +61,45 @@ public class GameManager : Singleton<GameManager>
         {
             m_resourceHandler.AddMeds(amount);
             m_commandLogManager.AddLog($"Added {amount} meds", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addrations", (int amount) =>
         {
             m_resourceHandler.AddRations(amount);
             m_commandLogManager.AddLog($"Added {amount} rations", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addscraps", (int amount) =>
         {
             m_resourceHandler.AddScraps(amount);
             m_commandLogManager.AddLog($"Added {amount} scraps", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("slider", (int min, int max, int amount) =>
         {
             var slider = JUtils.GenerateTextSlider(amount, min, max, 8);
             m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<bool>>("cursor", (bool enabled) =>
+        {
+            if (enabled)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+
+            m_commandLogManager.AddLog($"Cursor: {enabled}", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
 #endif
