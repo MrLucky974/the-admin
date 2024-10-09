@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 10672027}
   - component: {fileID: 10672029}
   - component: {fileID: 10672028}
+  - component: {fileID: 10672030}
   m_Layer: 5
   m_Name: Main Information
   m_TagString: Untagged
@@ -201,6 +202,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &10672030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 10672026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f8f525964a68e48ae6a21780fab525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_totalPopulationLabel: {fileID: 1655935420}
+  m_childrenPopulationLabel: {fileID: 620114036}
+  m_adultPopulationLabel: {fileID: 94033985}
+  m_elderPopulationLabel: {fileID: 492775840}
 --- !u!1 &24461340
 GameObject:
   m_ObjectHideFlags: 0
@@ -8044,6 +8061,9 @@ MonoBehaviour:
   - m_name: ACTION_CONFIRM
     m_sounds:
     - {fileID: 8300000, guid: 905d26c21872a4e4494703cb29508026, type: 3}
+  - m_name: CHARACTER_TYPE
+    m_sounds:
+    - {fileID: 8300000, guid: 654e78ea6bb6fd34ca8593d181ac4eb7, type: 3}
 --- !u!1 &1046960624
 GameObject:
   m_ObjectHideFlags: 0
