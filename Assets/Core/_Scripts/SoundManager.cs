@@ -10,6 +10,7 @@ public enum SoundType
     MODAL_CONFIRM,
     MODAL_CANCEL,
     ACTION_CONFIRM,
+    CHARACTER_TYPE,
 }
 
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
@@ -43,6 +44,9 @@ public class SoundManager : Singleton<SoundManager>
     public static void PlaySound(SoundType type, float volume = 1f)
     {
         AudioClip[] clips = Instance.m_sounds[(int)type].Sounds;
+        if (clips.Length == 0)
+            return;
+
         AudioClip randomClip = clips.PickRandom();
         Instance.m_audioSource.PlayOneShot(randomClip, volume);
         Instance.m_audioSource.pitch = 1f;
@@ -92,7 +96,7 @@ public struct SoundList
     [HideInInspector] public string m_name;
     [SerializeField] private AudioClip[] m_sounds;
     public AudioClip[] Sounds { get { return m_sounds; } }
-    
+
     public void AddSound(AudioClip clip)
     {
         m_sounds = m_sounds.Concat(new AudioClip[] { clip }).ToArray();
