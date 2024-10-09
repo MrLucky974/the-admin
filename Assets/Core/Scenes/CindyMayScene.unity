@@ -1146,7 +1146,6 @@ GameObject:
   m_Component:
   - component: {fileID: 199855777}
   - component: {fileID: 199855778}
-  - component: {fileID: 199855780}
   m_Layer: 0
   m_Name: '[VILLAGER TEST OBJECT]'
   m_TagString: Untagged
@@ -1181,25 +1180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6af17d7b4817424d8ee14a7b4bd5b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &199855780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 199855776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07fbdfa81d21a8d4cab3a6b6c9597910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_identifierLabel: {fileID: 438510297}
-  m_genderLabel: {fileID: 1027218291}
-  m_personalityLabel: {fileID: 1177400518}
-  m_ageLabel: {fileID: 1999587035}
-  m_healthLabel: {fileID: 255188403}
-  m_workingStatusLabel: {fileID: 327835845}
-  m_fatigueLabel: {fileID: 1544514105}
 --- !u!1 &209846054
 GameObject:
   m_ObjectHideFlags: 0
@@ -7563,7 +7543,7 @@ MonoBehaviour:
   m_resourceHandler: {fileID: 1136861727}
   m_explorationSystem: {fileID: 1136861728}
   m_modalBox: {fileID: 0}
-  m_villagerManager: {fileID: 0}
+  m_villagerManager: {fileID: 199855778}
 --- !u!4 &1136861723
 Transform:
   m_ObjectHideFlags: 0

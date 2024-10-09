@@ -19,14 +19,10 @@ public class VillagerDataDisplay : MonoBehaviour
         var commandSystem = GameManager.Instance.GetCommands();
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", (string identifier) =>
         {
-            var population = villagerManager.GetPopulation();
-            foreach (VillagerData villager in population)
+            var villager = villagerManager.GetVillagerByID(identifier);
+            if (villager != null)
             {
-                if (identifier.ToUpper() == villager.GetID())
-                {
-                    Display(villager);
-                    break;
-                }
+                Display(villager);
             }
         }));
     }
@@ -35,7 +31,7 @@ public class VillagerDataDisplay : MonoBehaviour
     {
         if (data == null) return;
 
-        m_identifierLabel.text = string.Format("{0} | {1}", data.GetID(), data.GetName());
+        m_identifierLabel.text = string.Format("{0} - {1}", data.GetID(), data.GetName());
         m_genderLabel.text = string.Format("Gender: {0}", data.GetGender());
         m_personalityLabel.text = string.Format("Personality: {0}", data.GetPersonality());
         m_ageLabel.text = string.Format("Age: {0}", data.GetAgeStage());
