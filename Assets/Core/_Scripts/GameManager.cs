@@ -116,6 +116,12 @@ public class GameManager : Singleton<GameManager>
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addreputation", (int value) =>
         {
+            if (value < 0)
+            {
+                m_commandLogManager.AddLog($"warning: value is negative", GameManager.RED);
+                value = Mathf.Abs(value);
+            }
+
             m_reputationHandler.IncreaseReputation(value);
             m_commandLogManager.AddLog($"reputation: reputation value set to {m_reputationHandler.Reputation}", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -123,6 +129,12 @@ public class GameManager : Singleton<GameManager>
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("removereputation", (int value) =>
         {
+            if (value < 0)
+            {
+                m_commandLogManager.AddLog($"warning: value is negative", GameManager.RED);
+                value = Mathf.Abs(value);
+            }
+
             m_reputationHandler.DecreaseReputation(value);
             m_commandLogManager.AddLog($"reputation: reputation value set to {m_reputationHandler.Reputation}", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
