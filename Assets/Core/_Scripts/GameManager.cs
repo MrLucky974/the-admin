@@ -1,6 +1,5 @@
 ﻿using LuckiusDev.Utils;
 using System;
-using System.Text;
 using UnityEngine;
 
 [DefaultExecutionOrder(-1000)]
@@ -12,12 +11,25 @@ public class GameManager : Singleton<GameManager>
     public static readonly Color GREEN = new Color(0.2617465f, 1f, 0f);
 
     [SerializeField] private TimeManager m_timeManager;
+
+    [Space]
+
     [SerializeField] private CommandSystem m_commandSystem;
     [SerializeField] private CommandLogManager m_commandLogManager;
+
+    [Space]
+
     [SerializeField] private ResourceHandler m_resourceHandler;
+    [SerializeField] private ReputationHandler m_reputationHandler;
+
+    [Space]
+
     [SerializeField] private ExplorationSystem m_explorationSystem;
-    [SerializeField] private ModalBox m_modalBox;
     [SerializeField] private VillagerManager m_villagerManager;
+
+    [Space]
+
+    [SerializeField] private ModalBox m_modalBox;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -102,6 +114,34 @@ public class GameManager : Singleton<GameManager>
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
 
+        m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("addreputation", (int value) =>
+        {
+            m_reputationHandler.IncreaseReputation(value);
+            m_commandLogManager.AddLog($"reputation: reputation value set to {m_reputationHandler.Reputation}", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("removereputation", (int value) =>
+        {
+            m_reputationHandler.DecreaseReputation(value);
+            m_commandLogManager.AddLog($"reputation: reputation value set to {m_reputationHandler.Reputation}", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("setreputation", (int value) =>
+        {
+            if (value < ReputationHandler.MIN_REPUTATION || value > ReputationHandler.MAX_REPUTATION)
+            {
+                m_commandLogManager.AddLog($"error: value out of range", GameManager.RED);
+                SoundManager.PlaySound(SoundType.ERROR);
+                return;
+            }
+
+            m_reputationHandler.SetReputation(value);
+            m_commandLogManager.AddLog($"reputation: reputation value set to {m_reputationHandler.Reputation}", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
 #endif
         #endregion
 
@@ -112,6 +152,7 @@ public class GameManager : Singleton<GameManager>
         // Initialize components
         m_timeManager.Initialize();
         m_resourceHandler.Initialize();
+        m_reputationHandler.Initialize();
         m_explorationSystem.Initialize();
         m_villagerManager.Initialize();
     }
@@ -132,6 +173,7 @@ public class GameManager : Singleton<GameManager>
     public CommandLogManager GetCommandLog() => m_commandLogManager;
     public PlayerInputActions GetInputActions() => m_inputActions;
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
+    public ReputationHandler GetReputationHandler() => m_reputationHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
     public ModalBox GetModal() => m_modalBox;
     public VillagerManager GetVillagerManager() => m_villagerManager;

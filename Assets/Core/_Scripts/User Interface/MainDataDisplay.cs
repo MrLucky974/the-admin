@@ -5,25 +5,41 @@ using UnityEngine;
 
 public class MainDataDisplay : MonoBehaviour
 {
+    [SerializeField] private TMP_Text m_reputationLabel;
+
+    [Space]
+
     [SerializeField] private TMP_Text m_totalPopulationLabel;
     [SerializeField] private TMP_Text m_childrenPopulationLabel;
     [SerializeField] private TMP_Text m_adultPopulationLabel;
     [SerializeField] private TMP_Text m_elderPopulationLabel;
 
     private VillagerManager m_villagerManager;
+    private ReputationHandler m_reputationHandler;
 
     private void Awake()
     {
         m_villagerManager = GameManager.Instance.GetVillagerManager();
-        m_villagerManager.OnPopulationChanged += UpdateValues;
+        m_villagerManager.OnPopulationChanged += UpdatePopulationValues;
+
+        m_reputationHandler = GameManager.Instance.GetReputationHandler();
+        m_reputationHandler.OnReputationChanged += UpdateReputationValue;
     }
 
     private void OnDestroy()
     {
-        m_villagerManager.OnPopulationChanged -= UpdateValues;
+        m_villagerManager.OnPopulationChanged -= UpdatePopulationValues;
+        m_reputationHandler.OnReputationChanged -= UpdateReputationValue;
     }
 
-    private void UpdateValues(List<VillagerData> list)
+    private void UpdateReputationValue(int value)
+    {
+        var sliderText = JUtils.GenerateTextSlider(value, 0, ReputationHandler.MAX_REPUTATION, 20);
+        Color color = (value < 0) ? GameManager.RED : ((value == 0) ? GameManager.ORANGE : GameManager.GREEN);
+        m_reputationLabel.SetText(JUtils.FormatColor($"Reputation: {sliderText} ({value})", color));
+    }
+
+    private void UpdatePopulationValues(List<VillagerData> list)
     {
         int total = list.Count;
         int children = list.Count(data => data.IsChild());

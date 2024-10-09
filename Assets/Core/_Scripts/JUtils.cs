@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class JUtils
 {
+    private const string COLORED_TEXT_FORMAT = "<color={0}>{1}</color>";
+
     public static void Print<T>(this T[] array)
     {
         StringBuilder sb = new StringBuilder();
@@ -55,5 +57,10 @@ public static class JUtils
         sb.Append(']');
 
         return sb.ToString();
+    }
+
+    public static string FormatColor(string message, Color color)
+    {
+        return string.Format(COLORED_TEXT_FORMAT, "#" + ColorUtility.ToHtmlStringRGBA(color), message);
     }
 }

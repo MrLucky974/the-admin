@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
 public class CommandLogManager : MonoBehaviour
 {
-    private const string COLORED_TEXT_FORMAT = "<color={0}>{1}</color>";
     private const string COMMAND_HISTORY_LOG_FORMAT = "[{0}] {1}";
 
     private List<string> m_commandHistory = new List<string>();
@@ -40,19 +38,14 @@ public class CommandLogManager : MonoBehaviour
         if (format is true)
         {
             text = string.Format(COMMAND_HISTORY_LOG_FORMAT, m_timeManager.MapTimeToString(), message);
-        } 
+        }
         else
         {
             text = message;
         }
 
-        m_commandHistory.Add(FormatColor(text, color));
+        m_commandHistory.Add(JUtils.FormatColor(text, color));
         m_historyChanged?.Invoke();
-    }
-
-    public static string FormatColor(string message, Color color)
-    {
-        return string.Format(COLORED_TEXT_FORMAT, "#" + ColorUtility.ToHtmlStringRGBA(color), message);
     }
 
     public void Clear()
