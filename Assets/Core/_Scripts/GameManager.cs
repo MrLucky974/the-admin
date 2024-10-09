@@ -75,6 +75,16 @@ public class GameManager : Singleton<GameManager>
             m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
         }));
 
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
+        {
+            m_roomManager.UpgradeRoom(roomId);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("repair", (String roomId) =>
+        {
+            m_roomManager.RepairRoom(roomId);
+        }));
+
 #endif
         #endregion
 

@@ -10,5 +10,5 @@ public enum RoomType{
     LUNCHROOM,
     GENERATORS,
     PUBROOM,
-    CORRIDOR  
+    JAIL  
 }
