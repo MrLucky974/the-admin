@@ -1734,7 +1734,7 @@ MonoBehaviour:
   m_value: 5
   m_minValue: 0
   m_maxValue: 10
-  m_owner: {fileID: 1816316347}
+  m_ownerRoom: {fileID: 2140023035}
 --- !u!114 &754714950
 MonoBehaviour:
   m_ObjectHideFlags: 0

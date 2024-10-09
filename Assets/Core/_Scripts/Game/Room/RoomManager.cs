@@ -30,13 +30,23 @@ public class RoomManager : MonoBehaviour
 
     public void Initialize()
     {
-        m_roomArray = FindObjectsOfType<RoomData>();//GetComponentsInChildren<RoomData>(); 
+        m_roomArray = FindObjectsOfType<RoomData>();
         m_resourceHandler = FindObjectOfType<ResourceHandler>();
         InitIds(m_roomArray.Length-1);
         m_admin = FindObjectOfType<Test>();
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
         m_ressCoroutine = StartCoroutine(GenerateRessources());
+
+        if (m_roomArray.Length == 0){
+            Debug.LogError("No room in this scene", this.gameObject);
+        }
+
+        if (!m_resourceHandler)
+        {
+            Debug.LogError("resource handler no find for", this.gameObject);
+        }
     }
+
 
     void InitIds(int roomNum)
     {
@@ -76,8 +86,7 @@ public class RoomManager : MonoBehaviour
         UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
         GameManager gm = FindObjectOfType<GameManager>();
         foreach (UpRoomData room in ressRooms) {
-            if (room.roomId == roomId)
-            {
+            if (room.roomId == roomId){
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost)){
                     room.Upgrade();
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
@@ -88,8 +97,7 @@ public class RoomManager : MonoBehaviour
                     gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed not enough resources", GameManager.RED);
                     return;
                 }
-            }
-            else{
+            }else{
                 if (roomId == ""){
                     gm.GetCommandLog().AddLog($"specify room id example: upgrade R1", GameManager.RED);
                     return;
@@ -99,6 +107,20 @@ public class RoomManager : MonoBehaviour
             }
         }
     }
+
+    public RoomData GetRoomOfType(RoomType type)
+    {
+        GameManager gm = FindObjectOfType<GameManager>();
+        foreach (RoomData room in m_roomArray){
+            if (room.roomType == type){
+                gm.GetCommandLog().AddLog($"{room.name} {room.durability}", GameManager.GREEN);
+                return room;
+            }
+        }
+        return null;
+    }
+
+    // COROUTINE
 
     IEnumerator DegradeRoom()
     {
@@ -118,12 +140,12 @@ public class RoomManager : MonoBehaviour
         {
             if (room.upgradeState == RessUpRoomData.UpgradeState.UPGRADED) // check if the room is upgraded
             {
-                switch (room.ressourceType)
+                switch (room.ressourceType) // check 
                 {
-                    case ResourceType.RATIONS:
+                    case ResourceType.RATIONS: // ration
                         m_resourceHandler.AddRations(room.ressValue);
                         break;
-                    case ResourceType.MEDS:
+                    case ResourceType.MEDS: // meds
                         m_resourceHandler.AddMeds(room.ressValue);
                         break;
                 }

@@ -5,13 +5,13 @@ using UnityEngine;
 public class AsciiSliderRoom : AsciiSlider
 {
     //Use to display room durability
-    [SerializeField] RoomData m_owner;
+    [SerializeField] RoomData m_ownerRoom;
 
 
     new void Start()
     {
         base.Start();
-        m_owner.OnDurabilityChanged += SetSlider;
+        m_ownerRoom.OnDurabilityChanged += SetSlider;
     }
 
     new void SetSlider(int value)

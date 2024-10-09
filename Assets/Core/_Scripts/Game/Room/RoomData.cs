@@ -10,17 +10,15 @@ public class RoomData : MonoBehaviour
     protected int m_durability = 100; // room hp 
     protected int m_maxDurability = 100; // max room hp
 
-
     protected const int DEGRADATION = 20; // degradation value 
     protected int m_repairCost = 5;
-    protected Array m_villagerInRoom; // !! replace with peapleData type
-
-    protected RoomState m_roomState = RoomState.FUNCTIONAL;
+    protected ArrayList m_villagerInRoom = new ArrayList(); // !! replace with peapleData type
 
     public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
 
-
+    [SerializeField] protected RoomType m_roomType;
+    protected RoomState m_roomState = RoomState.FUNCTIONAL;
 
     public enum RoomState {
         FUNCTIONAL,
@@ -45,6 +43,17 @@ public class RoomData : MonoBehaviour
     {
         get { return m_durability; }
     }
+
+    public int villagerCount
+    {
+        get { return m_villagerInRoom.Count; }
+    }
+
+    public RoomType roomType
+    {
+        get { return m_roomType; }
+    }
+
     //--
 
     private void Awake()
@@ -53,18 +62,7 @@ public class RoomData : MonoBehaviour
         gameObject.name = m_roomName;
         OnDurabilityChanged?.Invoke(m_durability);
     }
-    private void Update()
-    {
-        //Debug.Log(m_roomState+" / "+m_durability);
-        //TODO REMOVE update
-        if (Input.GetButtonDown("Fire1")){
-            IncrementDurability(-5);
-        }
-        if (Input.GetButtonDown("Fire2"))
-        {
-            RepairRoom();
-        }
-    }
+
     protected void SetRoomState(RoomState newState)
     {
         m_roomState = newState;
@@ -94,6 +92,11 @@ public class RoomData : MonoBehaviour
         if (m_durability <= 0){
             DestroyRoom();           
         }
+    }
+
+    protected void AddVillagerInRoom(GameObject villager) // TODO replace gameobject with villager type
+    {
+        m_villagerInRoom.Add(villager);
     }
 
     protected void DestroyRoom(){
