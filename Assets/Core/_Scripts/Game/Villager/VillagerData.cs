@@ -29,7 +29,8 @@ public class VillagerData
         SICK = 1 << 0,
         INJURED = 1 << 1,
         HUNGRY = 1 << 2,
-        PREGNANT = 1 << 3
+        PREGNANT = 1 << 3,
+        STARVED = 1 << 4
     };
 
     public enum Personality
@@ -86,8 +87,6 @@ public class VillagerData
 
     public void UpdateAgeStatus()
     {
-        m_age += 1;
-
         if (m_age >= 0 && m_age <= 7)
         {
             m_ageStage = AgeStage.KID;
@@ -225,10 +224,25 @@ public class VillagerData
 
         return (m_healthStatus & status) == status;
     }
+
+    public bool HasAnyHealthStatus(params HealthStatus[] status)
+    {
+        foreach (var item in status)
+        {
+            if (HasHealthStatus(item))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public HealthStatus GetHealthStatus()
     {
         return m_healthStatus;
     }
+
     public override string ToString()
     {
         return $"ID : {m_identifier} / {m_name}(Age: {m_age}, {m_ageStage}), Gender : {m_gender}, Personality : {m_personality}, HealthSt" +
