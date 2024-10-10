@@ -5,14 +5,18 @@ using UnityEngine.Events;
 
 public class RoomData : MonoBehaviour
 {
+    public const int DEGRADATION = 20; // degradation value 
+    public const int MIN_DURABILITY = 0;
+    public const int MAX_DURABILITY = 100;
+
+
     [SerializeField] protected String m_roomName;
     [SerializeField] protected String m_roomId;
-    protected int m_durability = 100; // room hp 
-    protected int m_maxDurability = 100; // max room hp
+    protected int m_durability = 50; // room hp 
+    protected int m_maxDurability = MAX_DURABILITY; // max room hp
 
-    protected const int DEGRADATION = 20; // degradation value 
     protected int m_repairCost = 5;
-    protected ArrayList m_villagerInRoom = new ArrayList(); // !! replace with peapleData type
+    protected ArrayList m_villagerInRoom = new ArrayList(); 
 
     public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
@@ -23,6 +27,7 @@ public class RoomData : MonoBehaviour
     public enum RoomState {
         FUNCTIONAL,
         DAMAGED,
+        REPAIRING,
         DESTROYED
     };
 
@@ -54,16 +59,19 @@ public class RoomData : MonoBehaviour
         get { return m_roomType; }
     }
 
+    public ArrayList GetVillagerInRoom() => m_villagerInRoom;
+  
+
     //--
 
     private void Awake()
     {
-        m_durability = m_maxDurability;
+        //m_durability = m_maxDurability;
         gameObject.name = m_roomName;
         OnDurabilityChanged?.Invoke(m_durability);
     }
 
-    protected void SetRoomState(RoomState newState)
+    public void SetRoomState(RoomState newState)
     {
         m_roomState = newState;
     }
@@ -100,6 +108,12 @@ public class RoomData : MonoBehaviour
     {
         m_villagerInRoom.Add(villager);
     }
+
+    public void RemoveVillager(VillagerData villager)
+    {
+        m_villagerInRoom.Remove(villager);
+    }
+
     protected void DestroyRoom(){
         SetRoomState(RoomState.DESTROYED);
         Debug.Log("BOOM");

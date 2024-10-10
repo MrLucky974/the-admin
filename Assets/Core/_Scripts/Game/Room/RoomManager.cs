@@ -72,30 +72,31 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    #region Room Handling Utilities
+
     public void RepairRoom(string roomId)
     {
         foreach (RoomData room in m_roomArray)
         {
             if (room.roomId == roomId)
             {
-                room.RepairRoom();
-                m_gm.GetCommandLog().AddLog($"{roomId} repaired", GameManager.ORANGE);
+                StartCoroutine(RepairRoomCoroutine(GetRoomWithId(roomId), 5));
             }
         }
     }
 
-
-    public void AddVillagerInRoom(string villagerID,string roomId)
+    public void TryToRepairRoom(string roomId)
     {
-
-        foreach (UpRoomData room in m_roomArray)
+        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DAMAGED && m_resourceHandler.HasEnoughResources(0, 0,5))
         {
-            if ((room.roomId == roomId))
-            {
-                
-            }
+            RepairRoom(roomId);
+        }
+        else
+        {
+            Debug.LogError("GAGNE PAS !!");
         }
     }
+
 
     public void UpgradeRoom(string roomId)
     {
@@ -123,6 +124,13 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public RoomData GetRoomWithId(string roomId) {
+        foreach(RoomData room in m_roomArray){
+            if(room.roomId == roomId){ return room; }
+        }
+        return null;
+    }
+
     public RoomData GetRoomOfType(RoomType type)
     {
         RoomData findedRoom = null;
@@ -134,7 +142,14 @@ public class RoomManager : MonoBehaviour
         return findedRoom;
     }
 
-    // COROUTINE
+    public ArrayList GetVillagerInRoom(RoomData room)
+    {
+        return room.GetVillagerInRoom();
+    }
+
+    #endregion
+
+    #region Coroutines
 
     IEnumerator DegradeRoom()
     {
@@ -169,5 +184,15 @@ public class RoomManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         m_ressCoroutine = StartCoroutine(GenerateRessources());
     }
+
+    IEnumerator RepairRoomCoroutine(RoomData roomToRepair,float time)
+    {
+        roomToRepair.SetRoomState(RoomData.RoomState.REPAIRING);
+        yield return new WaitForSeconds(time); //TODO Replace this hard value with villager states
+        roomToRepair.RepairRoom();
+        m_gm.GetCommandLog().AddLog($"{roomToRepair.roomId} repaired", GameManager.ORANGE);
+    }
+
+    #endregion
 
 }

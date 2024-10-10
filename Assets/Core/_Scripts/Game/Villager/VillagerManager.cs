@@ -67,6 +67,22 @@ public class VillagerManager : MonoBehaviour
         }
     }
 
+    public void SendVillagerToRoom(string villagerId,string roomId)
+    {
+        RoomManager roomManager = FindObjectOfType<RoomManager>();
+        RoomData room = roomManager.GetRoomWithId(roomId);
+        VillagerData villager =  GetVillagerByID(villagerId);
+        if (villager.GetID() == villagerId)
+        {
+            if (room != null)
+            {
+                room.AddVillagerInRoom(villager);  //Add villager to room array
+                roomManager.TryToRepairRoom(roomId);
+                Debug.Log(room.GetVillagerInRoom().Count);
+            }
+        }
+    }
+
     #endregion
 
     #region Villager Setup Utilities
