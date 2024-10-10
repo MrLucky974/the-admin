@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceHandler : MonoBehaviour
 {
-    private int m_rations; // Vivres
-    private int m_meds; // Soins
-    private int m_scraps; // Pièces détachés
-
     // Minimum and maximum values for resources
     public const int MIN_RESOURCE = 0;
     public const int MAX_RESOURCE = 999;
+
+    private int m_rations; // Vivres
+    private int m_meds; // Soins
+    private int m_scraps; // Pièces détachés
 
     // Events that other components can subscribe to
     public event Action<int> OnRationsChanged;

@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class VillagerManager : MonoBehaviour
 {
+    public event Action<List<VillagerData>> OnPopulationChanged;
+
     private VillagerGenerator m_villagerGenerator;
 
     private List<VillagerData> m_population;
@@ -25,6 +27,7 @@ public class VillagerManager : MonoBehaviour
         m_villagerGenerator.Initialize();
 
         m_population = new List<VillagerData>();
+        OnPopulationChanged?.Invoke(m_population);
         m_villagerQueue = new List<VillagerData>();
 
 #if UNITY_EDITOR
@@ -170,6 +173,7 @@ public class VillagerManager : MonoBehaviour
 
         AssignIdentifierToVillager();
         m_population.Add(m_currentVillager);
+        OnPopulationChanged?.Invoke(m_population);
         m_currentVillager = null;
     }
 
@@ -222,6 +226,7 @@ public class VillagerManager : MonoBehaviour
         m_currentVillager = null;
 
         m_population.Add(visitor);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     //checking a villager ID with the input information

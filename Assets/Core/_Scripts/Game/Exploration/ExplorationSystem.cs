@@ -61,6 +61,7 @@ public class ExplorationSystem : MonoBehaviour
                     if (sector.GetIdentifier().Equals(identifier.ToUpper()))
                     {
                         m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} already scanned", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
@@ -68,6 +69,7 @@ public class ExplorationSystem : MonoBehaviour
                 if (m_currentSectorScan != null && m_currentSectorScan.GetIdentifier().Equals(identifier))
                 {
                     m_commandLog.AddLog($"error: sector {m_currentSectorScan.GetIdentifier()} already targeted for scan", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
                     return;
                 }
 
@@ -116,6 +118,7 @@ public class ExplorationSystem : MonoBehaviour
             else
             {
                 m_commandLog.AddLog($"error: invalid sector {identifier.ToUpper()}", GameManager.RED);
+                SoundManager.PlaySound(SoundType.ERROR);
             }
         }));
 
@@ -133,6 +136,7 @@ public class ExplorationSystem : MonoBehaviour
                     if (sector.GetIdentifier().Equals(identifier.ToUpper()))
                     {
                         m_commandLog.AddLog($"error: sector {identifier.ToUpper()} already being explored by another squad", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
@@ -146,6 +150,7 @@ public class ExplorationSystem : MonoBehaviour
                         if (resourceData.resourceType == ResourceType.NONE)
                         {
                             m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} is empty", GameManager.RED);
+                            SoundManager.PlaySound(SoundType.ERROR);
                             return;
                         }
                         break;
@@ -158,6 +163,7 @@ public class ExplorationSystem : MonoBehaviour
                     if (sector.GetIdentifier().Equals(identifier) && sector.IsLooted())
                     {
                         m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} has already been looted", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
@@ -167,10 +173,12 @@ public class ExplorationSystem : MonoBehaviour
                 ExpSquad newSquad = ExpSquad.Generate(selectedSector);
                 m_squads.Add(newSquad);
                 m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
+                SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
             }
             else
             {
                 m_commandLog.AddLog($"error: invalid sector {identifier.ToUpper()}", GameManager.RED);
+                SoundManager.PlaySound(SoundType.ERROR);
             }
         }));
 
