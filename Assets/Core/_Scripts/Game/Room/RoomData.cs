@@ -20,6 +20,7 @@ public class RoomData : MonoBehaviour
 
     public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
+    public event Action OnStateChanged;
 
     [SerializeField] protected RoomType m_roomType;
     protected RoomState m_roomState = RoomState.FUNCTIONAL;
@@ -74,6 +75,7 @@ public class RoomData : MonoBehaviour
     public void SetRoomState(RoomState newState)
     {
         m_roomState = newState;
+        OnStateChanged?.Invoke();
     }
     public void RepairRoom() // repair the room
     {

@@ -26,8 +26,7 @@ public class RoomDisplay : MonoBehaviour
     protected void Init()
     {
         m_room = m_rm.GetRoomOfType(m_roomType);
-        m_room.OnDurabilityChanged += ChangeColor;
-        m_room.OnRoomRepaired += ChangeColor;   
+        m_room.OnStateChanged += ChangeColor;  
         m_tmPro.color = GameManager.GREEN;
         m_tmPro.alignment = TextAlignmentOptions.Center;
         DisplayName();
@@ -51,7 +50,7 @@ public class RoomDisplay : MonoBehaviour
     }
 
 
-    void ChangeColor(int durability)
+    void ChangeColor()
     {
         switch (m_room.roomState) {
             case RoomData.RoomState.FUNCTIONAL:
