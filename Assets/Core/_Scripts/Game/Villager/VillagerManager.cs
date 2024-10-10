@@ -121,6 +121,12 @@ public class VillagerManager : MonoBehaviour
         }
     }
 
+    public void SetWorkingStatus(VillagerData data, VillagerData.WorkingStatus status)
+    {
+        data.SetWorkingStatus(status);
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
     public void GetSick()
     {
         var rng = GameManager.RNG;

@@ -5,7 +5,7 @@ public class EventSystemTest : MonoBehaviour
 #if UNITY_EDITOR
     private void Start()
     {
-        var narrator = GameManager.Instance.GetNarratorSystem();
+        var narrator = GameManager.Instance.GetNarrator();
         narrator.Subscribe<TestEventData>(TestEvents.Test_01, OnTestEvent);
 
         // IT WORKS!!

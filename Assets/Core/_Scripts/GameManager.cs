@@ -202,6 +202,6 @@ public class GameManager : Singleton<GameManager>
     public ReputationHandler GetReputationHandler() => m_reputationHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
     public VillagerManager GetVillagerManager() => m_villagerManager;
-    public NarratorSystem GetNarratorSystem() => m_narratorSystem;
+    public NarratorSystem GetNarrator() => m_narratorSystem;
     public ModalBox GetModal() => m_modalBox;
 }
