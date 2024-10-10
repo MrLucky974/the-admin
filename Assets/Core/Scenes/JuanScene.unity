@@ -3423,6 +3423,7 @@ GameObject:
   - component: {fileID: 350365220}
   - component: {fileID: 350365219}
   - component: {fileID: 350365218}
+  - component: {fileID: 350365221}
   m_Layer: 0
   m_Name: '[TEST OBJECT]'
   m_TagString: Untagged
@@ -3469,6 +3470,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &350365221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350365217}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8839c4918a48dc44c83afc59b402ea09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &352622706
 GameObject:
   m_ObjectHideFlags: 0
@@ -7989,6 +8002,7 @@ GameObject:
   - component: {fileID: 1015892159}
   - component: {fileID: 1015892150}
   - component: {fileID: 1015892149}
+  - component: {fileID: 1015892160}
   - component: {fileID: 1015892158}
   - component: {fileID: 1015892157}
   m_Layer: 0
@@ -8089,6 +8103,7 @@ MonoBehaviour:
   m_reputationHandler: {fileID: 1015892159}
   m_explorationSystem: {fileID: 1015892150}
   m_villagerManager: {fileID: 1015892149}
+  m_narratorSystem: {fileID: 1015892160}
   m_modalBox: {fileID: 540376633}
 --- !u!4 &1015892156
 Transform:
@@ -8244,6 +8259,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b25dae64a87da441b6cb8a74d6981d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1015892160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015892148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f496f4467ca0acd479c9ebb28b4d6ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1046960624

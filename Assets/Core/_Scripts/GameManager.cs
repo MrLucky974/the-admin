@@ -26,6 +26,7 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private ExplorationSystem m_explorationSystem;
     [SerializeField] private VillagerManager m_villagerManager;
+    [SerializeField] private NarratorSystem m_narratorSystem;
 
     [Space]
 
@@ -179,6 +180,7 @@ public class GameManager : Singleton<GameManager>
         m_reputationHandler.Initialize();
         m_explorationSystem.Initialize();
         m_villagerManager.Initialize();
+        m_narratorSystem.Initialize();
     }
 
     private void Update()
@@ -199,6 +201,7 @@ public class GameManager : Singleton<GameManager>
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ReputationHandler GetReputationHandler() => m_reputationHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
-    public ModalBox GetModal() => m_modalBox;
     public VillagerManager GetVillagerManager() => m_villagerManager;
+    public NarratorSystem GetNarratorSystem() => m_narratorSystem;
+    public ModalBox GetModal() => m_modalBox;
 }
