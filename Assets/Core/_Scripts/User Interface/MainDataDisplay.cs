@@ -42,11 +42,12 @@ public class MainDataDisplay : MonoBehaviour
     private void UpdatePopulationValues(List<VillagerData> list)
     {
         int total = list.Count;
+        int available = list.Count(data => data.IsIdle());
         int children = list.Count(data => data.IsChild());
         int adults = list.Count(data => data.IsAdult());
         int elder = list.Count(data => data.IsElder());
 
-        m_totalPopulationLabel.SetText($"Population: {total}");
+        m_totalPopulationLabel.SetText($"Population: {available} / {total}");
         m_childrenPopulationLabel.SetText($"Children: {children}");
         m_adultPopulationLabel.SetText($"Adults: {adults}");
         m_elderPopulationLabel.SetText($"Elder: {elder}");

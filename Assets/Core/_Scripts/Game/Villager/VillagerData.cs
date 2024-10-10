@@ -170,6 +170,11 @@ public class VillagerData
         m_workingStatus = status;
     }
 
+    public bool IsIdle()
+    {
+        return m_workingStatus == WorkingStatus.IDLE;
+    }
+
     #region Handling Fatigue
     public void DecreaseFatigue(int fatigueToRemove)
     {
