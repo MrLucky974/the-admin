@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public static class JRandom
 {
     public static int RollDice(int n, int l, int s, System.Random random)
@@ -44,5 +40,34 @@ public static class JRandom
     public static T PickRandom<T>(this T[] array)
     {
         return PickRandom<T>(array, 0);
+    }
+
+    public static double NextDouble(this System.Random random, double max)
+    {
+        double value = random.NextDouble();
+        return value * max;
+    }
+
+    public static double NextFloat(this System.Random random, double min, double max)
+    {
+        double value = random.NextDouble();
+        return min + (max - min) * value;
+    }
+
+    public static float NextFloat(this System.Random random)
+    {
+        return (float)random.NextDouble();
+    }
+
+    public static float NextFloat(this System.Random random, float max)
+    {
+        float value = (float)random.NextDouble();
+        return value * max;
+    }
+
+    public static float NextFloat(this System.Random random, float min, float max)
+    {
+        float value = (float)random.NextDouble();
+        return min + (max - min) * value;
     }
 }

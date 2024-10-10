@@ -24,8 +24,8 @@ public class RoomManager : MonoBehaviour
     Coroutine m_degradeCoroutine;
     Coroutine m_ressCoroutine;
 
-    const int DEGRADATION = 5;
-    const float TIMEDEGRADE = 2;
+    public const int DEGRADATION = 5;
+    public const float TIMEDEGRADE = 1;
 
     GameManager m_gm;
 
@@ -162,14 +162,10 @@ public class RoomManager : MonoBehaviour
         return findedRoom;
     }
 
-
     public ArrayList GetVillagerInRoom(RoomData room)
     {
         return room.GetVillagersInRoom();
     }
-
-    
-
     #endregion
 
 
@@ -179,7 +175,7 @@ public class RoomManager : MonoBehaviour
     {
         foreach(RoomData room in m_roomArray){
             if (room.roomState != RoomData.RoomState.DESTROYED){
-                yield return new WaitForSeconds(TIMEDEGRADE);
+                yield return new WaitForSeconds(TimeManager.DAY_IN_SECONDS-DEGRADATION);
                 room.IncrementDurability(-DEGRADATION);  
             }
         }
@@ -216,10 +212,6 @@ public class RoomManager : MonoBehaviour
         roomToRepair.RepairRoom();
         m_gm.GetCommandLog().AddLog($"{roomToRepair.roomId} repaired", GameManager.ORANGE);
     }
-
-
-    
-
     #endregion
 
 }

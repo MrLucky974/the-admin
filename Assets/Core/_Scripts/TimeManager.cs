@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    private const int DAY_IN_SECONDS = 10 * 60;
-    private const int WEEK_LENGTH_IN_DAYS = 7;
+    public const int DAY_IN_SECONDS = 10;
+    public const int WEEK_LENGTH_IN_DAYS = 7;
     public static readonly string[] WEEK_DAYS =
     {
         "Firdai",

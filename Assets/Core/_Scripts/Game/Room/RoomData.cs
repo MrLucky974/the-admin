@@ -12,7 +12,7 @@ public class RoomData : MonoBehaviour
 
     [SerializeField] protected String m_roomName;
     [SerializeField] protected String m_roomId;
-    protected int m_durability = 50; // room hp 
+    protected int m_durability = 100; // room hp 
     protected int m_maxDurability = MAX_DURABILITY; // max room hp
 
     protected int m_repairCost = 5;

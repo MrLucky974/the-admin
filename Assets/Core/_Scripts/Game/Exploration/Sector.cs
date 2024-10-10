@@ -1,10 +1,13 @@
 using System.Text;
 
-public class ExpSector
+/// <summary>
+/// Data class containing data for exploration gameplay elements (resources gathering).
+/// </summary>
+public class Sector
 {
-    public static ExpSector Generate(string identifier)
+    public static Sector Generate(string identifier)
     {
-        var sector = new ExpSector(identifier);
+        var sector = new Sector(identifier);
 
         var rng = GameManager.RNG;
 
@@ -48,7 +51,7 @@ public class ExpSector
     private int m_amount = 0;
     private bool m_isLooted;
 
-    private ExpSector(string identifier)
+    private Sector(string identifier)
     {
         m_identifier = identifier;
     }

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ExplorationTest : MonoBehaviour
 {
-    private ExpRegion m_region;
+    private Region m_region;
 
     private void Start()
     {
-        m_region = ExpRegion.Generate();
+        m_region = Region.Generate();
         int size = m_region.GetSize();
         for (int i = 0; i < size; i++)
         {

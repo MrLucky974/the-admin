@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class VillagerManager : MonoBehaviour
 {
+    public event Action<List<VillagerData>> OnPopulationChanged;
+
     private VillagerGenerator m_villagerGenerator;
 
     private List<VillagerData> m_population;
@@ -25,6 +27,7 @@ public class VillagerManager : MonoBehaviour
         m_villagerGenerator.Initialize();
 
         m_population = new List<VillagerData>();
+        OnPopulationChanged?.Invoke(m_population);
         m_villagerQueue = new List<VillagerData>();
 
 #if UNITY_EDITOR
@@ -118,6 +121,12 @@ public class VillagerManager : MonoBehaviour
         }
     }
 
+    public void SetWorkingStatus(VillagerData data, VillagerData.WorkingStatus status)
+    {
+        data.SetWorkingStatus(status);
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
     public void GetSick()
     {
         var rng = GameManager.RNG;
@@ -130,17 +139,24 @@ public class VillagerManager : MonoBehaviour
 
     public void SendVillagerRepairRoom(string villagerId, string roomId)
     {
+        CommandLogManager clm = FindObjectOfType<CommandLogManager>();
         RoomManager roomManager = FindObjectOfType<RoomManager>();
         RoomData room = roomManager.GetRoomWithId(roomId);
         VillagerData villager = GetVillagerByID(villagerId);
 
-        if (villager == null) return; // Check villager != null
+        if (villager == null) {
+            clm.AddLog($"Villager not found", GameManager.RED);
+            return; 
+        } // Check villager != null
+        
         if (villager.GetID() == villagerId)
         {
-            if (room != null)
+            if (room == null)
             {
-                roomManager.TryToRepairRoom(villager, roomId, 5); // Check if can repair the room
+                clm.AddLog($"Room not found", GameManager.RED);
+                return;
             }
+            roomManager.TryToRepairRoom(villager, roomId, 5); // Check if can repair the room
         }
     }
 
@@ -188,6 +204,7 @@ public class VillagerManager : MonoBehaviour
 
         AssignIdentifierToVillager();
         m_population.Add(m_currentVillager);
+        OnPopulationChanged?.Invoke(m_population);
         m_currentVillager = null;
     }
 
@@ -240,6 +257,7 @@ public class VillagerManager : MonoBehaviour
         m_currentVillager = null;
 
         m_population.Add(visitor);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     //checking a villager ID with the input information

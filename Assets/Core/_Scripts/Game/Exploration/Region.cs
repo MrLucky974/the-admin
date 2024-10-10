@@ -1,15 +1,20 @@
 using System;
 using UnityEngine;
 
-public class ExpRegion
+/// <summary>
+/// Data class defining a grid of sectors (tiles) containing resources.
+/// </summary>
+public class Region
 {
-    public static ExpRegion Generate()
+    public const int DEFAULT_REGION_SIZE = 5;
+
+    public static Region Generate()
     {
-        var region = new ExpRegion(5);
+        var region = new Region(DEFAULT_REGION_SIZE);
 
         for (int i = 0; i < region.m_sectors.Length; i++)
         {
-            region.m_sectors[i] = ExpSector.Generate(region.GetIdentifier(i));
+            region.m_sectors[i] = Sector.Generate(region.GetIdentifier(i));
         }
 
         region.m_sectors.Print();
@@ -20,15 +25,15 @@ public class ExpRegion
     private const int MAX_SIZE = 26; // Limited by alphabet A-Z
 
     private readonly int m_size;
-    private readonly ExpSector[] m_sectors;
+    private readonly Sector[] m_sectors;
 
-    private ExpRegion(int size)
+    private Region(int size)
     {
         if (size <= 0 || size > MAX_SIZE)
             throw new ArgumentOutOfRangeException(nameof(size), $"Size must be between 1 and {MAX_SIZE}");
 
         m_size = size;
-        m_sectors = new ExpSector[size * size];
+        m_sectors = new Sector[size * size];
     }
 
     public int GetSize()
@@ -36,12 +41,12 @@ public class ExpRegion
         return m_size * m_size;
     }
 
-    public ExpSector[] GetSectors()
+    public Sector[] GetSectors()
     {
         return m_sectors;
     }
 
-    public ExpSector GetSector(string identifier)
+    public Sector GetSector(string identifier)
     {
         if (string.IsNullOrEmpty(identifier) || identifier.Length < 2)
         {

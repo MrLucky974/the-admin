@@ -7,23 +7,31 @@ using UnityEngine;
 public class ExplorationSystem : MonoBehaviour
 {
     private CommandLogManager m_commandLog;
+    private NarratorSystem m_narrator;
 
-    private ExpRegion m_region;
+    private Region m_region;
 
-    // Scanning
+    // Scanning properties
     private bool m_updateScanProgress = true;
-    private ExpSector m_currentSectorScan;
+    private Sector m_currentSectorScan;
     private Coroutine m_scanCoroutine;
 
-    private List<ExpSector> m_scannedSectors;
+    private List<Sector> m_scannedSectors; // List of every sector already scanned on this current region
 
-    // Exploration
-    private List<ExpSquad> m_squads;
+    // Exploration properties
+    private Coroutine m_explorationLoopCoroutine;
+    private List<Squad> m_activeSquads;
 
     public void Initialize()
     {
-        m_scannedSectors = new List<ExpSector>();
-        m_squads = new List<ExpSquad>();
+        m_narrator = GameManager.Instance.GetNarrator();
+        m_narrator.Subscribe<SquadArrivalEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, OnSquadArrival);
+
+        m_scannedSectors = new List<Sector>();
+        m_activeSquads = new List<Squad>();
+        m_explorationLoopCoroutine = StartCoroutine(nameof(Tick));
+
+        #region Initialize Commands
 
         var commandSystem = GameManager.Instance.GetCommands();
         var modalBox = GameManager.Instance.GetModal();
@@ -34,9 +42,19 @@ public class ExplorationSystem : MonoBehaviour
         {
             // TODO : Check for on-going expeditions before authorizing region scan
             // TODO : Open modal box when region is not explored at 100%
-            modalBox.Init("TEST", (modal) =>
+            modalBox.Init("REGENERATE REGION", (modal) =>
             {
-                m_region = ExpRegion.Generate();
+                // Clear scan sector list and stop any sector scan in progress
+                m_scannedSectors.Clear();
+                if (m_scanCoroutine != null)
+                {
+                    StopCoroutine(m_scanCoroutine);
+                    m_currentSectorScan = null;
+                }
+
+                // Generate a new region
+                m_region = Region.Generate();
+
                 modal.Close();
             })
             .SetBody("Are you sure you want to scan for a new region?")
@@ -45,15 +63,13 @@ public class ExplorationSystem : MonoBehaviour
                 modal.Close();
             })
             .Open();
-
-            //m_region = ExpRegion.Generate();
         }));
 
         // This command starts a scanning operation that will give information to the player
         // about resources on the specified sector
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("scan", (string identifier) =>
         {
-            ExpSector selectedSector = m_region.GetSector(identifier.ToUpper());
+            Sector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
             {
                 foreach (var sector in m_scannedSectors)
@@ -61,6 +77,7 @@ public class ExplorationSystem : MonoBehaviour
                     if (sector.GetIdentifier().Equals(identifier.ToUpper()))
                     {
                         m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} already scanned", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
@@ -68,6 +85,7 @@ public class ExplorationSystem : MonoBehaviour
                 if (m_currentSectorScan != null && m_currentSectorScan.GetIdentifier().Equals(identifier))
                 {
                     m_commandLog.AddLog($"error: sector {m_currentSectorScan.GetIdentifier()} already targeted for scan", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
                     return;
                 }
 
@@ -104,18 +122,11 @@ public class ExplorationSystem : MonoBehaviour
                     m_scanCoroutine = StartCoroutine(ScanSector(3));
                     m_updateScanProgress = true;
                 }
-
-                //if (m_scanCoroutine != null)
-                //    StopCoroutine(m_scanCoroutine);
-
-                // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
-                // Begin coroutine and mark sector as being scanned
-                //m_currentSectorScan = selectedSector;
-                //m_scanCoroutine = StartCoroutine(ScanSector(3));
             }
             else
             {
                 m_commandLog.AddLog($"error: invalid sector {identifier.ToUpper()}", GameManager.RED);
+                SoundManager.PlaySound(SoundType.ERROR);
             }
         }));
 
@@ -123,16 +134,17 @@ public class ExplorationSystem : MonoBehaviour
         // of coming back with resources
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("send", (string identifier) =>
         {
-            ExpSector selectedSector = m_region.GetSector(identifier.ToUpper());
+            Sector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
             {
                 // Check if a squad is already exploring the selected sector
-                foreach (var squad in m_squads)
+                foreach (var squad in m_activeSquads)
                 {
-                    var (sector, _) = squad.GetExplorationStatus();
+                    var sector = squad.GetActivitySector();
                     if (sector.GetIdentifier().Equals(identifier.ToUpper()))
                     {
                         m_commandLog.AddLog($"error: sector {identifier.ToUpper()} already being explored by another squad", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
@@ -146,6 +158,7 @@ public class ExplorationSystem : MonoBehaviour
                         if (resourceData.resourceType == ResourceType.NONE)
                         {
                             m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} is empty", GameManager.RED);
+                            SoundManager.PlaySound(SoundType.ERROR);
                             return;
                         }
                         break;
@@ -158,24 +171,97 @@ public class ExplorationSystem : MonoBehaviour
                     if (sector.GetIdentifier().Equals(identifier) && sector.IsLooted())
                     {
                         m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} has already been looted", GameManager.RED);
+                        SoundManager.PlaySound(SoundType.ERROR);
                         return;
                     }
                 }
 
                 // Send the squad into expedition
-                // TODO : Add delay before squad arrival
-                ExpSquad newSquad = ExpSquad.Generate(selectedSector);
-                m_squads.Add(newSquad);
+                Squad newSquad = Squad.Create(selectedSector);
+                if (newSquad == null)
+                {
+                    m_commandLog.AddLog($"error: not enough population to send a squad", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
+                    return;
+                }
+
+                m_activeSquads.Add(newSquad);
                 m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
+                SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
             }
             else
             {
                 m_commandLog.AddLog($"error: invalid sector {identifier.ToUpper()}", GameManager.RED);
+                SoundManager.PlaySound(SoundType.ERROR);
             }
         }));
 
+        #endregion
+
         // Generate a starting region on game start
-        m_region = ExpRegion.Generate();
+        m_region = Region.Generate();
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
+
+    private void OnSquadArrival(SquadArrivalEvent @event)
+    {
+        var villagerManager = GameManager.Instance.GetVillagerManager();
+        var resourceHandler = GameManager.Instance.GetResourceHandler();
+
+        (ResourceType type, int amount) = @event.resources;
+        switch (type)
+        {
+            case ResourceType.NONE:
+                break;
+            case ResourceType.RATIONS:
+                resourceHandler.AddRations(amount);
+                break;
+            case ResourceType.MEDS:
+                resourceHandler.AddMeds(amount);
+                break;
+            case ResourceType.SCRAPS:
+                resourceHandler.AddScraps(amount);
+                break;
+        }
+
+        foreach (var member in @event.members)
+        {
+            villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.IDLE);
+        }
+    }
+
+    private IEnumerator Tick()
+    {
+        const float TICK_UPDATE = 1f;
+
+        float elapsedTime = 0f;
+        while (true)
+        {
+            // Remove all inactive squads from the update list
+            var inactiveSquads = m_activeSquads.FindAll((squad) =>
+            {
+                return squad.GetState() == Squad.State.IDLE;
+            });
+            m_activeSquads.RemoveAll((squad) => inactiveSquads.Contains(squad));
+
+            if (elapsedTime < TICK_UPDATE)
+            {
+                yield return null;
+                elapsedTime += Time.deltaTime;
+                continue;
+            }
+
+            elapsedTime = 0f;
+            foreach (var squad in m_activeSquads)
+            {
+                squad.Process(m_narrator, m_commandLog);
+            }
+            yield return null;
+        }
     }
 
     /// <summary>
@@ -188,7 +274,7 @@ public class ExplorationSystem : MonoBehaviour
     {
         Debug.Log("Starting scan...");
         m_commandLog.AddLog($"scan: prospecting data on sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
-        
+
         // Wait until the time value has reached the total time
         // Could use WaitForSeconds but me no likey
         float time = 0;

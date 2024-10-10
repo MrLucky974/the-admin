@@ -50,10 +50,9 @@ public class VillagerData
 
     public enum WorkingStatus
     {
-        ON_BASE,
-        ON_EXPEDITION,
-        WORKING_ON_BASE,
-        RESTING
+        IDLE,
+        EXPEDITION,
+        MAINTENANCE,
     }
 
     #region Default Values
@@ -80,9 +79,9 @@ public class VillagerData
 
     Gender m_gender = DEFAULT_GENDER;
     HealthStatus m_healthStatus = HealthStatus.HEALTHY;
-    WorkingStatus m_workingStatus;
     Personality m_personality = DEFAULT_PERSONALITY;
     AgeStage m_ageStage;
+    WorkingStatus m_workingStatus = WorkingStatus.IDLE;
 
     public VillagerData(string name)
     {
@@ -169,6 +168,21 @@ public class VillagerData
     {
         int lastdigit = m_identifier[1];
         return lastdigit;
+    }
+
+    public WorkingStatus GetWorkingStatus()
+    {
+        return m_workingStatus;
+    }
+
+    public void SetWorkingStatus(WorkingStatus status)
+    {
+        m_workingStatus = status;
+    }
+
+    public bool IsIdle()
+    {
+        return m_workingStatus == WorkingStatus.IDLE;
     }
 
     #region Handling Fatigue

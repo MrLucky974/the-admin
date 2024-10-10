@@ -70,6 +70,7 @@ public class CommandSystem : MonoBehaviour
                 {
                     Debug.LogError("Parameter count doesn't match.");
                     m_commandLog.AddLog($"error: incorrect parameter count (required: {paramCount} | given: {parts.Length - 1})", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
                     break;
                 }
 
@@ -91,6 +92,7 @@ public class CommandSystem : MonoBehaviour
                 {
                     Debug.LogError("Invalid parameter type.");
                     m_commandLog.AddLog($"error: invalid parameter type at index {paramIndex}", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
                     break;
                 }
 
@@ -103,6 +105,7 @@ public class CommandSystem : MonoBehaviour
         {
             Debug.LogError("No command found.");
             m_commandLog.AddLog($"error: invalid command identifier", GameManager.RED);
+            SoundManager.PlaySound(SoundType.ERROR);
         }
     }
 }
