@@ -83,7 +83,7 @@ public class MainMenuSetup : MonoBehaviour
 
                 GameData.SetIdentifier(input);
 
-                m_logLabel.text += $"\nuser: {input}";
+                m_logLabel.text += $"\nusername: {input}";
                 m_logLabel.text += "\nEnter password (leave empty for random seed)...";
 
                 m_state = State.SEED;
