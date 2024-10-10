@@ -37,8 +37,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        // TODO : Apply seed
-        int seed = 0;
+        int seed = GameData.Seed;
         RNG = new System.Random(seed);
 
         m_inputActions = new PlayerInputActions();
