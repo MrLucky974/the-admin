@@ -48,6 +48,10 @@ public class GameManager : Singleton<GameManager>
             }
             m_commandLogManager.AddLog(sb.ToString(), GameManager.ORANGE);
         }));
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String, String>>("repair", (String villagerId, String roomId) =>
+        {
+            m_villagerManager.SendVillagerRepairRoom(villagerId, roomId);
+        }));
 
 #if UNITY_EDITOR
 
@@ -80,10 +84,7 @@ public class GameManager : Singleton<GameManager>
             m_roomManager.UpgradeRoom(roomId);
         }));
 
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String,String>>("send", (String villagerId,String roomId) =>
-        {
-            m_villagerManager.SendVillagerToRoom(villagerId, roomId);
-        }));
+ 
 
 #endif
         #endregion

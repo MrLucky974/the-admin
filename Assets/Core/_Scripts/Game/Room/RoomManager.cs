@@ -74,6 +74,13 @@ public class RoomManager : MonoBehaviour
 
     #region Room Handling Utilities
 
+
+    public void ApplyDamageToRoomType(RoomType roomType,int damage)
+    {
+        RoomData room = GetRoomOfType(roomType);
+        room.IncrementDurability(-damage);
+    }
+
     public void RepairRoom(string roomId, int scrapsCost)
     {
         RoomData currentRoom = GetRoomWithId(roomId);
@@ -106,7 +113,10 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-
+    public void AddVillagerToRoom(VillagerData villager, string roomId)
+    {
+        GetRoomWithId(roomId).AddVillagerInRoom(villager);
+    }
     public void UpgradeRoom(string roomId)
     {
         UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
@@ -133,6 +143,7 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+
     public RoomData GetRoomWithId(string roomId) {
         foreach(RoomData room in m_roomArray){
             if(room.roomId == roomId){ return room; }
@@ -151,12 +162,16 @@ public class RoomManager : MonoBehaviour
         return findedRoom;
     }
 
+
     public ArrayList GetVillagerInRoom(RoomData room)
     {
         return room.GetVillagersInRoom();
     }
 
+    
+
     #endregion
+
 
     #region Coroutines
 
@@ -201,6 +216,9 @@ public class RoomManager : MonoBehaviour
         roomToRepair.RepairRoom();
         m_gm.GetCommandLog().AddLog($"{roomToRepair.roomId} repaired", GameManager.ORANGE);
     }
+
+
+    
 
     #endregion
 
