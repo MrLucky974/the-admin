@@ -72,13 +72,14 @@ public class VillagerManager : MonoBehaviour
         RoomManager roomManager = FindObjectOfType<RoomManager>();
         RoomData room = roomManager.GetRoomWithId(roomId);
         VillagerData villager =  GetVillagerByID(villagerId);
+
+        if (villager == null) return; // Check villager != null
         if (villager.GetID() == villagerId)
         {
             if (room != null)
             {
-                room.AddVillagerInRoom(villager);  //Add villager to room array
-                roomManager.TryToRepairRoom(roomId);
-                Debug.Log(room.GetVillagerInRoom().Count);
+                roomManager.TryToRepairRoom(villager,roomId,5); // Check if can repair the room
+                Debug.Log(room.GetVillagersInRoom().Count);
             }
         }
     }

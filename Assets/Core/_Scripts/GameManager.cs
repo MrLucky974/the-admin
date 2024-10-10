@@ -80,11 +80,6 @@ public class GameManager : Singleton<GameManager>
             m_roomManager.UpgradeRoom(roomId);
         }));
 
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("repair", (String roomId) =>
-        {
-            m_roomManager.RepairRoom(roomId);
-        }));
-
         m_commandSystem.AddCommand(new CommandDefinition<Action<String,String>>("send", (String villagerId,String roomId) =>
         {
             m_villagerManager.SendVillagerToRoom(villagerId, roomId);

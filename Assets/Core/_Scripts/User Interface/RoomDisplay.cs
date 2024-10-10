@@ -26,6 +26,8 @@ public class RoomDisplay : MonoBehaviour
     protected void Init()
     {
         m_room = m_rm.GetRoomOfType(m_roomType);
+        m_room.OnDurabilityChanged += ChangeColor;
+        m_room.OnRoomRepaired += ChangeColor;   
         m_tmPro.color = GameManager.GREEN;
         m_tmPro.alignment = TextAlignmentOptions.Center;
         DisplayName();
@@ -46,6 +48,22 @@ public class RoomDisplay : MonoBehaviour
     protected void SetRoomType(RoomType newType)
     {
         m_roomType = newType;
+    }
+
+
+    void ChangeColor(int durability)
+    {
+        switch (m_room.roomState) {
+            case RoomData.RoomState.FUNCTIONAL:
+                m_tmPro.color = GameManager.GREEN;
+                break;
+            case RoomData.RoomState.DAMAGED:
+                m_tmPro.color = GameManager.ORANGE;
+                break;
+            case RoomData.RoomState.DESTROYED:
+                m_tmPro.color = GameManager.RED;
+                break;
+        }
     }
 
     void DisplayName()

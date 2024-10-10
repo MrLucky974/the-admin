@@ -59,7 +59,7 @@ public class RoomData : MonoBehaviour
         get { return m_roomType; }
     }
 
-    public ArrayList GetVillagerInRoom() => m_villagerInRoom;
+    public ArrayList GetVillagersInRoom() => m_villagerInRoom;
   
 
     //--
@@ -81,6 +81,8 @@ public class RoomData : MonoBehaviour
         m_durability = m_maxDurability;
         OnDurabilityChanged?.Invoke(m_durability);
         SetRoomState(RoomState.FUNCTIONAL);
+        IncreaseVillagerFatigue(5);
+        RemoveAllVillager();
     }
 
     public void IncrementDurability(int value){ 
@@ -104,14 +106,22 @@ public class RoomData : MonoBehaviour
         }
     }
 
+    public void IncreaseVillagerFatigue(int fatigueValue)
+    {
+        foreach(VillagerData villager in m_villagerInRoom)
+        {
+            villager.IncreaseFatigue(fatigueValue);
+        }
+    }
+
     public void AddVillagerInRoom(VillagerData villager)
     {
         m_villagerInRoom.Add(villager);
     }
 
-    public void RemoveVillager(VillagerData villager)
+    public void RemoveAllVillager()
     {
-        m_villagerInRoom.Remove(villager);
+        m_villagerInRoom.Clear();
     }
 
     protected void DestroyRoom(){

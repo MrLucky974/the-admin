@@ -74,26 +74,35 @@ public class RoomManager : MonoBehaviour
 
     #region Room Handling Utilities
 
-    public void RepairRoom(string roomId)
+    public void RepairRoom(string roomId, int scrapsCost)
     {
+        RoomData currentRoom = GetRoomWithId(roomId);
         foreach (RoomData room in m_roomArray)
         {
             if (room.roomId == roomId)
             {
-                StartCoroutine(RepairRoomCoroutine(GetRoomWithId(roomId), 5));
+                ArrayList villagers = currentRoom.GetVillagersInRoom();
+                float repairSpeed = VillagerData.DEFAULT_WORKING_SPEED; 
+                StartCoroutine(RepairRoomCoroutine(currentRoom,repairSpeed));
+                m_resourceHandler.ConsumeScraps(scrapsCost);
             }
         }
     }
 
-    public void TryToRepairRoom(string roomId)
+    public void TryToRepairRoom(VillagerData villager,string roomId,int scrapsCost)
     {
-        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DAMAGED && m_resourceHandler.HasEnoughResources(0, 0,5))
+        if (!m_resourceHandler.HasEnoughResources(0, 0, scrapsCost)) // --Check for ressources
         {
-            RepairRoom(roomId);
+            m_gm.GetCommandLog().AddLog($"repair {GetRoomWithId(roomId).roomId} failed not enough resources", GameManager.RED);
+            return;
         }
-        else
+        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DAMAGED) // --Check if room can be repaired 
         {
-            Debug.LogError("GAGNE PAS !!");
+            GetRoomWithId(roomId).AddVillagerInRoom(villager); // --Add villager to room
+            RepairRoom(roomId, scrapsCost); 
+        }else{
+            m_gm.GetCommandLog().AddLog($"repair {GetRoomWithId(roomId).roomId} failed", GameManager.RED);
+            return;
         }
     }
 
@@ -144,7 +153,7 @@ public class RoomManager : MonoBehaviour
 
     public ArrayList GetVillagerInRoom(RoomData room)
     {
-        return room.GetVillagerInRoom();
+        return room.GetVillagersInRoom();
     }
 
     #endregion

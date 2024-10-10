@@ -75,10 +75,12 @@ public class VillagerData
     int m_hunger = 0;
 
 
+
     RoomData m_currentRoom;
 
     Gender m_gender = DEFAULT_GENDER;
     HealthStatus m_healthStatus = HealthStatus.HEALTHY;
+    WorkingStatus m_workingStatus;
     Personality m_personality = DEFAULT_PERSONALITY;
     AgeStage m_ageStage;
 
@@ -155,11 +157,6 @@ public class VillagerData
     public void SetID(string newID)
     {
         m_identifier = newID;
-    }
-
-    public void SetCurrentRoom(RoomData newRoom)
-    {
-        m_currentRoom = newRoom;
     }
 
     public string GetID()
