@@ -42,6 +42,27 @@ public class VillagerGenerator
         return age;
     }
 
+    public int SetPreciseAge(int min, int max)
+    {
+        int age = Random.Range(min, max);
+        return age;
+    }
+
+    public int GetAgeDependingOnAgeStage(int ageStage)
+    {
+        if (ageStage == 1)
+        {
+            return SetPreciseAge(0, 8);
+        }
+        else if (ageStage == 2)
+        {
+            return SetPreciseAge(7, 15);
+        }
+        else
+        {
+            return SetPreciseAge(14, 21);
+        }
+    }
     public VillagerData.Gender SelectRandomGender()
     {
         var rng = GameManager.RNG;
