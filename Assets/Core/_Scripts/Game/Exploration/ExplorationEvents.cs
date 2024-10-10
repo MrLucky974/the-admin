@@ -6,4 +6,5 @@ public static class ExplorationEvents
 public struct SquadArrivalEvent : IGameEvent
 {
     public (ResourceType type, int amount) resources;
+    public VillagerData[] members;
 }

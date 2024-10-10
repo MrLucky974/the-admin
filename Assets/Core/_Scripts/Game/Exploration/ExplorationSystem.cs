@@ -177,8 +177,14 @@ public class ExplorationSystem : MonoBehaviour
                 }
 
                 // Send the squad into expedition
-                // TODO : Add delay before squad arrival
                 Squad newSquad = Squad.Create(selectedSector);
+                if (newSquad == null)
+                {
+                    m_commandLog.AddLog($"error: not enough population to send a squad", GameManager.RED);
+                    SoundManager.PlaySound(SoundType.ERROR);
+                    return;
+                }
+
                 m_activeSquads.Add(newSquad);
                 m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -203,6 +209,7 @@ public class ExplorationSystem : MonoBehaviour
 
     private void OnSquadArrival(SquadArrivalEvent @event)
     {
+        var villagerManager = GameManager.Instance.GetVillagerManager();
         var resourceHandler = GameManager.Instance.GetResourceHandler();
 
         (ResourceType type, int amount) = @event.resources;
@@ -219,6 +226,11 @@ public class ExplorationSystem : MonoBehaviour
             case ResourceType.SCRAPS:
                 resourceHandler.AddScraps(amount);
                 break;
+        }
+
+        foreach (var member in @event.members)
+        {
+            villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.IDLE);
         }
     }
 

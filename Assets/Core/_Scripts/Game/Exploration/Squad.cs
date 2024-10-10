@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -5,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class Squad
 {
+    public const int SQUAD_SIZE = 3;
+
     public enum State
     {
         IDLE = 0,
@@ -15,18 +19,46 @@ public class Squad
 
     public static Squad Create(Sector sector)
     {
-        var squad = new Squad(sector);
+        var villagerManager = GameManager.Instance.GetVillagerManager();
+
+        var population = new List<VillagerData>(villagerManager.GetPopulation());
+
+        // Filter every unavailable villager "entity" out of being drafted into a squad
+        population = population.Where(villager => villager.IsIdle() && !villager.IsChild()).ToList();
+        if (population.Count < SQUAD_SIZE)
+        {
+            Debug.LogError($"Not enough villager available: has {population.Count}, need {SQUAD_SIZE}");
+            return null;
+        }
+
+        population.Sort((villager1, villager2) =>
+        {
+            return villager1.GetAgeStage().CompareTo(villager2.GetAgeStage());
+        });
+
+        VillagerData[] members = new VillagerData[SQUAD_SIZE];
+        for (int i = 0; i < SQUAD_SIZE; i++)
+        {
+            var member = members[i] = population[i];
+            villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.EXPEDITION);
+        }
+
+        var squad = new Squad(sector, members);
         return squad;
     }
 
     private readonly Sector m_sector;
+    private readonly VillagerData[] m_members;
     private State m_state = State.DEPARTURE;
     private int m_progress;
     private (ResourceType resourceType, int amount) m_resources;
 
-    private Squad(Sector sector)
+    private Squad(Sector sector, VillagerData[] members)
     {
         m_sector = sector;
+
+        // TODO : Check for null elements inside array
+        m_members = members;
     }
 
     public void Process(NarratorSystem narrator, CommandLogManager commandLog)
@@ -95,6 +127,7 @@ public class Squad
                     var data = new SquadArrivalEvent
                     {
                         resources = m_resources,
+                        members = m_members,
                     };
                     narrator.TriggerEvent(ExplorationEvents.SQUAD_BACK_TO_BASE, data);
 
