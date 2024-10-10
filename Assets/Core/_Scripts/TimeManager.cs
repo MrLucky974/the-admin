@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
@@ -19,6 +20,9 @@ public class TimeManager : MonoBehaviour
     private int m_currentDay;
     private int m_currentWeek;
 
+    public event Action<int> OnDayEnded;
+    public event Action<int> OnWeekEnded;
+
     public void Initialize()
     {
         m_timePassed = 0;
@@ -31,9 +35,11 @@ public class TimeManager : MonoBehaviour
         m_timePassed += deltaTime;
         if (m_timePassed > DAY_IN_SECONDS)
         {
+            OnDayEnded?.Invoke(m_currentDay);
             m_currentDay++;
             if (m_currentDay >= WEEK_LENGTH_IN_DAYS)
             {
+                OnWeekEnded?.Invoke(m_currentWeek);
                 m_currentWeek++;
                 m_currentDay = 0;
             }
