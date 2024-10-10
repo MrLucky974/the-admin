@@ -14,10 +14,16 @@ public class VillagerManager : MonoBehaviour
     private VillagerData m_currentVillager;
     private List<VillagerData> m_villagerQueue;
 
+    private TimeManager m_timeManager;
 
     public ReadOnlyCollection<VillagerData> GetPopulation()
     {
         return m_population.AsReadOnly();
+    }
+
+    private void OnDestroy()
+    {
+        m_timeManager.OnWeekEnded -= FeedPopulation;
     }
 
     public void Initialize()
@@ -28,6 +34,9 @@ public class VillagerManager : MonoBehaviour
         m_population = new List<VillagerData>();
         OnPopulationChanged?.Invoke(m_population);
         m_villagerQueue = new List<VillagerData>();
+
+        m_timeManager = GameManager.Instance.GetTimeManager();
+        m_timeManager.OnWeekEnded += FeedPopulation;
 
 #if UNITY_EDITOR
         var commandSystem = GameManager.Instance.GetCommands();
@@ -53,6 +62,48 @@ public class VillagerManager : MonoBehaviour
         {
             ShowIDs();
         }));
+#endif
+    }
+
+    public void FeedPopulation(int week)
+    {
+        ResourceHandler handler = GameManager.Instance.GetResourceHandler();
+        bool famine = false;
+        foreach (VillagerData villager in m_population)
+        {
+            if (handler.HasEnoughResources(2, 0, 0) && famine == false)
+            {
+                handler.ConsumeRations(2);
+                if (villager.HasAnyHealthStatus(VillagerData.HealthStatus.HUNGRY,
+                    VillagerData.HealthStatus.STARVED))
+                {
+                    villager.RemoveHealthStatus(VillagerData.HealthStatus.HUNGRY);
+                    villager.RemoveHealthStatus(VillagerData.HealthStatus.STARVED);
+                }
+            }
+            else
+            {
+                var isHungry = villager.HasHealthStatus(VillagerData.HealthStatus.HUNGRY);
+                var isStarved = villager.HasHealthStatus(VillagerData.HealthStatus.STARVED);
+                if (isHungry && !isStarved)
+                {
+                    villager.ApplyHealthStatus(VillagerData.HealthStatus.STARVED);
+                    villager.RemoveHealthStatus(VillagerData.HealthStatus.HUNGRY);
+                }
+                else
+                {
+                    if (isStarved)
+                    {
+                        // TODO : Kill the fucking villager
+                        continue;
+                    }
+                    villager.ApplyHealthStatus(VillagerData.HealthStatus.HUNGRY);
+                }
+            }
+        }
+
+#if UNITY_EDITOR
+        ListPopulation();
 #endif
     }
 
