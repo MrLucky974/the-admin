@@ -128,6 +128,12 @@ public class VillagerData
     {
         return m_ageStage;
     }
+    
+    public void SetAge(int babyAge)
+    {
+        m_age = babyAge;
+        UpdateAgeStatus();
+    }
 
     public Gender GetGender()
     {
@@ -204,7 +210,10 @@ public class VillagerData
 
         return (m_healthStatus & status) == status;
     }
-
+    public HealthStatus GetHealthStatus()
+    {
+        return m_healthStatus;
+    }
     public override string ToString()
     {
         return $"ID : {m_identifier} / {m_name}(Age: {m_age}, {m_ageStage}), Gender : {m_gender}, Personality : {m_personality}, HealthSt" +
