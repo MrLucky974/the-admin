@@ -6,7 +6,7 @@ public class ReputationHandler : MonoBehaviour
     public const int MIN_REPUTATION = -100;
     public const int MAX_REPUTATION = 100;
 
-    private int m_reputation;
+    private int m_reputation = 0;
 
     public event Action<int> OnReputationChanged;
 
@@ -37,7 +37,7 @@ public class ReputationHandler : MonoBehaviour
     public bool IncreaseReputation(int amount)
     {
         if (amount < 0) return false;
-        Reputation += amount;
+        Reputation += amount; 
         return true;
     }
 

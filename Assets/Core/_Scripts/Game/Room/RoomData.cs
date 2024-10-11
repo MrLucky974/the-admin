@@ -21,16 +21,21 @@ public class RoomData : MonoBehaviour
     public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
     public event Action OnStateChanged;
+    public event Action OnRoomDestroyed;
+
 
     [SerializeField] protected RoomType m_roomType;
+    
+    
     protected RoomState m_roomState = RoomState.FUNCTIONAL;
-
     public enum RoomState {
         FUNCTIONAL,
         DAMAGED,
         REPAIRING,
         DESTROYED
     };
+
+    RoomManager m_roomManager;
 
     //----------- SET GET
 
@@ -69,6 +74,7 @@ public class RoomData : MonoBehaviour
     {
         //m_durability = m_maxDurability;
         gameObject.name = m_roomName;
+        m_roomManager = FindObjectOfType<RoomManager>();
         OnDurabilityChanged?.Invoke(m_durability);
     }
 
@@ -83,7 +89,6 @@ public class RoomData : MonoBehaviour
         m_durability = m_maxDurability;
         OnDurabilityChanged?.Invoke(m_durability);
         SetRoomState(RoomState.FUNCTIONAL);
-        IncreaseVillagerFatigue(5);
         RemoveAllVillager();
     }
 
@@ -108,18 +113,14 @@ public class RoomData : MonoBehaviour
         }
     }
 
-    public void IncreaseVillagerFatigue(int fatigueValue)
-    {
-        foreach(VillagerData villager in m_villagerInRoom)
-        {
-            villager.IncreaseFatigue(fatigueValue);
-        }
-    }
 
+    #region Handling Villager In Room
     public void AddVillagerInRoom(VillagerData villager)
     {
         m_villagerInRoom.Add(villager);
     }
+    #endregion
+
 
     public void RemoveAllVillager()
     {
@@ -128,6 +129,7 @@ public class RoomData : MonoBehaviour
 
     protected void DestroyRoom(){
         SetRoomState(RoomState.DESTROYED);
+        OnRoomDestroyed?.Invoke();
         Debug.Log("BOOM");
     }
   
