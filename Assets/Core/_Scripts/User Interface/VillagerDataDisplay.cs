@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ public class VillagerDataDisplay : MonoBehaviour
     [SerializeField] private TMP_Text m_workingStatusLabel;
     [SerializeField] private TMP_Text m_fatigueLabel;
 
+    private VillagerData m_lastData;
+
     private void Start()
     {
         var villagerManager = GameManager.Instance.GetVillagerManager();
@@ -31,18 +34,40 @@ public class VillagerDataDisplay : MonoBehaviour
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
             }
         }));
+
+        villagerManager.OnPopulationChanged += UpdateDisplayData;
+    }
+
+    private void UpdateDisplayData(List<VillagerData> list)
+    {
+        // Only update the display if it is displayed on the screen
+        if (m_pages.IsPageSelected() is false || m_pages.GetSelectedIndex<StatusPageIndex>().Equals(StatusPageIndex.CHECKUP) is false)
+            return;
+
+        if (list.Contains(m_lastData)) // Villager is present and data were probably modified
+        {
+            Display(m_lastData); // Update the values on the text
+        }
+        else // Villager was likely killed or died
+        {
+            m_lastData = null;
+            m_pages.HideAll();
+        }
     }
 
     public void Display(VillagerData data)
     {
         if (data == null) return;
 
+        Debug.Log(data.GetHealthStatus());
         m_identifierLabel.SetText(string.Format("{0} | {1}", data.GetID(), data.GetName()));
         m_genderLabel.SetText(string.Format("Gender: {0}", data.GetGender()));
         m_personalityLabel.SetText(string.Format("Personality: {0}", data.GetPersonality()));
         m_ageLabel.SetText(string.Format("Age: {0}", data.GetAgeStage()));
         m_healthLabel.SetText(string.Format("Health Status: {0}", "PIPI"));
-        m_workingStatusLabel.SetText(string.Format("Working Status: {0}", "CACA"));
+        m_workingStatusLabel.SetText(string.Format("Working Status: {0}", data.GetWorkingStatus()));
         m_fatigueLabel.SetText(string.Format("Fatigue: {0}", data.GetFatigue()));
+
+        m_lastData = data;
     }
 }

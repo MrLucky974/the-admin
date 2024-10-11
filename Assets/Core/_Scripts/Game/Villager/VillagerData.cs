@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VillagerData
@@ -10,13 +11,20 @@ public class VillagerData
         ELDER
     };
 
+    public static readonly Dictionary<AgeStage, (int min, int max)> AGE_RANGE = new Dictionary<AgeStage, (int min, int max)>
+    {
+        { AgeStage.KID, (0, 7) },
+        { AgeStage.ADULT, (8, 14) },
+        { AgeStage.ELDER, (15, 23) },
+    };
+
     public enum Gender
     {
         MALE,
         FEMALE
     };
 
-    public static Gender[] ALL_GENDERS =
+    public static readonly Gender[] ALL_GENDERS =
     {
         Gender.MALE,
         Gender.FEMALE
@@ -41,7 +49,7 @@ public class VillagerData
         UNSTABLE
     }
 
-    public static Personality[] ALL_PERSONALITIES =
+    public static readonly Personality[] ALL_PERSONALITIES =
     {
         Personality.NORMAL,
         Personality.HARDWORKER,
@@ -57,9 +65,9 @@ public class VillagerData
     }
 
     #region Default Values
-    private const int DEFAULT_AGE = 7;
-    private const Gender DEFAULT_GENDER = Gender.MALE;
-    private const Personality DEFAULT_PERSONALITY = Personality.NORMAL;
+    public const int DEFAULT_AGE = 8; // Default adult age
+    public const Gender DEFAULT_GENDER = Gender.MALE;
+    public const Personality DEFAULT_PERSONALITY = Personality.NORMAL;
     #endregion
 
     public const int MIN_FATIGUE = 0;
@@ -83,27 +91,23 @@ public class VillagerData
     public VillagerData(string name)
     {
         m_name = name;
+        UpdateAgeStatus();
     }
 
     public void UpdateAgeStatus()
     {
-        if (m_age >= 0 && m_age <= 7)
+        if (m_age >= AGE_RANGE[AgeStage.KID].min && m_age <= AGE_RANGE[AgeStage.KID].max)
         {
             m_ageStage = AgeStage.KID;
         }
-        else if (m_age > 7 && m_age <= 14)
+        else if (m_age >= AGE_RANGE[AgeStage.ADULT].min && m_age <= AGE_RANGE[AgeStage.ADULT].max)
         {
             m_ageStage = AgeStage.ADULT;
         }
         else
         {
             m_ageStage = AgeStage.ELDER;
-            if (m_age >= 21)
-            {
-                //the vilager will die
-            }
         }
-
     }
 
     #region Age Checking
@@ -127,7 +131,7 @@ public class VillagerData
     {
         return m_ageStage;
     }
-    
+
     public void SetAge(int babyAge)
     {
         m_age = babyAge;
