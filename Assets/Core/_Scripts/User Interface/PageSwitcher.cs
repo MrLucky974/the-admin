@@ -15,7 +15,8 @@ public class PageSwitcher : MonoBehaviour
 
     [SerializeField] private bool m_hideAllOnStart = true;
     [SerializeField] private List<GameObject> m_pages;
-    private int m_selectedIndex;
+
+    private int m_selectedIndex = INVALID_PAGE_INDEX;
 
     private void Start()
     {
@@ -79,7 +80,7 @@ public class PageSwitcher : MonoBehaviour
             if (index == i)
             {
                 m_pages[i].SetActive(true);
-                return;
+                break;
             }
         }
 
