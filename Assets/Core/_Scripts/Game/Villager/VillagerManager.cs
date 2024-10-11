@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using static VillagerData;
 
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
 public class VillagerManager : MonoBehaviour
@@ -66,7 +67,7 @@ public class VillagerManager : MonoBehaviour
         }));
 #endif
     }
-    
+
     public void GetOlder(int week)
     {
         foreach (VillagerData villager in m_population)
@@ -160,13 +161,13 @@ public class VillagerManager : MonoBehaviour
             { continue; }
             if (villager.HasHealthStatus(VillagerData.HealthStatus.PREGNANT))
             { continue; }
- 
+
             villager.Impregnate(GetRandomMale());
 
             Debug.Log($"is pregnant: {villager}");
             somebodyPregnant = true;
             break;
-            
+
         }
 
         if (somebodyPregnant == false)
@@ -178,10 +179,10 @@ public class VillagerManager : MonoBehaviour
             OnPopulationChanged?.Invoke(m_population);
         }
     }
-    
+
     public VillagerData GetRandomMale()
     {
-        var males = m_population.FindAll((villager) => {  return villager.IsMale(); });
+        var males = m_population.FindAll((villager) => { return villager.IsMale(); });
         var rng = GameManager.RNG;
         return males.PickRandom(rng);
     }
@@ -244,8 +245,28 @@ public class VillagerManager : MonoBehaviour
             .SetPersonality(personality)
             .Build();
 
-        m_currentVillager = villager;
-        Debug.Log($"villager created: {m_currentVillager}");
+        SetVillager(villager);
+    }
+
+    private void CreateBaby(VillagerData parent1, VillagerData parent2)
+    {
+        var name = m_villagerGenerator.GenerateNameFromParents(parent1, parent2);
+        var gender = m_villagerGenerator.SelectRandomGender();
+        var personality = m_villagerGenerator.SelectRandomPersonality();
+
+        var villager = new VillagerData.Builder(name)
+        .SetAge(AGE_RANGE[AgeStage.KID].min)
+            .SetGender(gender)
+            .SetPersonality(personality)
+            .Build();
+
+        SetVillager(villager);
+    }
+
+    private void SetVillager(VillagerData data)
+    {
+        m_currentVillager = data;
+        Debug.Log($"set current villager: {m_currentVillager}");
     }
 
     private void AssignIdentifierToVillager()
@@ -348,15 +369,6 @@ public class VillagerManager : MonoBehaviour
             Debug.Log(villager.GetID());
         }
     }
-
-    //private void KillVillagers(int numberToKill)
-    //{
-    //    if (numberToKill <= m_population.Count)
-    //    {
-    //        Debug.Log($"is getting killed {m_population[numberToKill]})");
-    //        m_population.Remove(m_population[numberToKill]);
-    //    }
-    //}
 
 #if UNITY_EDITOR
     private void ListPopulation()
