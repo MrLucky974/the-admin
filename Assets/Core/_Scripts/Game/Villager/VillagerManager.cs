@@ -90,17 +90,20 @@ public class VillagerManager : MonoBehaviour
             if (villager.IsAdult() && villager.GetGender() == VillagerData.Gender.FEMALE)
             {
                 villager.Impregnate();
-                OnPopulationChanged?.Invoke(m_population);
 
                 Debug.Log($"is pregnant: {villager}");
                 somebodyPregnant = true;
                 break;
             }
-
         }
+
         if (somebodyPregnant == false)
         {
             Debug.Log("nobody was made pregnant");
+        }
+        else
+        {
+            OnPopulationChanged?.Invoke(m_population);
         }
     }
 
