@@ -51,7 +51,7 @@ public class VillagerGenerator
 
     public int GenerateAgeByStage(VillagerData.AgeStage ageStage)
     {
-        switch (ageStage)
+        switch (ageStage) 
         {
             case VillagerData.AgeStage.KID:
                 return GenerateAge(AGE_RANGE[AgeStage.KID].min, AGE_RANGE[AgeStage.KID].max);

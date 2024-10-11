@@ -66,6 +66,7 @@ public class VillagerManager : MonoBehaviour
         }));
 #endif
     }
+    
     public void GetOlder(int week)
     {
         foreach (VillagerData villager in m_population)
@@ -74,47 +75,6 @@ public class VillagerManager : MonoBehaviour
             Debug.Log($"{villager.GetName()} got older : {villager.GetAgeStage()}");
         }
         OnPopulationChanged?.Invoke(m_population);
-    }
-    public void FeedPopulation(int week)
-    {
-        ResourceHandler handler = GameManager.Instance.GetResourceHandler();
-        bool famine = false;
-        foreach (VillagerData villager in m_population)
-        {
-            if (handler.HasEnoughResources(2, 0, 0) && famine == false)
-            {
-                handler.ConsumeRations(2);
-                if (villager.HasAnyHealthStatus(VillagerData.HealthStatus.HUNGRY,
-                    VillagerData.HealthStatus.STARVED))
-                {
-                    villager.RemoveHealthStatus(VillagerData.HealthStatus.HUNGRY);
-                    villager.RemoveHealthStatus(VillagerData.HealthStatus.STARVED);
-                }
-            }
-            else
-            {
-                var isHungry = villager.HasHealthStatus(VillagerData.HealthStatus.HUNGRY);
-                var isStarved = villager.HasHealthStatus(VillagerData.HealthStatus.STARVED);
-                if (isHungry && !isStarved)
-                {
-                    villager.ApplyHealthStatus(VillagerData.HealthStatus.STARVED);
-                    villager.RemoveHealthStatus(VillagerData.HealthStatus.HUNGRY);
-                }
-                else
-                {
-                    if (isStarved)
-                    {
-                        // TODO : Kill the fucking villager
-                        continue;
-                    }
-                    villager.ApplyHealthStatus(VillagerData.HealthStatus.HUNGRY);
-                }
-            }
-        }
-
-#if UNITY_EDITOR
-        ListPopulation();
-#endif
     }
 
     public void FeedPopulation(int week)
