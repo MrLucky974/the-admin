@@ -41,11 +41,11 @@ public class VillagerGenerator
         var surnames = new string[] { surname1, surname2 };
 
         var rng = GameManager.RNG;
-        string name = m_names.PickRandom(rng).Replace("\r", "");
+        string name = m_names.PickRandom(rng);
         string surname = surnames.PickRandom(rng);
 
         string fullName = $"{name} {surname}";
-        return fullName;
+        return fullName.Replace("\r", "");
     }
 
     public string GenerateName()
@@ -53,10 +53,10 @@ public class VillagerGenerator
         //Give the full name and surname
         var rng = GameManager.RNG;
 
-        string name = m_names.PickRandom(rng).Replace("\r", "");
+        string name = m_names.PickRandom(rng);
         string surname = m_surnames.PickRandom(rng);
         string fullName = $"{name} {surname}";
-        return fullName;
+        return fullName.Replace("\r", "");
     }
 
     public int GenerateAge()

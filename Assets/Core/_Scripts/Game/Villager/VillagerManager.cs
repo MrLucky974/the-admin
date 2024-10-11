@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine;
 using static VillagerData;
 
@@ -16,6 +17,7 @@ public class VillagerManager : MonoBehaviour
     private List<VillagerData> m_villagerQueue;
 
     private TimeManager m_timeManager;
+    private CommandLogManager m_commandLog;
 
     public ReadOnlyCollection<VillagerData> GetPopulation()
     {
@@ -41,8 +43,10 @@ public class VillagerManager : MonoBehaviour
         m_timeManager.OnWeekEnded += OnNewWeek;
         m_timeManager.OnDayEnded += OnNewDay;
 
-#if UNITY_EDITOR
+        m_commandLog = GameManager.Instance.GetCommandLog();
         var commandSystem = GameManager.Instance.GetCommands();
+
+#if UNITY_EDITOR
         commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("initpop", (int child, int adults, int elders) =>
         {
             CreateRandomVillagers(child, adults, elders);
@@ -53,38 +57,39 @@ public class VillagerManager : MonoBehaviour
         {
             GetSick();
         }));
+
         commandSystem.AddCommand(new CommandDefinition<Action>("getpregnant", () =>
         {
             GetPregnant();
         }));
-        commandSystem.AddCommand(new CommandDefinition<Action>("getbaby", () =>
-        {
-            DeliverBaby();
-        }));
+
         commandSystem.AddCommand(new CommandDefinition<Action>("showid", () =>
         {
             ShowIDs();
         }));
 #endif
     }
-    
+
+    #region Villager Gameplay Handlers
+
     public void OnNewWeek(int week)
     {
         FeedPopulation();
+        GetPregnant();
     }
-    
+
     public void OnNewDay(int day)
     {
-        GetOlder();
-        UpdatePregnantWoman();
+        AgePopulation();
+        UpdatePregnantWomenStatus();
     }
-    
-    public void GetOlder()
+
+    public void AgePopulation()
     {
         foreach (VillagerData villager in m_population)
         {
             villager.GetOlder();
-            Debug.Log($"{villager.GetName()} got older : {villager.GetAgeStage()}");
+            //Debug.Log($"{villager.GetName()} got older : {villager.GetAgeStage()}");
         }
         OnPopulationChanged?.Invoke(m_population);
     }
@@ -133,6 +138,72 @@ public class VillagerManager : MonoBehaviour
 #endif
     }
 
+    public void GetPregnant()
+    {
+        // Get a list of all adult women inside the base not already pregnant
+        var women = m_population.FindAll((villager) => villager.IsAdult()
+            && villager.IsMale() is false
+            && villager.IsOnExpedition() is false
+            && villager.IsPregnant() is false
+        );
+
+        // Check if there is at least one male on the base
+        bool hasMale = m_population.Any((villager) => villager.IsAdult()
+            && villager.IsMale()
+            && villager.IsOnExpedition() is false
+        );
+
+        if (women.Count < 1 || !hasMale)
+        {
+            Debug.Log("nobody can be made pregnant");
+            return;
+        }
+
+        // Give a random number of women that are going to get pregnant on this game tick
+        var rng = GameManager.RNG;
+        const int MINIMUM_PREGNANCY_COUNT = 1; // Can be one since we already check that there's at least one women on base
+        const int PREGNANCY_CHANCE = 20;
+        int maxPregnancyCount = Mathf.Max(MINIMUM_PREGNANCY_COUNT, women.Count > (100 / PREGNANCY_CHANCE) + 1 ? (women.Count * PREGNANCY_CHANCE) / 100 : women.Count);
+        int expectedPregnancyCount = rng.Next(MINIMUM_PREGNANCY_COUNT, maxPregnancyCount + 1); //+1 is added to max since Next does [min, max)
+
+        Debug.Log($"{women.Count} available for mating");
+        Debug.Log($"fucking {expectedPregnancyCount} people ({MINIMUM_PREGNANCY_COUNT} | {maxPregnancyCount})");
+
+        Queue<VillagerData> futurePregnancies = new Queue<VillagerData>();
+        for (int i = 0; i < expectedPregnancyCount; i++)
+        {
+            var value = women.PickRandom();
+            women.Remove(value);
+            futurePregnancies.Enqueue(value);
+        }
+
+        while (futurePregnancies.TryDequeue(out var villager))
+        {
+            villager.Impregnate(GetRandomMale());
+            Debug.Log($"is pregnant: {villager}");
+        }
+
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
+    public void UpdatePregnantWomenStatus()
+    {
+        var pregnantIndividuals = m_population.FindAll((villager) => villager.IsPregnant());
+        foreach (VillagerData villager in pregnantIndividuals)
+        {
+            villager.UpdatePregnancy();
+            if (villager.GetPregnancyDuration() >= 3)
+            {
+                villager.RemoveHealthStatus(HealthStatus.PREGNANT);
+                var baby = CreateBaby(villager, villager.GetMate());
+                AddVillagerToPopulation();
+                m_commandLog.AddLog($"villager: {baby.GetName()} is born!", GameManager.ORANGE);
+            }
+        }
+    }
+
+    #endregion
+
     #region Villager Handling Utilities
 
     public void IncreaseFatigue(VillagerData data, int value)
@@ -159,83 +230,18 @@ public class VillagerManager : MonoBehaviour
         OnPopulationChanged?.Invoke(m_population);
     }
 
-    public void GetPregnant()
+    private VillagerData GetRandomMale()
     {
-        bool somebodyPregnant = false;
-        foreach (VillagerData villager in m_population)
-        {
-            if (villager.IsAdult() == false)
-            {
-                continue;
-            }
-            if (villager.GetGender() != VillagerData.Gender.FEMALE)
-            { continue; }
-            if (villager.HasHealthStatus(VillagerData.HealthStatus.PREGNANT))
-            { continue; }
-
-            villager.Impregnate(GetRandomMale());
-
-            Debug.Log($"is pregnant: {villager}");
-            somebodyPregnant = true;
-            break;
-
-        }
-
-        if (somebodyPregnant == false)
-        {
-            Debug.Log("nobody was made pregnant");
-        }
-        else
-        {
-            OnPopulationChanged?.Invoke(m_population);
-        }
-    }
-    
-    public void UpdatePregnantWoman()
-    {
-        foreach (VillagerData pregVillager in m_population)
-        {
-            if (pregVillager.IsPregnant())
-            {
-                pregVillager.UpdatePregnancy();
-                if (pregVillager.GetPregnancyDuration() >= 3)
-                {
-                    pregVillager.RemoveHealthStatus(VillagerData.HealthStatus.PREGNANT);
-                    CreateBaby(pregVillager, pregVillager.GetMate());
-                }
-            }
-        }
-    }
-
-    public VillagerData GetRandomMale()
-    {
-        var males = m_population.FindAll((villager) => { return villager.IsMale(); });
+        // Select all adult males that are on the base
+        var males = m_population.FindAll((villager) => villager.IsAdult()
+            && villager.IsMale()
+            && villager.IsOnExpedition() is false
+        );
         var rng = GameManager.RNG;
         return males.PickRandom(rng);
     }
 
-    public void DeliverBaby()
-    {
-        bool _isBabyBorn = false;
-        foreach (VillagerData villager in m_population)
-        {
-            //if (villager.HasHealthStatus(VillagerData.HealthStatus.PREGNANT))
-            //{
-            //    //villager.RemoveHealthStatus(VillagerData.HealthStatus.PREGNANT);
-            //    CreateRandomVillager();
-            //    m_currentVillager.SetAge(0);
-            //    Debug.Log($"{m_currentVillager} is born !");
-            //    AddVillagerToPopulation();
-            //    _isBabyBorn = true;
-            //}
-        }
-        if (_isBabyBorn == false)
-        {
-            Debug.Log("no baby born");
-        }
-    }
-
-    public void SetWorkingStatus(VillagerData data, VillagerData.WorkingStatus status)
+    public void SetWorkingStatus(VillagerData data, WorkingStatus status)
     {
         data.SetWorkingStatus(status);
         OnPopulationChanged?.Invoke(m_population);
@@ -245,16 +251,17 @@ public class VillagerManager : MonoBehaviour
     {
         var rng = GameManager.RNG;
         int randomNumber = rng.Next(0, m_population.Count);
-        m_population[randomNumber].ApplyHealthStatus(VillagerData.HealthStatus.SICK);
+        m_population[randomNumber].ApplyHealthStatus(HealthStatus.SICK);
         OnPopulationChanged?.Invoke(m_population);
         Debug.Log(m_population[randomNumber]);
         Debug.Log("is sick, yeaaah");
     }
+
     #endregion
 
     #region Villager Setup Utilities
 
-    private void CreateRandomVillager(VillagerData.AgeStage stage)
+    private void CreateRandomVillager(AgeStage stage)
     {
         var age = m_villagerGenerator.GenerateAgeByStage(stage);
         CreateRandomVillager(age);
@@ -275,7 +282,7 @@ public class VillagerManager : MonoBehaviour
         SetVillager(villager);
     }
 
-    private void CreateBaby(VillagerData parent1, VillagerData parent2)
+    private VillagerData CreateBaby(VillagerData parent1, VillagerData parent2)
     {
         var name = m_villagerGenerator.GenerateNameFromParents(parent1, parent2);
         var gender = m_villagerGenerator.SelectRandomGender();
@@ -288,6 +295,7 @@ public class VillagerManager : MonoBehaviour
             .Build();
 
         SetVillager(villager);
+        return villager;
     }
 
     private void SetVillager(VillagerData data)

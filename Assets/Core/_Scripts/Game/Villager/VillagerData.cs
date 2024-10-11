@@ -14,8 +14,8 @@ public class VillagerData
     public static readonly Dictionary<AgeStage, (int min, int max)> AGE_RANGE = new Dictionary<AgeStage, (int min, int max)>
     {
         { AgeStage.KID, (0, 7) },
-        { AgeStage.ADULT, (8, 14) },
-        { AgeStage.ELDER, (15, 23) },
+        { AgeStage.ADULT, (8, 20) },
+        { AgeStage.ELDER, (21, 29) },
     };
 
     public enum Gender
