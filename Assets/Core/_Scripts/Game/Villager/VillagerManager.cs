@@ -150,14 +150,21 @@ public class VillagerManager : MonoBehaviour
         bool somebodyPregnant = false;
         foreach (VillagerData villager in m_population)
         {
-            if (villager.IsAdult() && villager.GetGender() == VillagerData.Gender.FEMALE)
+            if (villager.IsAdult() == false)
             {
-                villager.Impregnate();
-
-                Debug.Log($"is pregnant: {villager}");
-                somebodyPregnant = true;
-                break;
+                continue;
             }
+            if (villager.GetGender() != VillagerData.Gender.FEMALE)
+            { continue; }
+            if (villager.HasHealthStatus(VillagerData.HealthStatus.PREGNANT))
+            { continue; }
+ 
+            villager.Impregnate(GetRandomMale());
+
+            Debug.Log($"is pregnant: {villager}");
+            somebodyPregnant = true;
+            break;
+            
         }
 
         if (somebodyPregnant == false)
@@ -168,6 +175,13 @@ public class VillagerManager : MonoBehaviour
         {
             OnPopulationChanged?.Invoke(m_population);
         }
+    }
+    
+    public VillagerData GetRandomMale()
+    {
+        var males = m_population.FindAll((villager) => {  return villager.IsMale(); });
+        var rng = GameManager.RNG;
+        return males.PickRandom(rng);
     }
 
     public void DeliverBaby()
