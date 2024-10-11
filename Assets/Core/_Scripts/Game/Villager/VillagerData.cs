@@ -100,7 +100,7 @@ public class VillagerData
         {
             m_ageStage = AgeStage.KID;
         }
-        else if (m_age > AGE_RANGE[AgeStage.ADULT].min && m_age <= AGE_RANGE[AgeStage.ADULT].max)
+        else if (m_age >= AGE_RANGE[AgeStage.ADULT].min && m_age <= AGE_RANGE[AgeStage.ADULT].max)
         {
             m_ageStage = AgeStage.ADULT;
         }
