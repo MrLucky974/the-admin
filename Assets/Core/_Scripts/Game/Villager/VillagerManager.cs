@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Unity.VisualScripting;
 using UnityEngine;
 
-
+// TODO : Replace some OnPopulationChanged calls by a more individual focused event
 public class VillagerManager : MonoBehaviour
 {
     public event Action<List<VillagerData>> OnPopulationChanged;
@@ -14,7 +13,7 @@ public class VillagerManager : MonoBehaviour
     private List<VillagerData> m_population;
     private VillagerData m_currentVillager;
     private List<VillagerData> m_villagerQueue;
-    
+
 
     public ReadOnlyCollection<VillagerData> GetPopulation()
     {
@@ -34,7 +33,7 @@ public class VillagerManager : MonoBehaviour
         var commandSystem = GameManager.Instance.GetCommands();
         commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("initpop", (int child, int adults, int elders) =>
         {
-            CreateRandomVillagers(child,adults,elders);
+            CreateRandomVillagers(child, adults, elders);
             ListPopulation();
         }));
 
@@ -62,41 +61,46 @@ public class VillagerManager : MonoBehaviour
     public void IncreaseFatigue(VillagerData data, int value)
     {
         data.IncreaseFatigue(value);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     public void DecreaseFatigue(VillagerData data, int value)
     {
         data.DecreaseFatigue(value);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     public void ApplyHealthStatus(VillagerData data, VillagerData.HealthStatus status)
     {
         data.ApplyHealthStatus(status);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     public void RemoveHealthStatus(VillagerData data, VillagerData.HealthStatus status)
     {
         data.RemoveHealthStatus(status);
+        OnPopulationChanged?.Invoke(m_population);
     }
 
     public void GetPregnant()
     {
-        bool _NoPregnancy = false;
+        bool somebodyPregnant = false;
         foreach (VillagerData villager in m_population)
         {
             if (villager.IsAdult() && villager.GetGender() == VillagerData.Gender.FEMALE)
             {
                 villager.Impregnate();
-                Debug.Log($"is pregnant : {villager}");
-                _NoPregnancy = true;
+                OnPopulationChanged?.Invoke(m_population);
+
+                Debug.Log($"is pregnant: {villager}");
+                somebodyPregnant = true;
                 break;
             }
-            
+
         }
-        if (_NoPregnancy == false)
+        if (somebodyPregnant == false)
         {
-            Debug.Log("nobody is pregnant");
-            
+            Debug.Log("nobody was made pregnant");
         }
     }
 
@@ -132,8 +136,8 @@ public class VillagerManager : MonoBehaviour
         var rng = GameManager.RNG;
         int randomNumber = rng.Next(0, m_population.Count);
         m_population[randomNumber].ApplyHealthStatus(VillagerData.HealthStatus.SICK);
+        OnPopulationChanged?.Invoke(m_population);
         Debug.Log(m_population[randomNumber]);
-
         Debug.Log("is sick, yeaaah");
     }
     #endregion
@@ -183,27 +187,27 @@ public class VillagerManager : MonoBehaviour
         m_currentVillager = null;
     }
 
-    private void CreateRandomVillagers( int kids, int adults, int elders)
+    private void CreateRandomVillagers(int kids, int adults, int elders)
     {
-         while (kids > 0)
-            {
-                CreateRandomVillager(1);
-                AddVillagerToPopulation();
-                kids--;
-            }
+        while (kids > 0)
+        {
+            CreateRandomVillager(1);
+            AddVillagerToPopulation();
+            kids--;
+        }
         while (adults > 0)
-            {
-                CreateRandomVillager(2);
-                AddVillagerToPopulation();
-                adults--;
-            }
+        {
+            CreateRandomVillager(2);
+            AddVillagerToPopulation();
+            adults--;
+        }
         while (elders > 0)
-            {
-                CreateRandomVillager(3);
-                AddVillagerToPopulation();
-                elders--;
-            }
-        
+        {
+            CreateRandomVillager(3);
+            AddVillagerToPopulation();
+            elders--;
+        }
+
     }
 
     private void CreateRandomVillagersInQueue(int amount)
