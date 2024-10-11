@@ -1,4 +1,5 @@
 using UnityEngine;
+using static VillagerData;
 
 public class VillagerGenerator
 {
@@ -36,33 +37,33 @@ public class VillagerGenerator
         return id;
     }
 
-    public int SetAge()
+    public int GenerateAge()
     {
-        int age = Random.Range(0, 20);
+        int age = Random.Range(AGE_RANGE[AgeStage.KID].min, 20);
         return age;
     }
 
-    public int SetPreciseAge(int min, int max)
+    public int GenerateAge(int min, int max)
     {
         int age = Random.Range(min, max + 1);
         return age;
     }
 
-    public int GetAgeDependingOnAgeStage(int ageStage)
+    public int GenerateAgeByStage(VillagerData.AgeStage ageStage)
     {
-        if (ageStage == 1)
+        switch (ageStage)
         {
-            return SetPreciseAge(0, 7);
+            case VillagerData.AgeStage.KID:
+                return GenerateAge(AGE_RANGE[AgeStage.KID].min, AGE_RANGE[AgeStage.KID].max);
+            case VillagerData.AgeStage.ADULT:
+                return GenerateAge(AGE_RANGE[AgeStage.ADULT].min, AGE_RANGE[AgeStage.ADULT].max);
+            case VillagerData.AgeStage.ELDER:
+                return GenerateAge(AGE_RANGE[AgeStage.ELDER].min, 20);
         }
-        else if (ageStage == 2)
-        {
-            return SetPreciseAge(7, 14);
-        }
-        else
-        {
-            return SetPreciseAge(14, 20);
-        }
+
+        return VillagerData.DEFAULT_AGE;
     }
+
     public VillagerData.Gender SelectRandomGender()
     {
         var rng = GameManager.RNG;

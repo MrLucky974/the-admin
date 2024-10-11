@@ -198,10 +198,15 @@ public class VillagerManager : MonoBehaviour
 
     #region Villager Setup Utilities
 
-    private void CreateRandomVillager(int agetoset)
+    private void CreateRandomVillager(VillagerData.AgeStage stage)
+    {
+        var age = m_villagerGenerator.GenerateAgeByStage(stage);
+        CreateRandomVillager(age);
+    }
+
+    private void CreateRandomVillager(int age = VillagerData.DEFAULT_AGE)
     {
         var name = m_villagerGenerator.GenerateName();
-        var age = m_villagerGenerator.GetAgeDependingOnAgeStage(agetoset);
         var gender = m_villagerGenerator.SelectRandomGender();
         var personality = m_villagerGenerator.SelectRandomPersonality();
 
@@ -245,30 +250,31 @@ public class VillagerManager : MonoBehaviour
     {
         while (kids > 0)
         {
-            CreateRandomVillager(1);
+            CreateRandomVillager(VillagerData.AgeStage.KID);
             AddVillagerToPopulation();
             kids--;
         }
+
         while (adults > 0)
         {
-            CreateRandomVillager(2);
+            CreateRandomVillager(VillagerData.AgeStage.ADULT);
             AddVillagerToPopulation();
             adults--;
         }
+
         while (elders > 0)
         {
-            CreateRandomVillager(3);
+            CreateRandomVillager(VillagerData.AgeStage.ELDER);
             AddVillagerToPopulation();
             elders--;
         }
-
     }
 
     private void CreateRandomVillagersInQueue(int amount)
     {
         while (amount > 0)
         {
-            CreateRandomVillager(m_villagerGenerator.SetAge());
+            CreateRandomVillager(m_villagerGenerator.GenerateAge());
             m_villagerQueue.Add(m_currentVillager);
             amount--;
         }
