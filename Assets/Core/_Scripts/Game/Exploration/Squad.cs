@@ -42,6 +42,7 @@ public class Squad
             var member = members[i] = population[i];
             villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.EXPEDITION);
         }
+        members.Print();
 
         var squad = new Squad(sector, members);
         return squad;
