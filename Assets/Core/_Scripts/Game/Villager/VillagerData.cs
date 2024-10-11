@@ -81,6 +81,8 @@ public class VillagerData
     int m_age = DEFAULT_AGE;
     int m_fatigue = 0;
     int m_hunger = 0;
+    private VillagerData m_mate;
+    private int m_pregnancyDuration = 0;
 
     Gender m_gender = DEFAULT_GENDER;
     HealthStatus m_healthStatus = HealthStatus.HEALTHY;
@@ -203,10 +205,32 @@ public class VillagerData
     }
     #endregion
 
-    public void Impregnate()
+    public void Impregnate(VillagerData mate)
     {
+        m_mate = mate;
         RemoveHealthStatus(HealthStatus.HEALTHY);
         ApplyHealthStatus(HealthStatus.PREGNANT);
+        m_pregnancyDuration = 0;
+    }
+
+    public bool IsMale()
+    {
+        return m_gender == Gender.MALE;
+    }
+
+    public int GetPregnancyDuration()
+    {
+        return m_pregnancyDuration;
+    }
+
+    public bool IsPregnant()
+    {
+        return HasHealthStatus(HealthStatus.PREGNANT);
+    }
+
+    public void UpdatePregnancy()
+    {
+        m_pregnancyDuration++;
     }
 
     public void ApplyHealthStatus(HealthStatus status)
