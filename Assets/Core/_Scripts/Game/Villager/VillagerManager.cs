@@ -114,6 +114,8 @@ public class VillagerManager : MonoBehaviour
             }
         }
 
+        OnPopulationChanged?.Invoke(m_population);
+
 #if UNITY_EDITOR
         ListPopulation();
 #endif
