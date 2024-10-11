@@ -179,6 +179,21 @@ public class VillagerManager : MonoBehaviour
         }
     }
     
+    public void UpdatePregnantWoman()
+    {
+        foreach (VillagerData pregVillager in m_population)
+        {
+            if (pregVillager.IsPregnant())
+            {
+                pregVillager.UpdatePregnancy();
+                if (pregVillager.GetPregnancyDuration() >= 3)
+                {
+                    pregVillager.RemoveHealthStatus(VillagerData.HealthStatus.PREGNANT);
+                    //TODO Deliver baby
+                }
+            }
+        }
+    }
     public VillagerData GetRandomMale()
     {
         var males = m_population.FindAll((villager) => {  return villager.IsMale(); });
