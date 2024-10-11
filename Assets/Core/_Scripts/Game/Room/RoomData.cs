@@ -108,6 +108,7 @@ public class RoomData : MonoBehaviour
     }
 
     protected void CheckIsDestroy(){
+        if (roomState == RoomState.DESTROYED) return;
         if (m_durability <= 0){
             DestroyRoom();           
         }

@@ -29,6 +29,8 @@ public class RoomManager : MonoBehaviour
     public const int DEGRADATION = 7;
     public const float TIMEDEGRADE = 1f;
 
+    float m_repairTimeBonus = 0;
+
     GameManager m_gm;
 
   
@@ -94,7 +96,7 @@ public class RoomManager : MonoBehaviour
     public void RoomWasDestroy()
     {
         m_reputationHandler.DecreaseReputation(15); //TODO add a reputation value
-        Debug.Log("AIIIIIIE");
+       
     }
 
     public void ApplyDamageToRoomType(RoomType roomType,int damage)
@@ -111,7 +113,12 @@ public class RoomManager : MonoBehaviour
             if (room.roomId == roomId)
             {
                 ArrayList villagers = currentRoom.GetVillagersInRoom();
-                float repairSpeed = VillagerData.DEFAULT_WORKING_SPEED;
+                float repairSpeed = VillagerData.DEFAULT_WORKING_SPEED-m_repairTimeBonus;  //
+                if(currentRoom.roomState == RoomData.RoomState.DESTROYED)
+                {
+                    repairSpeed = repairSpeed * 2;
+                    scrapsCost = scrapsCost * 2;
+                }
                 VillagerManager vm = m_gm.GetVillagerManager();
                 foreach (VillagerData villager in room.GetVillagersInRoom())
                 {
@@ -128,8 +135,10 @@ public class RoomManager : MonoBehaviour
         VillagerManager vm = m_gm.GetVillagerManager();
         foreach (VillagerData villager in room.GetVillagersInRoom()) 
         {
-            vm.IncreaseFatigue(villager,5); //Increase fatigue to villager in room //TODO compute de fatigue value
+            vm.IncreaseFatigue(villager,5); //Increase fatigue to villager in room //TODO compute fatigue value
             vm.SetWorkingStatus(villager, VillagerData.WorkingStatus.IDLE);
+            m_gm.GetCommandLog().AddLog($"{room.roomId} repaired", GameManager.ORANGE);
+            SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }
         room.RepairRoom();
     }
@@ -138,20 +147,20 @@ public class RoomManager : MonoBehaviour
     {
         if (villager.GetWorkingStatus() != VillagerData.WorkingStatus.IDLE)
         {
-            m_gm.GetCommandLog().AddLog($"villager {villager.GetID()} is occupied", GameManager.RED);
+            m_gm.GetCommandLog().AddLogError($"villager {villager.GetID()} is occupied");
             return;
         }
         if (!m_resourceHandler.HasEnoughResources(0, 0, scrapsCost)) // --Check for ressources
         {
-            m_gm.GetCommandLog().AddLog($"repair {GetRoomWithId(roomId).roomId} failed not enough resources", GameManager.RED);
+            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed not enough resources");
             return;
         }
-        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DAMAGED) // --Check if room can be repaired 
+        if (GetRoomWithId(roomId).roomState != RoomData.RoomState.FUNCTIONAL) // --Check if room can be repaired 
         {
             GetRoomWithId(roomId).AddVillagerInRoom(villager); // --Add villager to room
             StartRepairRoom(roomId, scrapsCost); 
         }else{
-            m_gm.GetCommandLog().AddLog($"repair {GetRoomWithId(roomId).roomId} failed", GameManager.RED);
+            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed");
             return;
         }
     }
@@ -163,7 +172,7 @@ public class RoomManager : MonoBehaviour
 
     public void UpgradeRoom(string roomId)
     {
-        UpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
+        UpRoomData[] ressRooms = FindObjectsOfType<UpRoomData>();
         foreach (UpRoomData room in ressRooms) {
             if (room.roomId == roomId){
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost)){
@@ -178,13 +187,18 @@ public class RoomManager : MonoBehaviour
                 }
             }else{
                 if (roomId == ""){
-                    m_gm.GetCommandLog().AddLog($"specify room id example: upgrade R1", GameManager.RED);
+                    m_gm.GetCommandLog().AddLogError($"specify room id example: upgrade R1");
                     return;
                 }
-                m_gm.GetCommandLog().AddLog($"upgrade {roomId} failed you cant upgrade this room", GameManager.RED);
+                m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
                 return;
             }
         }
+    }
+
+    public void IncreaseGlobalRepairSpeed(float value)
+    {
+        m_repairTimeBonus += value;
     }
 
 
@@ -226,10 +240,8 @@ public class RoomManager : MonoBehaviour
     IEnumerator DegradeRoom()
     {
         foreach(RoomData room in m_roomArray){
-            if (room.roomState != RoomData.RoomState.DESTROYED){
-                yield return new WaitForSeconds(1);
-                room.IncrementDurability(-DEGRADATION);  
-            }
+            yield return new WaitForSeconds(1);
+            room.IncrementDurability(-DEGRADATION);            
         }
         yield return new WaitForSeconds(TimeManager.DAY_IN_SECONDS / m_roomArray.Length);
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
@@ -262,9 +274,8 @@ public class RoomManager : MonoBehaviour
         roomToRepair.SetRoomState(RoomData.RoomState.REPAIRING);
         yield return new WaitForSeconds(time); //TODO Replace this hard value with villager states
         RepairRoomComplete(roomToRepair);
-        //roomToRepair.RepairRoom();
-        m_gm.GetCommandLog().AddLog($"{roomToRepair.roomId} repaired", GameManager.ORANGE);
     }
+
     #endregion
 
 }

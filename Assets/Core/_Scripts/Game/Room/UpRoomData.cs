@@ -6,6 +6,8 @@ using UnityEngine;
 public class UpRoomData : RoomData
 {
 
+    public const int COST_FACTOR = 5;
+
     [SerializeField] UpgradeState m_upgradeState = UpgradeState.NONE;
     [SerializeField] int m_upgradeCost = 5;
 
@@ -32,9 +34,21 @@ public class UpRoomData : RoomData
         m_upgradeState = newState;
     }
 
-    public void Upgrade()
+    void IncreaseUpradeCost(int amount)
+    {
+        m_upgradeCost += amount;
+
+    }
+
+    void DecreaseUpradeCost(int amount)
+    {
+        m_upgradeCost -= amount;
+    }
+
+    virtual public void Upgrade()
     {
         SetUpgradeState(UpgradeState.UPGRADED);
+        IncreaseUpradeCost(COST_FACTOR);
         OnRoomUpgraded?.Invoke();
     }
 }

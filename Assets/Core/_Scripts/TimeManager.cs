@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
@@ -19,11 +20,40 @@ public class TimeManager : MonoBehaviour
     private int m_currentDay;
     private int m_currentWeek;
 
+    public event Action<int> OnDayEnded;
+    public event Action<int> OnWeekEnded;
+
     public void Initialize()
     {
         m_timePassed = 0;
         m_currentDay = 0;
         m_currentWeek = 1;
+
+#if UNITY_EDITOR
+
+        var commandSystem = GameManager.Instance.GetCommands();
+        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipweeks", (int weeks) =>
+        {
+            int skippedDays = WEEK_LENGTH_IN_DAYS * weeks;
+            MadeInHeaven(skippedDays);
+        }));
+
+        commandSystem.AddCommand(new CommandDefinition<Action>("skipweek", () =>
+        {
+            MadeInHeaven(WEEK_LENGTH_IN_DAYS);
+        }));
+
+        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipdays", (int days) =>
+        {
+            MadeInHeaven(days);
+        }));
+
+        commandSystem.AddCommand(new CommandDefinition<Action>("skipday", () =>
+        {
+            MadeInHeaven(1);
+        }));
+
+#endif
     }
 
     public void UpdateTime(float deltaTime)
@@ -31,9 +61,11 @@ public class TimeManager : MonoBehaviour
         m_timePassed += deltaTime;
         if (m_timePassed > DAY_IN_SECONDS)
         {
+            OnDayEnded?.Invoke(m_currentDay);
             m_currentDay++;
             if (m_currentDay >= WEEK_LENGTH_IN_DAYS)
             {
+                OnWeekEnded?.Invoke(m_currentWeek);
                 m_currentWeek++;
                 m_currentDay = 0;
             }
@@ -68,4 +100,37 @@ public class TimeManager : MonoBehaviour
 
     public int GetCurrentDay() => m_currentDay;
     public int GetCurrentWeek() => m_currentWeek;
+
+    /// <summary>
+    /// Simulates the passage of time over a specified number of days.
+    /// </summary>
+    /// <param name="days">The number of days to simulate.</param>
+    private void MadeInHeaven(int days)
+    {
+        // Loop through the number of days specified
+        for (int i = 0; i < days; i++)
+        {
+            // Invoke the event for the end of the day, passing the current day
+            OnDayEnded?.Invoke(m_currentDay);
+
+            // Increment the current day
+            m_currentDay++;
+
+            // Check if the current day exceeds the length of the week
+            if (m_currentDay >= WEEK_LENGTH_IN_DAYS)
+            {
+                // Invoke the event for the end of the week, passing the current week
+                OnWeekEnded?.Invoke(m_currentWeek);
+
+                // Increment the current week
+                m_currentWeek++;
+
+                // Reset the current day to 0 (start of a new week)
+                m_currentDay = 0;
+            }
+
+            // Reset the time passed for the new day
+            m_timePassed = 0;
+        }
+    }
 }
