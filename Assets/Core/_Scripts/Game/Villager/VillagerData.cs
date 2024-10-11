@@ -213,6 +213,10 @@ public class VillagerData
         m_pregnancyDuration = 0;
     }
 
+    public VillagerData GetMate()
+    {
+        return (m_mate);
+    }
     public bool IsMale()
     {
         return m_gender == Gender.MALE;
