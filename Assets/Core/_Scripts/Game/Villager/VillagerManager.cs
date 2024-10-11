@@ -8,11 +8,19 @@ using static VillagerData;
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
 public class VillagerManager : MonoBehaviour
 {
+    public enum DeathType
+    {
+        AGE,
+        STARVATION,
+        SICKNESS
+    }
+
     public event Action<List<VillagerData>> OnPopulationChanged;
 
     private VillagerGenerator m_villagerGenerator;
 
     private List<VillagerData> m_population;
+
     private VillagerData m_currentVillager;
     private List<VillagerData> m_villagerQueue;
 
@@ -36,6 +44,7 @@ public class VillagerManager : MonoBehaviour
         m_villagerGenerator.Initialize();
 
         m_population = new List<VillagerData>();
+
         OnPopulationChanged?.Invoke(m_population);
         m_villagerQueue = new List<VillagerData>();
 
@@ -86,10 +95,12 @@ public class VillagerManager : MonoBehaviour
 
     public void AgePopulation()
     {
-        foreach (VillagerData villager in m_population)
+        foreach (VillagerData villager in m_population.ToList())
         {
-            villager.GetOlder();
+            var age = villager.GetOlder();
             //Debug.Log($"{villager.GetName()} got older : {villager.GetAgeStage()}");
+            if (age > VillagerData.AGE_RANGE[AgeStage.ELDER].max)
+                Kill(villager, DeathType.AGE);
         }
         OnPopulationChanged?.Invoke(m_population);
     }
@@ -98,7 +109,8 @@ public class VillagerManager : MonoBehaviour
     {
         ResourceHandler handler = GameManager.Instance.GetResourceHandler();
         bool famine = false;
-        foreach (VillagerData villager in m_population)
+
+        foreach (VillagerData villager in m_population.ToList())
         {
             if (handler.HasEnoughResources(2, 0, 0) && famine == false)
             {
@@ -123,7 +135,7 @@ public class VillagerManager : MonoBehaviour
                 {
                     if (isStarved)
                     {
-                        // TODO : Kill the fucking villager
+                        Kill(villager, DeathType.STARVATION);
                         continue;
                     }
                     villager.ApplyHealthStatus(VillagerData.HealthStatus.HUNGRY);
@@ -205,6 +217,35 @@ public class VillagerManager : MonoBehaviour
     #endregion
 
     #region Villager Handling Utilities
+
+    public void Kill(VillagerData data, DeathType death)
+    {
+        if (m_population.Contains(data) is false)
+            return;
+
+        m_population.Remove(data);
+
+        var reputationHandler = GameManager.Instance.GetReputationHandler();
+        switch (death)
+        {
+            case DeathType.AGE:
+                m_commandLog.AddLog($"villager: {data.GetName()} died of old age.", GameManager.RED);
+                break;
+            case DeathType.STARVATION:
+                m_commandLog.AddLog($"villager: {data.GetName()} died of starvation.", GameManager.RED);
+                reputationHandler.DecreaseReputation(5);
+                break;
+            case DeathType.SICKNESS:
+                m_commandLog.AddLog($"villager: {data.GetName()} died of sickness.", GameManager.RED);
+                reputationHandler.DecreaseReputation(5);
+                break;
+            default:
+                m_commandLog.AddLog($"villager: {data.GetName()} died in mysterious circumstances.", GameManager.RED);
+                break;
+        }
+
+        OnPopulationChanged?.Invoke(m_population);
+    }
 
     public void IncreaseFatigue(VillagerData data, int value)
     {
@@ -387,7 +428,7 @@ public class VillagerManager : MonoBehaviour
 
     public VillagerData GetVillagerByID(string idInput)
     {
-        foreach (VillagerData villager in m_population)
+        foreach (VillagerData villager in m_population.ToList())
         {
             if (idInput.ToUpper() == villager.GetID())
             {
@@ -399,7 +440,7 @@ public class VillagerManager : MonoBehaviour
 
     public void ShowIDs()
     {
-        foreach (VillagerData villager in m_population)
+        foreach (VillagerData villager in m_population.ToList())
         {
             Debug.Log(villager.GetID());
         }
