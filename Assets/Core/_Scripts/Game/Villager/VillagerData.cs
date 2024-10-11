@@ -181,9 +181,14 @@ public class VillagerData
         m_workingStatus = status;
     }
 
+    public bool IsOnExpedition()
+    {
+        return m_workingStatus.Equals(WorkingStatus.EXPEDITION);
+    }
+
     public bool IsIdle()
     {
-        return m_workingStatus == WorkingStatus.IDLE;
+        return m_workingStatus.Equals(WorkingStatus.IDLE);
     }
 
     #region Handling Fatigue
@@ -269,7 +274,7 @@ public class VillagerData
 
         return false;
     }
-    
+
     public int GetOlder()
     {
         m_age++;
