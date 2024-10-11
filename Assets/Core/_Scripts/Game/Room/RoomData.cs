@@ -21,7 +21,7 @@ public class RoomData : MonoBehaviour
     public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
     public event Action OnStateChanged;
-    public event Action OnRoomDestroyed;
+    public event Action<RoomData> OnRoomDestroyed;
 
 
     [SerializeField] protected RoomType m_roomType;
@@ -128,10 +128,9 @@ public class RoomData : MonoBehaviour
         m_villagerInRoom.Clear();
     }
 
-    protected void DestroyRoom(){
+    virtual protected void DestroyRoom(){
         SetRoomState(RoomState.DESTROYED);
-        OnRoomDestroyed?.Invoke();
-        Debug.Log("BOOM");
+        OnRoomDestroyed?.Invoke(this);
     }
   
 }

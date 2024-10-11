@@ -29,7 +29,7 @@ public class UpRoomData : RoomData
         get { return m_upgradeState; }
     }
 
-    void SetUpgradeState(UpgradeState newState)
+    public void SetUpgradeState(UpgradeState newState)
     {
         m_upgradeState = newState;
     }

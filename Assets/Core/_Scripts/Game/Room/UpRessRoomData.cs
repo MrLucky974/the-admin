@@ -32,4 +32,10 @@ public class RessUpRoomData : UpRoomData
     {
         OnResourceGenerated?.Invoke(ressType, ressNum);
     }
+
+    protected override void DestroyRoom()
+    {
+        base.DestroyRoom();
+        SetUpgradeState(UpgradeState.NONE);
+    }
 }

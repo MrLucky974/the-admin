@@ -66,7 +66,7 @@ public class RoomManager : MonoBehaviour
         InitIds(m_roomArray.Length - 1);
         foreach (RoomData room in m_roomArray)
         {
-            room.OnRoomDestroyed +=RoomWasDestroy;
+            room.OnRoomDestroyed +=RoomWasDestroyed;
         }
     }
 
@@ -93,8 +93,14 @@ public class RoomManager : MonoBehaviour
 
     #region Room Handling Utilities
 
-    public void RoomWasDestroy()
+    public void RoomWasDestroyed(RoomData roomDestroyed)
     {
+        switch (roomDestroyed.roomType)
+        {
+            case RoomType.GENERATORS:
+                m_repairTimeBonus = 0; 
+            break;
+        }
         m_reputationHandler.DecreaseReputation(15); //TODO add a reputation value
        
     }
@@ -145,6 +151,10 @@ public class RoomManager : MonoBehaviour
 
     public void TryToRepairRoom(VillagerData villager,string roomId,int scrapsCost)
     {
+        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DESTROYED)
+        {
+            scrapsCost = scrapsCost * 2;
+        }
         if (villager.GetWorkingStatus() != VillagerData.WorkingStatus.IDLE)
         {
             m_gm.GetCommandLog().AddLogError($"villager {villager.GetID()} is occupied");
@@ -170,13 +180,20 @@ public class RoomManager : MonoBehaviour
         GetRoomWithId(roomId).AddVillagerInRoom(villager);
     }
 
+
     public void UpgradeRoom(string roomId)
     {
         UpRoomData[] ressRooms = FindObjectsOfType<UpRoomData>();
-        foreach (UpRoomData room in ressRooms) {
+        foreach (UpRoomData room in ressRooms) { 
+            //TODO create a function try to upgrade 
             if (room.roomId == roomId){
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost)){
-                    room.Upgrade();
+                    if (room.roomState == RoomData.RoomState.DESTROYED)
+                    {
+                        m_gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed this room is destroyed", GameManager.RED);
+                        return;
+                    }
+                    room.Upgrade(); //Upgrade 
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     m_gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
                     return;
@@ -190,10 +207,11 @@ public class RoomManager : MonoBehaviour
                     m_gm.GetCommandLog().AddLogError($"specify room id example: upgrade R1");
                     return;
                 }
-                m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
-                return;
+                
             }
         }
+        m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
+        return;
     }
 
     public void IncreaseGlobalRepairSpeed(float value)
@@ -201,6 +219,12 @@ public class RoomManager : MonoBehaviour
         m_repairTimeBonus += value;
     }
 
+    public RoomData PickRandomRoom()
+    {
+        int rng = GameManager.RNG.Next(0,m_roomArray.Length);
+        RoomData room = m_roomArray[rng];
+        return room;
+    }
 
     public RoomData GetRoomWithId(string roomId) {
         foreach(RoomData room in m_roomArray){
@@ -239,10 +263,18 @@ public class RoomManager : MonoBehaviour
 
     IEnumerator DegradeRoom()
     {
-        foreach(RoomData room in m_roomArray){
+        RoomData room = PickRandomRoom();
+        for (int i = 0;i < m_roomArray.Length; i++)
+        {
+            room = PickRandomRoom();
+            yield return new WaitForSeconds(1);
+            room.IncrementDurability(-DEGRADATION);
+        }
+     
+        /*foreach(RoomData room in m_roomArray){  // each room lose durability
             yield return new WaitForSeconds(1);
             room.IncrementDurability(-DEGRADATION);            
-        }
+        }*/
         yield return new WaitForSeconds(TimeManager.DAY_IN_SECONDS / m_roomArray.Length);
         m_degradeCoroutine = StartCoroutine(DegradeRoom());
     }
