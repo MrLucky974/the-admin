@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public static class JRandom
 {
     public static int RollDice(int n, int l, int s, System.Random random)
@@ -40,6 +42,22 @@ public static class JRandom
     public static T PickRandom<T>(this T[] array)
     {
         return PickRandom<T>(array, 0);
+    }
+
+    public static T PickRandom<T>(this List<T> list, System.Random random)
+    {
+        int index = random.Next(list.Count);
+        return list[index];
+    }
+
+    public static T PickRandom<T>(this List<T> list, int seed)
+    {
+        return PickRandom<T>(list, new System.Random(seed));
+    }
+
+    public static T PickRandom<T>(this List<T> list)
+    {
+        return PickRandom<T>(list, 0);
     }
 
     public static double NextDouble(this System.Random random, double max)
