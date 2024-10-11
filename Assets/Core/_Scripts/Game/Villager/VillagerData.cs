@@ -237,6 +237,12 @@ public class VillagerData
 
         return false;
     }
+    public int GetOlder()
+    {
+        m_age++;
+        UpdateAgeStatus();
+        return m_age;
+    }
 
     public HealthStatus GetHealthStatus()
     {

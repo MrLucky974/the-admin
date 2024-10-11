@@ -25,6 +25,7 @@ public class VillagerManager : MonoBehaviour
     private void OnDestroy()
     {
         m_timeManager.OnWeekEnded -= FeedPopulation;
+        m_timeManager.OnDayEnded -= GetOlder;
     }
 
     public void Initialize()
@@ -38,6 +39,7 @@ public class VillagerManager : MonoBehaviour
 
         m_timeManager = GameManager.Instance.GetTimeManager();
         m_timeManager.OnWeekEnded += FeedPopulation;
+        m_timeManager.OnDayEnded += GetOlder;
 
 #if UNITY_EDITOR
         var commandSystem = GameManager.Instance.GetCommands();
@@ -65,7 +67,15 @@ public class VillagerManager : MonoBehaviour
         }));
 #endif
     }
-
+    public void GetOlder(int week)
+    {
+        foreach (VillagerData villager in m_population)
+        {
+            villager.GetOlder();
+            Debug.Log($"{villager.GetName()} got older : {villager.GetAgeStage()}");
+        }
+        OnPopulationChanged?.Invoke(m_population);
+    }
     public void FeedPopulation(int week)
     {
         ResourceHandler handler = GameManager.Instance.GetResourceHandler();
