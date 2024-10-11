@@ -82,6 +82,10 @@ public class VillagerData
     int m_fatigue = 0;
     int m_hunger = 0;
 
+
+
+    RoomData m_currentRoom;
+
     Gender m_gender = DEFAULT_GENDER;
     HealthStatus m_healthStatus = HealthStatus.HEALTHY;
     Personality m_personality = DEFAULT_PERSONALITY;
