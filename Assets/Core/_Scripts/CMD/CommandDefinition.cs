@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -73,6 +74,15 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
                 return true;
             }
         }
+        else if (type == typeof(float))
+        {
+            regex = new Regex("^-?\\d*(\\.\\d+)?$");
+            if (regex.IsMatch(input))
+            {
+                output = float.Parse(input, CultureInfo.InvariantCulture);
+                return true;
+            }
+        }
         else if (type == typeof(bool))
         {
             regex = new Regex("^(?i)(true|false)$");
@@ -113,6 +123,10 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
             else if (param.ParameterType == typeof(int))
             {
                 type = "int";
+            }
+            else if (param.ParameterType == typeof(float))
+            {
+                type = "float";
             }
             else if (param.ParameterType == typeof(bool))
             {
