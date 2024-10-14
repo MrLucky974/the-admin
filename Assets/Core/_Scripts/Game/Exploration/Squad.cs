@@ -53,7 +53,7 @@ public class Squad
     private readonly Sector m_sector;
     private readonly VillagerData[] m_members;
 
-    private int m_force = DEFAULT_FORCE_POINTS;
+    private int m_strength = DEFAULT_FORCE_POINTS;
 
     private State m_state = State.DEPARTURE;
     private int m_progress;
@@ -83,19 +83,19 @@ public class Squad
         m_members = members;
 
         // Caculate force value used in combat to determine the outcome.
-        m_force = DEFAULT_FORCE_POINTS;
+        m_strength = DEFAULT_FORCE_POINTS;
         foreach (var member in members)
         {
             // VillagerData.MAX_FATIGUE = 10
             int fatigue = member.GetFatigue();
-            m_force -= fatigue;
+            m_strength -= fatigue;
         }
-        m_force = Mathf.Max(m_force, 0); // Ensure value cannot get under zero
+        m_strength = Mathf.Max(m_strength, 0); // Ensure value cannot get under zero
     }
 
     public void InitiateCombat(int enemyForce)
     {
-        // TODO : Output the outcome
+        // TODO : Calculate & output the outcome
 
         // Roll for different outcomes
         // - CRITICAL SUCCESS : The enemy team is vanquished completely
@@ -106,6 +106,8 @@ public class Squad
         // - CRITICAL FAILURE : Some squad members are killed and the rest will retreat
         // back home
     }
+
+    public int GetStrength() { return m_strength; }
 
     public void Process(NarratorSystem narrator, CommandLogManager commandLog)
     {
