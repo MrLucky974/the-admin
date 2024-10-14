@@ -68,10 +68,6 @@ public class GameManager : Singleton<GameManager>
             }
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String, String>>("repair", (String roomId, String villagerId) =>
-        {
-            m_villagerManager.SendVillagerRepairRoom(villagerId, roomId);
-        }));
 
 #if UNITY_EDITOR
 
@@ -104,11 +100,6 @@ public class GameManager : Singleton<GameManager>
             var slider = JUtils.GenerateTextSlider(amount, min, max, 8);
             m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
-        }));
-
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
-        {
-            m_roomManager.UpgradeRoom(roomId);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<bool>>("cursor", (bool enabled) =>

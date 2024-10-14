@@ -10,6 +10,8 @@ public class UpRoomData : RoomData
 
     [SerializeField] UpgradeState m_upgradeState = UpgradeState.NONE;
     [SerializeField] int m_upgradeCost = 5;
+    String m_message;
+
 
     public enum UpgradeState
     {
@@ -50,5 +52,10 @@ public class UpRoomData : RoomData
         SetUpgradeState(UpgradeState.UPGRADED);
         IncreaseUpradeCost(COST_FACTOR);
         OnRoomUpgraded?.Invoke();
+    }
+
+    override protected void DestroyRoom(){
+        base.DestroyRoom();
+        m_upgradeCost = COST_FACTOR;
     }
 }
