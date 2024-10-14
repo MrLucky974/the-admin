@@ -34,6 +34,7 @@ public class TimeManager : MonoBehaviour
 #if UNITY_EDITOR
 
         var commandSystem = GameManager.Instance.GetCommands();
+        var commandLog = GameManager.Instance.GetCommandLog();
         commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipweeks", (int weeks) =>
         {
             int skippedDays = WEEK_LENGTH_IN_DAYS * weeks;
@@ -57,8 +58,12 @@ public class TimeManager : MonoBehaviour
 
         commandSystem.AddCommand(new CommandDefinition<Action<float>>("timescale", (float timeScale) =>
         {
-            Debug.Log(timeScale);
-            //SetTimeScale(timeScale);
+            if (timeScale < 0f)
+            {
+                commandLog.AddLogError("error: timescale value cannot be less than zero.");
+                return;
+            }
+            SetTimeScale(timeScale);
         }));
 
 #endif
@@ -144,7 +149,7 @@ public class TimeManager : MonoBehaviour
 
     public void SetTimeScale(float timeScale)
     {
-        m_timePassed = Mathf.Max(timeScale, 0f);
+        m_timeScale = Mathf.Max(timeScale, 0f);
     }
 
     public float GetTimeScale() => m_timeScale;
