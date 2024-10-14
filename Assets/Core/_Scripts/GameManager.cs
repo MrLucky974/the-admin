@@ -31,6 +31,7 @@ public class GameManager : Singleton<GameManager>
     [Space]
 
     [SerializeField] private ModalBox m_modalBox;
+    [SerializeField] private RoomManager m_roomManager;
     private PlayerInputActions m_inputActions;
 
     public static System.Random RNG = new System.Random();
@@ -67,6 +68,10 @@ public class GameManager : Singleton<GameManager>
             }
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }));
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String, String>>("repair", (String roomId, String villagerId) =>
+        {
+            m_villagerManager.SendVillagerRepairRoom(villagerId, roomId);
+        }));
 
 #if UNITY_EDITOR
 
@@ -99,6 +104,11 @@ public class GameManager : Singleton<GameManager>
             var slider = JUtils.GenerateTextSlider(amount, min, max, 8);
             m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+        }));
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
+        {
+            m_roomManager.UpgradeRoom(roomId);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<bool>>("cursor", (bool enabled) =>
@@ -180,6 +190,7 @@ public class GameManager : Singleton<GameManager>
         m_reputationHandler.Initialize();
         m_explorationSystem.Initialize();
         m_villagerManager.Initialize();
+        m_roomManager.Initialize();
         m_narratorSystem.Initialize();
     }
 
@@ -201,6 +212,7 @@ public class GameManager : Singleton<GameManager>
     public ResourceHandler GetResourceHandler() => m_resourceHandler;
     public ReputationHandler GetReputationHandler() => m_reputationHandler;
     public ExplorationSystem GetExplorer() => m_explorationSystem;
+    public RoomManager GetRoomManager() => m_roomManager;
     public VillagerManager GetVillagerManager() => m_villagerManager;
     public NarratorSystem GetNarrator() => m_narratorSystem;
     public ModalBox GetModal() => m_modalBox;

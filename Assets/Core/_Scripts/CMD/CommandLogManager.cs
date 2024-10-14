@@ -32,6 +32,12 @@ public class CommandLogManager : MonoBehaviour
         AddLog(message, GameManager.GREEN, format);
     }
 
+    public void AddLogError(string message, bool format = true)
+    {
+        AddLog(message, GameManager.RED, format);
+        SoundManager.PlaySound(SoundType.ERROR);
+    }
+
     public void AddLog(string message, Color color, bool format = true)
     {
         string text = "";

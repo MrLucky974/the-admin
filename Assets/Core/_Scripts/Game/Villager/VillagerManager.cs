@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using UnityEngine;
-using static VillagerData;
-
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
 public class VillagerManager : MonoBehaviour
 {
@@ -361,6 +354,30 @@ public class VillagerManager : MonoBehaviour
         OnPopulationChanged?.Invoke(m_population);
         Debug.Log(m_population[randomNumber]);
         Debug.Log("is sick, yeaaah");
+    }
+
+    public void SendVillagerRepairRoom(string villagerId, string roomId)
+    {
+        CommandLogManager clm = FindObjectOfType<CommandLogManager>();
+        RoomManager roomManager = FindObjectOfType<RoomManager>();
+        RoomData room = roomManager.GetRoomWithId(roomId);
+        VillagerData villager = GetVillagerByID(villagerId);
+
+        if (villager == null)
+        {
+            clm.AddLog($"Villager not found", GameManager.RED);
+            return;
+        } // Check villager != null
+
+        if (villager.GetID() == villagerId)
+        {
+            if (room == null)
+            {
+                clm.AddLog($"Room not found", GameManager.RED);
+                return;
+            }
+            roomManager.TryToRepairRoom(villager, roomId, 5); // Check if can repair the room
+        }
     }
 
     #endregion
