@@ -14,8 +14,8 @@ public class VillagerData
     public static readonly Dictionary<AgeStage, (int min, int max)> AGE_RANGE = new Dictionary<AgeStage, (int min, int max)>
     {
         { AgeStage.KID, (0, 7) },
-        { AgeStage.ADULT, (8, 14) },
-        { AgeStage.ELDER, (15, 23) },
+        { AgeStage.ADULT, (8, 20) },
+        { AgeStage.ELDER, (21, 29) },
     };
 
     public enum Gender
@@ -81,6 +81,8 @@ public class VillagerData
     int m_age = DEFAULT_AGE;
     int m_fatigue = 0;
     int m_hunger = 0;
+    private VillagerData m_mate;
+    private int m_pregnancyDuration = 0;
 
 
 
@@ -183,9 +185,14 @@ public class VillagerData
         m_workingStatus = status;
     }
 
+    public bool IsOnExpedition()
+    {
+        return m_workingStatus.Equals(WorkingStatus.EXPEDITION);
+    }
+
     public bool IsIdle()
     {
-        return m_workingStatus == WorkingStatus.IDLE;
+        return m_workingStatus.Equals(WorkingStatus.IDLE);
     }
 
     #region Handling Fatigue
@@ -207,10 +214,36 @@ public class VillagerData
     }
     #endregion
 
-    public void Impregnate()
+    public void Impregnate(VillagerData mate)
     {
+        m_mate = mate;
         RemoveHealthStatus(HealthStatus.HEALTHY);
         ApplyHealthStatus(HealthStatus.PREGNANT);
+        m_pregnancyDuration = 0;
+    }
+
+    public VillagerData GetMate()
+    {
+        return (m_mate);
+    }
+    public bool IsMale()
+    {
+        return m_gender == Gender.MALE;
+    }
+
+    public int GetPregnancyDuration()
+    {
+        return m_pregnancyDuration;
+    }
+
+    public bool IsPregnant()
+    {
+        return HasHealthStatus(HealthStatus.PREGNANT);
+    }
+
+    public void UpdatePregnancy()
+    {
+        m_pregnancyDuration++;
     }
 
     public void ApplyHealthStatus(HealthStatus status)
@@ -244,6 +277,13 @@ public class VillagerData
         }
 
         return false;
+    }
+
+    public int GetOlder()
+    {
+        m_age++;
+        UpdateAgeStatus();
+        return m_age;
     }
 
     public HealthStatus GetHealthStatus()
