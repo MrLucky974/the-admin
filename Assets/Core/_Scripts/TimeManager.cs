@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    public const int DAY_IN_SECONDS = 10;
+    public const int DAY_IN_SECONDS = 10 * 60;
     public const int WEEK_LENGTH_IN_DAYS = 7;
     public static readonly string[] WEEK_DAYS =
     {
@@ -15,6 +15,8 @@ public class TimeManager : MonoBehaviour
         "Sindai",
         "Sevdai"
     };
+
+    [SerializeField, Min(0f)] private float m_timeScale = 1f;
 
     private float m_timePassed;
     private int m_currentDay;
@@ -32,6 +34,7 @@ public class TimeManager : MonoBehaviour
 #if UNITY_EDITOR
 
         var commandSystem = GameManager.Instance.GetCommands();
+        var commandLog = GameManager.Instance.GetCommandLog();
         commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipweeks", (int weeks) =>
         {
             int skippedDays = WEEK_LENGTH_IN_DAYS * weeks;
@@ -53,12 +56,22 @@ public class TimeManager : MonoBehaviour
             MadeInHeaven(1);
         }));
 
+        commandSystem.AddCommand(new CommandDefinition<Action<float>>("timescale", (float timeScale) =>
+        {
+            if (timeScale < 0f)
+            {
+                commandLog.AddLogError("error: timescale value cannot be less than zero.");
+                return;
+            }
+            SetTimeScale(timeScale);
+        }));
+
 #endif
     }
 
     public void UpdateTime(float deltaTime)
     {
-        m_timePassed += deltaTime;
+        m_timePassed += deltaTime * m_timeScale;
         if (m_timePassed > DAY_IN_SECONDS)
         {
             OnDayEnded?.Invoke(m_currentDay);
@@ -133,4 +146,11 @@ public class TimeManager : MonoBehaviour
             m_timePassed = 0;
         }
     }
+
+    public void SetTimeScale(float timeScale)
+    {
+        m_timeScale = Mathf.Max(timeScale, 0f);
+    }
+
+    public float GetTimeScale() => m_timeScale;
 }

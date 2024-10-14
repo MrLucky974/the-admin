@@ -1,26 +1,27 @@
 using System;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public interface ICommandDefinition
 {
     string Identifier { get; }
+    string Description { get; }
     public int GetCommandParameterCount();
     public bool CheckIdentifier(string identifier);
     public void Execute(params object[] parameters);
     public bool TryConvertParameter(int index, string input, out object result);
 }
 
-// TODO : Check for optional variables by using parameters default
 public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate : Delegate
 {
-    string m_identifier;
-    IDelegate m_commandAction;
-    ParameterInfo[] m_parameterInfo;
+    private string m_identifier;
+    private string m_description;
+    private IDelegate m_commandAction;
+    private ParameterInfo[] m_parameterInfo;
 
     public string Identifier => m_identifier;
+    public string Description => m_description;
 
     public CommandDefinition(string identifier, IDelegate command)
     {
@@ -29,10 +30,13 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         m_parameterInfo = command.GetMethodInfo().GetParameters();
     }
 
+    public CommandDefinition(string identifier, string description, IDelegate command) : this(identifier, command)
+    {
+        m_description = description;
+    }
 
     public bool CheckIdentifier(string identifier)
     {
-        // TODO : Hash the strings for better comparaison
         return m_identifier == identifier;
     }
 
@@ -52,42 +56,24 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         }
 
         var paramInfo = m_parameterInfo[index];
-        return Compare(paramInfo.ParameterType, input, out result);
-    }
-
-    private static bool Compare(Type type, string input, out object output)
-    {
-        Regex regex;
-        output = null;
-
-        if (type == null)
+        if (string.IsNullOrEmpty(input) && paramInfo.HasDefaultValue)
         {
-            return false;
-        }
-        else if (type == typeof(int))
-        {
-            regex = new Regex("^-?\\d+$");
-            if (regex.IsMatch(input))
-            {
-                output = int.Parse(input);
-                return true;
-            }
-        }
-        else if (type == typeof(bool))
-        {
-            regex = new Regex("^(?i)(true|false)$");
-            if (regex.IsMatch(input))
-            {
-                output = input.Equals("true", StringComparison.OrdinalIgnoreCase);
-                return true;
-            }
-        }
-        else if (type == typeof(string))
-        {
-            output = input;
+            result = paramInfo.DefaultValue;
             return true;
         }
 
+        if (CommandSystem.TryGetTypeParser(paramInfo.ParameterType, out var parser))
+        {
+            try
+            {
+                result = parser(input);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
         return false;
     }
 
@@ -100,34 +86,75 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"{Identifier}");
+
+        if (!string.IsNullOrEmpty(Description))
+        {
+            sb.Append($" - {Description}");
+        }
+
         sb.Append("(");
 
-        int index = 0;
-        foreach (var param in m_parameterInfo)
+        for (int i = 0; i < m_parameterInfo.Length; i++)
         {
-            string type = "error";
-            if (param.ParameterType == typeof(string))
+            var param = m_parameterInfo[i];
+            string typeString = CommandSystem.GetTypeString(param.ParameterType);
+            sb.Append($"{typeString}");
+
+            if (param.HasDefaultValue)
             {
-                type = "string";
-            }
-            else if (param.ParameterType == typeof(int))
-            {
-                type = "int";
-            }
-            else if (param.ParameterType == typeof(bool))
-            {
-                type = "bool";
+                sb.Append($" = {param.DefaultValue}");
             }
 
-            sb.Append($"{type}");
-            if (index < m_parameterInfo.Length - 1)
+            if (i < m_parameterInfo.Length - 1)
             {
                 sb.Append(", ");
             }
-            index++;
         }
         sb.Append(")");
 
         return sb.ToString();
+    }
+
+    public class Builder
+    {
+        private string m_builderIdentifier;
+        private string m_builderDescription = string.Empty; // Default to empty if not provided
+        private IDelegate m_builderCommandAction;
+
+        public Builder SetIdentifier(string identifier)
+        {
+            m_builderIdentifier = identifier;
+            return this;
+        }
+
+        public Builder SetDescription(string description)
+        {
+            m_builderDescription = description;
+            return this;
+        }
+
+        public Builder SetCommandAction(IDelegate commandAction)
+        {
+            m_builderCommandAction = commandAction;
+            return this;
+        }
+
+        public CommandDefinition<IDelegate> Build()
+        {
+            if (string.IsNullOrEmpty(m_builderIdentifier))
+            {
+                throw new InvalidOperationException("Command identifier must be set.");
+            }
+
+            if (m_builderCommandAction == null)
+            {
+                throw new InvalidOperationException("Command action must be set.");
+            }
+
+            // Use the overloaded constructor based on the description
+            return string.IsNullOrEmpty(m_builderDescription)
+                ? new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderCommandAction)
+                : new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderDescription, m_builderCommandAction);
+        }
     }
 }
