@@ -230,11 +230,7 @@ public class ExplorationSystem : MonoBehaviour
         while (true)
         {
             // Remove all inactive squads from the update list
-            var inactiveSquads = m_activeSquads.FindAll((squad) =>
-            {
-                return squad.GetState() == Squad.State.IDLE;
-            });
-            m_activeSquads.RemoveAll((squad) => inactiveSquads.Contains(squad));
+            m_activeSquads.RemoveAll((squad) => squad.GetState() == Squad.State.IDLE);
 
             if (elapsedTime < TICK_UPDATE)
             {
