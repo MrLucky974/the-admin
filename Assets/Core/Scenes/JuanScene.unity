@@ -8003,6 +8003,7 @@ GameObject:
   - component: {fileID: 1015892150}
   - component: {fileID: 1015892149}
   - component: {fileID: 1015892160}
+  - component: {fileID: 1015892161}
   - component: {fileID: 1015892158}
   - component: {fileID: 1015892157}
   m_Layer: 0
@@ -8084,6 +8085,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66244bbf6377a87488575005b53e56e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_timeScale: 1
 --- !u!114 &1015892155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8105,6 +8107,7 @@ MonoBehaviour:
   m_villagerManager: {fileID: 1015892149}
   m_narratorSystem: {fileID: 1015892160}
   m_modalBox: {fileID: 540376633}
+  m_roomManager: {fileID: 1015892161}
 --- !u!4 &1015892156
 Transform:
   m_ObjectHideFlags: 0
@@ -8271,6 +8274,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f496f4467ca0acd479c9ebb28b4d6ccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1015892161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015892148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4cd178e05c81542a15843c7ee3e1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1046960624
