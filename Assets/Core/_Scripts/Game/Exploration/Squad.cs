@@ -9,6 +9,7 @@ using UnityEngine;
 public class Squad
 {
     public const int SQUAD_SIZE = 3;
+    public const int DEFAULT_FORCE_POINTS = 30;
 
     public enum State
     {
@@ -51,6 +52,9 @@ public class Squad
 
     private readonly Sector m_sector;
     private readonly VillagerData[] m_members;
+
+    private int m_force = DEFAULT_FORCE_POINTS;
+
     private State m_state = State.DEPARTURE;
     private int m_progress;
     private (ResourceType resourceType, int amount) m_resources;
@@ -77,6 +81,30 @@ public class Squad
 
         m_sector = sector;
         m_members = members;
+
+        // Caculate force value used in combat to determine the outcome.
+        m_force = DEFAULT_FORCE_POINTS;
+        foreach (var member in members)
+        {
+            // VillagerData.MAX_FATIGUE = 10
+            int fatigue = member.GetFatigue();
+            m_force -= fatigue;
+        }
+        m_force = Mathf.Max(m_force, 0); // Ensure value cannot get under zero
+    }
+
+    public void InitiateCombat(int enemyForce)
+    {
+        // TODO : Output the outcome
+
+        // Roll for different outcomes
+        // - CRITICAL SUCCESS : The enemy team is vanquished completely
+        // - SUCCESS : The enemy team has been beaten and will move elsewhere
+        // - TIE : Both teams get randomly lightly damaged,
+        // the enemy team will move elsewhere and the squad will retreat back to home
+        // - FAILURE : Squad members are randomly hurt and will retreat back to home
+        // - CRITICAL FAILURE : Some squad members are killed and the rest will retreat
+        // back home
     }
 
     public void Process(NarratorSystem narrator, CommandLogManager commandLog)
