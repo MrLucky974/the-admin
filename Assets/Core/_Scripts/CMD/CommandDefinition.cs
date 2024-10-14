@@ -6,6 +6,7 @@ using UnityEngine;
 public interface ICommandDefinition
 {
     string Identifier { get; }
+    string Description { get; }
     public int GetCommandParameterCount();
     public bool CheckIdentifier(string identifier);
     public void Execute(params object[] parameters);
@@ -16,10 +17,13 @@ public interface ICommandDefinition
 public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate : Delegate
 {
     string m_identifier;
+    string m_description;
     IDelegate m_commandAction;
     ParameterInfo[] m_parameterInfo;
 
     public string Identifier => m_identifier;
+
+    public string Description => m_description;
 
     public CommandDefinition(string identifier, IDelegate command)
     {
@@ -28,6 +32,10 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         m_parameterInfo = command.GetMethodInfo().GetParameters();
     }
 
+    public CommandDefinition(string identifier, string description, IDelegate command) : this(identifier, command)
+    {
+        m_description = description;
+    }
 
     public bool CheckIdentifier(string identifier)
     {
@@ -91,5 +99,45 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         sb.Append(")");
 
         return sb.ToString();
+    }
+
+    public class Builder
+    {
+        private string m_builderIdentifier;
+        private string m_builderDescription = string.Empty; // Default to empty if not provided
+        private IDelegate m_builderCommandAction;
+
+        public Builder SetIdentifier(string identifier)
+        {
+            m_builderIdentifier = identifier;
+            return this;
+        }
+
+        public Builder SetDescription(string description)
+        {
+            m_builderDescription = description;
+            return this;
+        }
+
+        public Builder SetCommandAction(IDelegate commandAction)
+        {
+            m_builderCommandAction = commandAction;
+            return this;
+        }
+
+        public CommandDefinition<IDelegate> Build()
+        {
+            if (string.IsNullOrEmpty(m_builderIdentifier))
+            {
+                throw new InvalidOperationException("Command identifier must be set.");
+            }
+
+            if (m_builderCommandAction == null)
+            {
+                throw new InvalidOperationException("Command action must be set.");
+            }
+
+            return new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderDescription, m_builderCommandAction);
+        }
     }
 }

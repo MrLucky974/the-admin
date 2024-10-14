@@ -55,11 +55,11 @@ public class CommandSystem : MonoBehaviour
         }
     };
 
-    public IEnumerable<(string identifier, string description)> GetCommandHelp()
+    public IEnumerable<(string identifier, string description)> GetCommandsList()
     {
         foreach (var command in m_commands)
         {
-            yield return (command.ToString(), "Lorem ipsum dolor sit amet!");
+            yield return (command.ToString(), command.Description);
         }
     }
 

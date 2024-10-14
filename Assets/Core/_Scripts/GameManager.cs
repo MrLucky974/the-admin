@@ -61,9 +61,9 @@ public class GameManager : Singleton<GameManager>
         m_commandSystem.AddCommand(new CommandDefinition<Action>("help", () =>
         {
             m_commandLogManager.AddLog("Commands: ", GameManager.ORANGE);
-            foreach (var element in m_commandSystem.GetCommandHelp())
+            foreach (var element in m_commandSystem.GetCommandsList())
             {
-                var text = $"- {element.identifier}: {element.description}";
+                var text = $"- {element.identifier}{(string.IsNullOrEmpty(element.description) ? "" : $": {element.description}")}";
                 m_commandLogManager.AddLog(text, GameManager.ORANGE, format: false);
             }
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
