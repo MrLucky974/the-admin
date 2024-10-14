@@ -29,6 +29,7 @@ public class ExplorationSystem : MonoBehaviour
         m_narrator.Subscribe<SquadArrivalEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, OnSquadArrival);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
+        m_timeManager.OnDayEnded += UpdateMap;
 
         m_scannedSectors = new List<Sector>();
         m_activeSquads = new List<Squad>();
@@ -189,10 +190,44 @@ public class ExplorationSystem : MonoBehaviour
         // Generate a starting region on game start
         m_region = Region.Generate();
     }
-
     private void OnDestroy()
     {
         StopAllCoroutines();
+    }
+
+    private void UpdateMap(int previousDay)
+    {
+        var rng = GameManager.RNG;
+
+        // Move enemies on the map
+        MoveEnemyUnits(rng);
+
+        // TODO : Send an event to update the expedition UI
+        m_region.GetSectors().Print();
+    }
+
+    private void MoveEnemyUnits(System.Random rng)
+    {
+        var enemies = m_region.GetEnemies();
+        foreach (var enemy in enemies)
+        {
+            var location = enemy.GetLocation();
+
+            var adjacentSectors = m_region.GetAdjacentSectors(location);
+            if (adjacentSectors.Count < 1)
+            {
+                continue;
+            }
+
+            var originSector = m_region.GetSector(location);
+            var targetSector = adjacentSectors.PickRandom(rng);
+
+            originSector.RemoveEnemy();
+            enemy.SetLocation(targetSector.GetIdentifier());
+            targetSector.SetEnemy(enemy);
+
+            Debug.Log($"enemy moved from {originSector.GetIdentifier()} to {targetSector.GetIdentifier()}");
+        }
     }
 
     private void OnSquadArrival(SquadArrivalEvent @event)

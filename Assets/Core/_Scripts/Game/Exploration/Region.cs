@@ -149,4 +149,57 @@ public class Region
 
         return true;
     }
+
+    public List<Sector> GetAdjacentSectors(string identifier)
+    {
+        List<Sector> adjacentSectors = new List<Sector>();
+
+        // Get the current sector's row and column indices
+        Sector currentSector = GetSector(identifier);
+        if (currentSector == null)
+        {
+            Debug.LogError("Invalid sector identifier.");
+            return adjacentSectors;
+        }
+
+        char colChar = identifier[0];
+        int row = int.Parse(identifier.Substring(1));
+
+        // Convert column letter to 0-based index
+        int col = colChar - 'A';
+
+        // Get adjacent sectors if they exist
+        // Top (row - 1)
+        if (row > 1)
+        {
+            string topIdentifier = $"{colChar}{row - 1}";
+            adjacentSectors.Add(GetSector(topIdentifier));
+        }
+
+        // Bottom (row + 1)
+        if (row < m_size)
+        {
+            string bottomIdentifier = $"{colChar}{row + 1}";
+            adjacentSectors.Add(GetSector(bottomIdentifier));
+        }
+
+        // Left (col - 1)
+        if (col > 0)
+        {
+            char leftColChar = (char)(colChar - 1);
+            string leftIdentifier = $"{leftColChar}{row}";
+            adjacentSectors.Add(GetSector(leftIdentifier));
+        }
+
+        // Right (col + 1)
+        if (col < m_size - 1)
+        {
+            char rightColChar = (char)(colChar + 1);
+            string rightIdentifier = $"{rightColChar}{row}";
+            adjacentSectors.Add(GetSector(rightIdentifier));
+        }
+
+        // Return the list of adjacent sectors
+        return adjacentSectors;
+    }
 }
