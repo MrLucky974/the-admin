@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -17,6 +18,24 @@ public class Region
             region.m_sectors[i] = Sector.Generate(region.GetIdentifier(i));
         }
 
+        // Generate enemies (between 1 and 3)
+        var rng = GameManager.RNG;
+        int enemyCount = rng.Next(1, 4); // Generate 1 to 3 enemies
+        for (int i = 0; i < enemyCount; i++)
+        {
+            // Create an enemy with a random strength (1 to 10)
+            int strength = JRandom.RollDice(4, 1, 6, rng);
+
+            // Assign the enemy to a random sector
+            int randomIndex = rng.Next(region.m_sectors.Length);
+            string sectorIdentifier = region.GetIdentifier(randomIndex);
+            var enemy = new Enemy(strength, sectorIdentifier);
+
+            // Add the enemy to the region's list and the sector
+            region.m_enemies.Add(enemy);
+            region.m_sectors[randomIndex].SetEnemy(enemy);
+        }
+
         region.m_sectors.Print();
 
         return region;
@@ -26,6 +45,7 @@ public class Region
 
     private readonly int m_size;
     private readonly Sector[] m_sectors;
+    private readonly List<Enemy> m_enemies = new List<Enemy>();
 
     private Region(int size)
     {
@@ -85,5 +105,48 @@ public class Region
         char colChar = (char)('A' + col);    // Convert to letter
 
         return $"{colChar}{row}";
+    }
+
+    public List<Enemy> GetEnemies()
+    {
+        return m_enemies;
+    }
+
+    /// <summary>
+    /// Moves an enemy from its current sector to another sector.
+    /// </summary>
+    /// <param name="enemy">The enemy to move.</param>
+    /// <param name="newSectorIdentifier">The identifier of the target sector.</param>
+    /// <returns>True if the move was successful, false otherwise.</returns>
+    public bool MoveEnemy(Enemy enemy, string newSectorIdentifier)
+    {
+        if (enemy == null || string.IsNullOrEmpty(newSectorIdentifier))
+        {
+            Debug.LogError("Enemy or target sector identifier is invalid.");
+            return false;
+        }
+
+        // Find the current sector of the enemy
+        Sector currentSector = GetSector(enemy.GetLocation());
+        if (currentSector == null)
+        {
+            Debug.LogError("Current sector not found.");
+            return false;
+        }
+
+        // Find the target sector
+        Sector targetSector = GetSector(newSectorIdentifier);
+        if (targetSector == null)
+        {
+            Debug.LogError("Target sector not found.");
+            return false;
+        }
+
+        // Move the enemy to the new sector
+        currentSector.RemoveEnemy(); // Clear enemy from the current sector
+        enemy.SetLocation(newSectorIdentifier); // Update the enemy's location
+        targetSector.SetEnemy(enemy); // Assign enemy to the target sector
+
+        return true;
     }
 }

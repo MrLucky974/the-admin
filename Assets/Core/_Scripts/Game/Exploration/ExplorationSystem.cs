@@ -8,6 +8,7 @@ public class ExplorationSystem : MonoBehaviour
 {
     private CommandLogManager m_commandLog;
     private NarratorSystem m_narrator;
+    private TimeManager m_timeManager;
 
     private Region m_region;
 
@@ -26,6 +27,8 @@ public class ExplorationSystem : MonoBehaviour
     {
         m_narrator = GameManager.Instance.GetNarrator();
         m_narrator.Subscribe<SquadArrivalEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, OnSquadArrival);
+
+        m_timeManager = GameManager.Instance.GetTimeManager();
 
         m_scannedSectors = new List<Sector>();
         m_activeSquads = new List<Squad>();
@@ -72,25 +75,15 @@ public class ExplorationSystem : MonoBehaviour
             Sector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
             {
-                foreach (var sector in m_scannedSectors)
-                {
-                    if (sector.GetIdentifier().Equals(identifier.ToUpper()))
-                    {
-                        m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} already scanned", GameManager.RED);
-                        SoundManager.PlaySound(SoundType.ERROR);
-                        return;
-                    }
-                }
-
+                // Check if sector identifiers matches and prevent it from being
+                // scanned twice if true
                 if (m_currentSectorScan != null && m_currentSectorScan.GetIdentifier().Equals(identifier))
                 {
-                    m_commandLog.AddLog($"error: sector {m_currentSectorScan.GetIdentifier()} already targeted for scan", GameManager.RED);
-                    SoundManager.PlaySound(SoundType.ERROR);
+                    m_commandLog.AddLogError($"error: sector {m_currentSectorScan.GetIdentifier()} already targeted for scan");
                     return;
                 }
 
                 // Stop the sector being currently scanned
-                // TODO : Open modal box to confirm this action
                 if (m_scanCoroutine != null)
                 {
                     m_updateScanProgress = false;
@@ -143,8 +136,7 @@ public class ExplorationSystem : MonoBehaviour
                     var sector = squad.GetActivitySector();
                     if (sector.GetIdentifier().Equals(identifier.ToUpper()))
                     {
-                        m_commandLog.AddLog($"error: sector {identifier.ToUpper()} already being explored by another squad", GameManager.RED);
-                        SoundManager.PlaySound(SoundType.ERROR);
+                        m_commandLog.AddLogError($"error: sector {identifier.ToUpper()} already being explored by another squad");
                         return;
                     }
                 }
@@ -157,8 +149,7 @@ public class ExplorationSystem : MonoBehaviour
                         var resourceData = sector.GetResourceData();
                         if (resourceData.resourceType == ResourceType.NONE)
                         {
-                            m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} is empty", GameManager.RED);
-                            SoundManager.PlaySound(SoundType.ERROR);
+                            m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} is empty");
                             return;
                         }
                         break;
@@ -170,8 +161,7 @@ public class ExplorationSystem : MonoBehaviour
                 {
                     if (sector.GetIdentifier().Equals(identifier) && sector.IsLooted())
                     {
-                        m_commandLog.AddLog($"error: sector {sector.GetIdentifier()} has already been looted", GameManager.RED);
-                        SoundManager.PlaySound(SoundType.ERROR);
+                        m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} has already been looted");
                         return;
                     }
                 }
@@ -180,19 +170,17 @@ public class ExplorationSystem : MonoBehaviour
                 Squad newSquad = Squad.Create(selectedSector);
                 if (newSquad == null)
                 {
-                    m_commandLog.AddLog($"error: not enough population to send a squad", GameManager.RED);
-                    SoundManager.PlaySound(SoundType.ERROR);
+                    m_commandLog.AddLogError($"error: not enough population to send a squad");
                     return;
                 }
 
                 m_activeSquads.Add(newSquad);
-                m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()}", GameManager.ORANGE);
+                m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()} (estimated strength: {newSquad.GetStrength()})", GameManager.ORANGE);
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
             }
             else
             {
-                m_commandLog.AddLog($"error: invalid sector {identifier.ToUpper()}", GameManager.RED);
-                SoundManager.PlaySound(SoundType.ERROR);
+                m_commandLog.AddLogError($"error: invalid sector {identifier.ToUpper()}");
             }
         }));
 
@@ -251,7 +239,7 @@ public class ExplorationSystem : MonoBehaviour
             if (elapsedTime < TICK_UPDATE)
             {
                 yield return null;
-                elapsedTime += Time.deltaTime;
+                elapsedTime += Time.deltaTime * m_timeManager.GetTimeScale();
                 continue;
             }
 
@@ -292,11 +280,17 @@ public class ExplorationSystem : MonoBehaviour
         var resourceData = m_currentSectorScan.GetResourceData();
         if (resourceData.resourceType == ResourceType.NONE)
         {
-            m_commandLog.AddLog("Found nothing.", GameManager.ORANGE);
+            m_commandLog.AddLog("Found nothing.", GameManager.ORANGE, false);
         }
         else
         {
-            m_commandLog.AddLog($"Found {resourceData.amount} {resourceData.resourceType}!", GameManager.ORANGE);
+            m_commandLog.AddLog($"Found {resourceData.amount} {resourceData.resourceType}!", GameManager.ORANGE, false);
+        }
+
+        if (m_currentSectorScan.HasEnemy())
+        {
+            var enemy = m_currentSectorScan.GetEnemy();
+            m_commandLog.AddLog($"alert: enemy movement detected (estimated strength: {enemy.GetStrength()})", GameManager.RED);
         }
 
         // Mark the sector as scanned
