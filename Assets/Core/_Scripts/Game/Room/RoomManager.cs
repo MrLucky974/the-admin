@@ -28,7 +28,7 @@ public class RoomManager : MonoBehaviour
     Coroutine m_degradeCoroutine;
     Coroutine m_ressCoroutine;
 
-    public const int DEGRADATION = 10;
+    public const int DEGRADATION = 4;
     public const float TIMEDEGRADE = 1f;
 
     float m_repairTimeBonus = 0;
@@ -61,6 +61,7 @@ public class RoomManager : MonoBehaviour
         {
             Debug.LogError("reputation handler not find", this.gameObject);
         }
+        InitCommands();
     }
 
     void InitRoom()
@@ -92,6 +93,20 @@ public class RoomManager : MonoBehaviour
             Debug.Log(room.name+" / "+room.roomId);
         }
     }
+
+    #region Commandes
+    void InitCommands()
+    {
+        m_gm.GetCommands().AddCommand(new CommandDefinition<Action<String, String>>("repair", (String roomId, String villagerId) =>
+        {
+            m_gm.GetVillagerManager().SendVillagerRepairRoom(villagerId, roomId);
+        }));
+        m_gm.GetCommands().AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
+        {
+            UpgradeRoom(roomId);
+        }));
+    }
+    #endregion
 
     #region Room Handling Utilities
 
@@ -379,7 +394,6 @@ public class RoomManager : MonoBehaviour
         yield return new WaitForSeconds(time); //TODO Replace this hard value with villager states
         RepairRoomComplete(roomToRepair);
     }
-
     #endregion
 
 }

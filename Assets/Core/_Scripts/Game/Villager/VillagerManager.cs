@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using UnityEngine;
-using static VillagerData;
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
 using System;
 using System.Collections.Generic;
