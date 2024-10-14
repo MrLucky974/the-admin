@@ -1,6 +1,8 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuSetup : MonoBehaviour
 {
@@ -23,6 +25,10 @@ public class MainMenuSetup : MonoBehaviour
     [SerializeField] private TMP_Text m_logLabel;
     [SerializeField] private TMP_Text m_prefixLabel;
     [SerializeField] private TMP_InputField m_inputField;
+
+    [SerializeField] private GameObject m_btnMenuContainer;
+    [SerializeField] private Button m_playButton;
+    [SerializeField] private Button m_quitButton;
 
     private State m_state;
     private float m_loadingBarValue;
@@ -61,7 +67,7 @@ public class MainMenuSetup : MonoBehaviour
             yield return null;
             currentLoadingValue += Time.deltaTime;
         }
-
+        LoadGamePlayScene();
         // TODO : Load gameplay scene
     }
 
@@ -111,9 +117,33 @@ public class MainMenuSetup : MonoBehaviour
                 m_loadingBarValue = Random.Range(1f, 2f);
                 m_prefixLabel.gameObject.SetActive(false);
                 m_inputField.gameObject.SetActive(false);
-                StartCoroutine(nameof(LoadingScreen));
+                DisplayButtonMenu();
+                //StartCoroutine(nameof(LoadingScreen));
                 break;
         }
+    }
+
+
+    void DisplayButtonMenu()
+    {
+        m_btnMenuContainer.gameObject.SetActive(true);
+        m_playButton.Select();
+    }
+
+    public void ButtonStartPressed()
+    {
+        m_btnMenuContainer.gameObject.SetActive(false);
+        StartCoroutine(nameof(LoadingScreen));
+    }
+
+    public void LoadGamePlayScene()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     private void OnValueChanged(string input)
@@ -122,4 +152,7 @@ public class MainMenuSetup : MonoBehaviour
         SoundManager.SetPitch(rng.NextFloat(0.8f, 1.2f));
         SoundManager.PlaySound(SoundType.CHARACTER_TYPE);
     }
+
+
+
 }
