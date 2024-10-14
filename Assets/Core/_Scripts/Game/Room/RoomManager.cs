@@ -6,6 +6,8 @@ using UnityEngine;
 using static System.Collections.Specialized.BitVector32;
 using static UnityEngine.Rendering.HDROutputUtils;
 using System;
+using static UpVillRoomData;
+using System.Collections.ObjectModel;
 
 
 public class RoomManager : MonoBehaviour
@@ -26,7 +28,7 @@ public class RoomManager : MonoBehaviour
     Coroutine m_degradeCoroutine;
     Coroutine m_ressCoroutine;
 
-    public const int DEGRADATION = 7;
+    public const int DEGRADATION = 10;
     public const float TIMEDEGRADE = 1f;
 
     float m_repairTimeBonus = 0;
@@ -95,11 +97,10 @@ public class RoomManager : MonoBehaviour
 
     public void RoomWasDestroyed(RoomData roomDestroyed)
     {
-        switch (roomDestroyed.roomType)
-        {
-            case RoomType.GENERATORS:
-                m_repairTimeBonus = 0; 
-            break;
+        if(roomDestroyed is UpVillRoomData) //for villager upgrades
+        { 
+            UpVillRoomData room = roomDestroyed.GetComponent<UpVillRoomData>();
+            CancelVillRoomUpgrade(room);
         }
         m_reputationHandler.DecreaseReputation(15); //TODO add a reputation value
        
@@ -151,6 +152,11 @@ public class RoomManager : MonoBehaviour
 
     public void TryToRepairRoom(VillagerData villager,string roomId,int scrapsCost)
     {
+        if (GetRoomWithId(roomId).GetVillagersInRoom().Count != 0)
+        {
+            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed someone is repairing this room");
+            return;
+        }
         if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DESTROYED)
         {
             scrapsCost = scrapsCost * 2;
@@ -180,6 +186,7 @@ public class RoomManager : MonoBehaviour
         GetRoomWithId(roomId).AddVillagerInRoom(villager);
     }
 
+    #region Upgrade funcs
 
     public void UpgradeRoom(string roomId)
     {
@@ -190,34 +197,96 @@ public class RoomManager : MonoBehaviour
                 if (m_resourceHandler.HasEnoughResources(0,0, room.upgradeCost)){
                     if (room.roomState == RoomData.RoomState.DESTROYED)
                     {
-                        m_gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed this room is destroyed", GameManager.RED);
+                        m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed this room is destroyed");
                         return;
                     }
-                    room.Upgrade(); //Upgrade 
+                    UpgradeRoom(room); //Upgrade 
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     m_gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
                     return;
                 }
                 else{
-                    m_gm.GetCommandLog().AddLog($"upgrade {room.roomId} failed not enough resources", GameManager.RED);
+                    m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed not enough resources");
                     return;
                 }
             }else{
                 if (roomId == ""){
                     m_gm.GetCommandLog().AddLogError($"specify room id example: upgrade R1");
                     return;
-                }
-                
+                }        
             }
         }
         m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
         return;
     }
 
+    public void UpgradeRoom(UpRoomData room)
+    {
+        room.Upgrade();
+        if (room is UpVillRoomData){
+            UpVillRoomData upRoom = room.GetComponent<UpVillRoomData>();
+            UpgradeVillRoom(upRoom);
+           
+        }
+    }
+
+    public void UpgradeVillRoom(UpVillRoomData room)
+    {
+        switch (room.UpgradeType)
+        {
+            case UpgradeTypes.REPAIR_SPEED:
+                UpgradeRepairSpeed(room);
+                break;
+            case UpgradeTypes.FATIGUE_REREN:
+                UpgradeFatigueRegen(room);
+                break;
+        }
+    }
+
+    public void UpgradeRepairSpeed(UpVillRoomData room)
+    {
+        IncreaseGlobalRepairSpeed(room.BonusValue);
+        m_gm.GetCommandLog().AddLog($"reparation time is faster", GameManager.ORANGE);
+    }
+
+    public void UpgradeFatigueRegen(UpVillRoomData room)
+    {
+        VillagerManager vm = FindObjectOfType<VillagerManager>();
+        ReadOnlyCollection<VillagerData> population = vm.GetPopulation();
+        foreach (VillagerData villager in population)
+        {
+            vm.IncreaseRecoveryValue(villager, room.BonusValue);
+            Debug.Log(villager.GetName()+"-"+villager.GetRecoveryValue());
+        }
+        m_gm.GetCommandLog().AddLog($"the population rests faster ", GameManager.ORANGE);
+    }
+
+    public void CancelVillRoomUpgrade(UpVillRoomData room)
+    {
+        switch (room.UpgradeType)
+        {
+            case UpgradeTypes.REPAIR_SPEED:
+                m_repairTimeBonus = 0;
+                break;
+            case UpgradeTypes.FATIGUE_REREN:
+                VillagerManager vm = FindObjectOfType<VillagerManager>();
+                ReadOnlyCollection<VillagerData> population = vm.GetPopulation();
+                foreach (VillagerData villager in population)
+                {
+                    vm.DecreaseRecoveryValue(villager, room.BonusValue);
+                    Debug.Log(villager.GetName() + "-" + villager.GetRecoveryValue());
+                }
+                break;
+        }
+     
+    }
+
     public void IncreaseGlobalRepairSpeed(float value)
     {
         m_repairTimeBonus += value;
     }
+
+    #endregion
 
     public RoomData PickRandomRoom()
     {
@@ -268,7 +337,10 @@ public class RoomManager : MonoBehaviour
         {
             room = PickRandomRoom();
             yield return new WaitForSeconds(1);
-            room.IncrementDurability(-DEGRADATION);
+            if (room.roomState != RoomData.RoomState.DESTROYED)
+            {
+                room.IncrementDurability(-DEGRADATION);
+            }
         }
      
         /*foreach(RoomData room in m_roomArray){  // each room lose durability

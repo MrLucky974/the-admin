@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using UnityEngine;
+using static VillagerData;
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
 public class VillagerManager : MonoBehaviour
 {
@@ -84,6 +90,7 @@ public class VillagerManager : MonoBehaviour
     {
         AgePopulation();
         UpdatePregnantWomenStatus();
+        ReduceFatigueWithTime();
     }
 
     public void AgePopulation()
@@ -237,6 +244,32 @@ public class VillagerManager : MonoBehaviour
                 break;
         }
 
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
+    public void ReduceFatigueWithTime()
+    {
+        foreach(VillagerData villager in m_population)
+        {
+            DecreaseFatigue(villager,villager.GetRecoveryValue());
+        }
+    }
+
+    public void IncreaseRecoveryValue(VillagerData data, int value)
+    {
+        data.IncreaseRecoveryValue(value);
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
+    public void DecreaseRecoveryValue(VillagerData data, int value)
+    {
+        data.DecreaseRecoveryValue(value);
+        OnPopulationChanged?.Invoke(m_population);
+    }
+
+    public void ResetRecoveryValue(VillagerData data)
+    {
+        data.ResetRecoveryValue();
         OnPopulationChanged?.Invoke(m_population);
     }
 
