@@ -1,8 +1,6 @@
 using System;
-using System.Globalization;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public interface ICommandDefinition
@@ -53,51 +51,18 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         }
 
         var paramInfo = m_parameterInfo[index];
-        return Compare(paramInfo.ParameterType, input, out result);
-    }
-
-    private static bool Compare(Type type, string input, out object output)
-    {
-        Regex regex;
-        output = null;
-
-        if (type == null)
+        if (CommandSystem.TryGetTypeParser(paramInfo.ParameterType, out var parser))
         {
-            return false;
-        }
-        else if (type == typeof(int))
-        {
-            regex = new Regex("^-?\\d+$");
-            if (regex.IsMatch(input))
+            try
             {
-                output = int.Parse(input);
+                result = parser(input);
                 return true;
             }
-        }
-        else if (type == typeof(float))
-        {
-            regex = new Regex("^-?\\d*(\\.\\d+)?$");
-            if (regex.IsMatch(input))
+            catch (FormatException)
             {
-                output = float.Parse(input, CultureInfo.InvariantCulture);
-                return true;
+                return false;
             }
         }
-        else if (type == typeof(bool))
-        {
-            regex = new Regex("^(?i)(true|false)$");
-            if (regex.IsMatch(input))
-            {
-                output = input.Equals("true", StringComparison.OrdinalIgnoreCase);
-                return true;
-            }
-        }
-        else if (type == typeof(string))
-        {
-            output = input;
-            return true;
-        }
-
         return false;
     }
 
@@ -112,33 +77,16 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         sb.Append($"{Identifier}");
         sb.Append("(");
 
-        int index = 0;
-        foreach (var param in m_parameterInfo)
+        for (int i = 0; i < m_parameterInfo.Length; i++)
         {
-            string type = "error";
-            if (param.ParameterType == typeof(string))
-            {
-                type = "string";
-            }
-            else if (param.ParameterType == typeof(int))
-            {
-                type = "int";
-            }
-            else if (param.ParameterType == typeof(float))
-            {
-                type = "float";
-            }
-            else if (param.ParameterType == typeof(bool))
-            {
-                type = "bool";
-            }
+            var param = m_parameterInfo[i];
+            string typeString = CommandSystem.GetTypeString(param.ParameterType);
+            sb.Append($"{typeString}");
 
-            sb.Append($"{type}");
-            if (index < m_parameterInfo.Length - 1)
+            if (i < m_parameterInfo.Length - 1)
             {
                 sb.Append(", ");
             }
-            index++;
         }
         sb.Append(")");
 

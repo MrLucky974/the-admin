@@ -1,11 +1,59 @@
+// TODO: Add support for aliases (e.g. help -> hl, checkup -> chk)
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 // TODO: Add support for aliases (e.g. help -> hl, checkup -> chk)
 public class CommandSystem : MonoBehaviour
 {
     private readonly List<ICommandDefinition> m_commands = new List<ICommandDefinition>();
+
+    private static readonly Dictionary<Type, CommandTypeHandler> TypeHandlers = new Dictionary<Type, CommandTypeHandler>()
+    {
+        { typeof(int), new CommandTypeHandler(
+            input =>
+            {
+                var regex = new Regex("^-?\\d+$");
+                if (regex.IsMatch(input))
+                {
+                    return int.Parse(input, CultureInfo.InvariantCulture);
+                }
+                throw new FormatException("Invalid integer format.");
+            },
+            "int")
+        },
+        { typeof(float), new CommandTypeHandler(
+            input =>
+            {
+                var regex = new Regex("^-?\\d*(\\.\\d+)?$");
+                if (regex.IsMatch(input))
+                {
+                    return float.Parse(input, CultureInfo.InvariantCulture);
+                }
+                throw new FormatException("Invalid float format.");
+            },
+            "float")
+        },
+        { typeof(bool), new CommandTypeHandler(
+            input =>
+            {
+                var regex = new Regex("^(?i)(true|false)$");
+                if (regex.IsMatch(input))
+                {
+                    return input.Equals("true", StringComparison.OrdinalIgnoreCase);
+                }
+                throw new FormatException("Invalid boolean format.");
+            },
+            "bool")
+        },
+        { typeof(string), new CommandTypeHandler(
+            input => input,
+            "string")
+        }
+    };
 
     public IEnumerable<(string identifier, string description)> GetCommandHelp()
     {
@@ -24,6 +72,33 @@ public class CommandSystem : MonoBehaviour
             return;
         }
         m_commands.Add(command);
+    }
+
+    // Type handling methods
+    public static bool TryGetTypeParser(Type type, out Func<string, object> parser)
+    {
+        parser = null;
+        if (TypeHandlers.TryGetValue(type, out var handler))
+        {
+            parser = handler.Parser;
+            return true;
+        }
+        return false;
+    }
+
+    public static string GetTypeString(Type type)
+    {
+        return TypeHandlers.TryGetValue(type, out var handler) ? handler.TypeString : "error";
+    }
+
+    public static void AddCustomType(Type type, Func<string, object> parser, string typeString)
+    {
+        if (TypeHandlers.ContainsKey(type))
+        {
+            Debug.LogError($"Type '{type}' is already registered.");
+            return;
+        }
+        TypeHandlers[type] = new CommandTypeHandler(parser, typeString);
     }
 
     private static readonly char[] separators = new char[]
@@ -48,7 +123,7 @@ public class CommandSystem : MonoBehaviour
         // EXAMPLE: "checkup A1" -> ["checkup", "A1"]
         Debug.Log($"Parsing command: {input}");
         m_commandLog.AddLog($"command: {input}");
-        
+
         string[] parts = input.Split(separators);
 
         // TODO: Search & call relevent command
