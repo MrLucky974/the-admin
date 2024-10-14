@@ -13,16 +13,14 @@ public interface ICommandDefinition
     public bool TryConvertParameter(int index, string input, out object result);
 }
 
-// TODO : Check for optional variables by using parameters default
 public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate : Delegate
 {
-    string m_identifier;
-    string m_description;
-    IDelegate m_commandAction;
-    ParameterInfo[] m_parameterInfo;
+    private string m_identifier;
+    private string m_description;
+    private IDelegate m_commandAction;
+    private ParameterInfo[] m_parameterInfo;
 
     public string Identifier => m_identifier;
-
     public string Description => m_description;
 
     public CommandDefinition(string identifier, IDelegate command)
@@ -39,7 +37,6 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
 
     public bool CheckIdentifier(string identifier)
     {
-        // TODO : Hash the strings for better comparaison
         return m_identifier == identifier;
     }
 
@@ -59,6 +56,12 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
         }
 
         var paramInfo = m_parameterInfo[index];
+        if (string.IsNullOrEmpty(input) && paramInfo.HasDefaultValue)
+        {
+            result = paramInfo.DefaultValue;
+            return true;
+        }
+
         if (CommandSystem.TryGetTypeParser(paramInfo.ParameterType, out var parser))
         {
             try
@@ -83,6 +86,12 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"{Identifier}");
+
+        if (!string.IsNullOrEmpty(Description))
+        {
+            sb.Append($" - {Description}");
+        }
+
         sb.Append("(");
 
         for (int i = 0; i < m_parameterInfo.Length; i++)
@@ -90,6 +99,11 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
             var param = m_parameterInfo[i];
             string typeString = CommandSystem.GetTypeString(param.ParameterType);
             sb.Append($"{typeString}");
+
+            if (param.HasDefaultValue)
+            {
+                sb.Append($" = {param.DefaultValue}");
+            }
 
             if (i < m_parameterInfo.Length - 1)
             {
@@ -137,7 +151,10 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
                 throw new InvalidOperationException("Command action must be set.");
             }
 
-            return new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderDescription, m_builderCommandAction);
+            // Use the overloaded constructor based on the description
+            return string.IsNullOrEmpty(m_builderDescription)
+                ? new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderCommandAction)
+                : new CommandDefinition<IDelegate>(m_builderIdentifier, m_builderDescription, m_builderCommandAction);
         }
     }
 }

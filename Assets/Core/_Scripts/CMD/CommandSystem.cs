@@ -120,14 +120,11 @@ public class CommandSystem : MonoBehaviour
 
     public void ParseCommand(string input)
     {
-        // EXAMPLE: "checkup A1" -> ["checkup", "A1"]
         Debug.Log($"Parsing command: {input}");
         m_commandLog.AddLog($"command: {input}");
 
         string[] parts = input.Split(separators);
-
-        // TODO: Search & call relevent command
-        var identifier = parts[0];
+        string identifier = parts[0];
 
         bool commandFound = false;
         object[] parameters;
@@ -140,38 +137,32 @@ public class CommandSystem : MonoBehaviour
                 int paramCount = command.GetCommandParameterCount();
                 parameters = new object[paramCount];
 
-                // Check if parameter count matches
-                if ((parts.Length - 1) != paramCount)
+                // Check if there are more required parameters than provided arguments
+                if (parts.Length - 1 > paramCount)
                 {
-                    Debug.LogError("Parameter count doesn't match.");
-                    m_commandLog.AddLog($"error: incorrect parameter count (required: {paramCount} | given: {parts.Length - 1})", GameManager.RED);
-                    SoundManager.PlaySound(SoundType.ERROR);
+                    Debug.LogError("Too many parameters provided.");
+                    m_commandLog.AddLogError($"error: too many parameters provided (expected: {paramCount})");
                     break;
                 }
 
                 bool canExecute = true;
-                int paramIndex;
-                for (paramIndex = 1; paramIndex < parts.Length; paramIndex++)
+                for (int i = 0; i < paramCount; i++)
                 {
-                    var inputParameter = parts[paramIndex];
-                    if (!command.TryConvertParameter(paramIndex - 1, inputParameter, out var result))
+                    string inputParameter = i + 1 < parts.Length ? parts[i + 1] : null;
+                    if (!command.TryConvertParameter(i, inputParameter, out var result))
                     {
                         canExecute = false;
+                        Debug.LogError($"Invalid parameter at index {i}.");
+                        m_commandLog.AddLogError($"error: invalid parameter at index {i}");
                         break;
                     }
-
-                    parameters[paramIndex - 1] = result;
+                    parameters[i] = result;
                 }
 
-                if (!canExecute)
+                if (canExecute)
                 {
-                    Debug.LogError("Invalid parameter type.");
-                    m_commandLog.AddLog($"error: invalid parameter type at index {paramIndex}", GameManager.RED);
-                    SoundManager.PlaySound(SoundType.ERROR);
-                    break;
+                    command.Execute(parameters);
                 }
-
-                command.Execute(parameters);
                 break;
             }
         }
@@ -179,8 +170,7 @@ public class CommandSystem : MonoBehaviour
         if (!commandFound)
         {
             Debug.LogError("No command found.");
-            m_commandLog.AddLog($"error: invalid command identifier", GameManager.RED);
-            SoundManager.PlaySound(SoundType.ERROR);
+            m_commandLog.AddLogError($"error: invalid command identifier");
         }
     }
 }
