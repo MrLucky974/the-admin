@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -56,9 +57,25 @@ public class Squad
 
     private Squad(Sector sector, VillagerData[] members)
     {
-        m_sector = sector;
+        if (sector == null)
+        {
+            throw new ArgumentNullException(nameof(sector), "Sector cannot be null.");
+        }
 
-        // TODO : Check for null elements inside array
+        if (members == null)
+        {
+            throw new ArgumentNullException(nameof(members), "Members array cannot be null.");
+        }
+
+        foreach (var member in members)
+        {
+            if (member == null)
+            {
+                throw new ArgumentException("Members array contains null elements.", nameof(members));
+            }
+        }
+
+        m_sector = sector;
         m_members = members;
     }
 
