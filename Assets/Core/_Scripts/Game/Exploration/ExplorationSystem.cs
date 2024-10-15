@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// TODO : Take care of the backlog of the squad expedition system
 public class ExplorationSystem : MonoBehaviour
 {
     private CommandLogManager m_commandLog;
@@ -44,7 +43,7 @@ public class ExplorationSystem : MonoBehaviour
         m_commandLog = GameManager.Instance.GetCommandLog();
 
         // This command generates a new region (grid) of sectors (cells) for exploration
-        commandSystem.AddCommand(new CommandDefinition<Action>("region", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("region", "Scan for a new region to regenerate resources", () =>
         {
             // TODO : Check for on-going expeditions before authorizing region scan
             // TODO : Open modal box when region is not explored at 100%
@@ -73,7 +72,7 @@ public class ExplorationSystem : MonoBehaviour
 
         // This command starts a scanning operation that will give information to the player
         // about resources on the specified sector
-        commandSystem.AddCommand(new CommandDefinition<Action<string>>("scan", (string identifier) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("scan", "Scan a sector to unveil their resources and potential threats", (string identifier) =>
         {
             Sector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
@@ -128,7 +127,7 @@ public class ExplorationSystem : MonoBehaviour
 
         // This command launch an expedition to the specified sector, with a probability
         // of coming back with resources
-        commandSystem.AddCommand(new CommandDefinition<Action<string>>("send", (string identifier) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("send", "Send a squad on the sector to gather resources", (string identifier) =>
         {
             Sector selectedSector = m_region.GetSector(identifier.ToUpper());
             if (selectedSector != null)
