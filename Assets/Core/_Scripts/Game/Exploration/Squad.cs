@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine;
 public class Squad
 {
     public const int SQUAD_SIZE = 3;
+    public const int DEFAULT_FORCE_POINTS = 30;
 
     public enum State
     {
@@ -50,17 +52,98 @@ public class Squad
 
     private readonly Sector m_sector;
     private readonly VillagerData[] m_members;
+
+    private int m_strength = DEFAULT_FORCE_POINTS;
+
     private State m_state = State.DEPARTURE;
     private int m_progress;
     private (ResourceType resourceType, int amount) m_resources;
 
     private Squad(Sector sector, VillagerData[] members)
     {
-        m_sector = sector;
+        if (sector == null)
+        {
+            throw new ArgumentNullException(nameof(sector), "Sector cannot be null.");
+        }
 
-        // TODO : Check for null elements inside array
+        if (members == null)
+        {
+            throw new ArgumentNullException(nameof(members), "Members array cannot be null.");
+        }
+
+        foreach (var member in members)
+        {
+            if (member == null)
+            {
+                throw new ArgumentException("Members array contains null elements.", nameof(members));
+            }
+        }
+
+        m_sector = sector;
         m_members = members;
+
+        // Caculate force value used in combat to determine the outcome.
+        m_strength = DEFAULT_FORCE_POINTS;
+        foreach (var member in members)
+        {
+            // VillagerData.MAX_FATIGUE = 10
+            int fatigue = member.GetFatigue();
+            m_strength -= fatigue;
+        }
+        m_strength = Mathf.Max(m_strength, 0); // Ensure value cannot get under zero
     }
+
+    public void InitiateCombat(Enemy enemy)
+    {
+        enemy.MarkAsInCombat();
+
+        // TODO : send combat outcome into a game event
+        // Determine combat result using random roll and strength comparison
+        int strengthDifference = m_strength - enemy.GetStrength();
+
+        var rng = GameManager.RNG;
+        int roll = rng.Next(1, 101); // Roll between 1 and 100
+
+        // Adjust roll by the relative strength difference
+        roll += strengthDifference / 2;
+
+        // Determine outcome thresholds (adjusted to increase tie frequency)
+        const int criticalSuccessThreshold = 90;
+        const int successThreshold = 65;
+        const int tieThreshold = 35; // Tie range is wider to increase the chances
+        const int failureThreshold = 15;
+
+        // Determine the outcome based on adjusted thresholds
+        if (roll >= criticalSuccessThreshold)
+        {
+            // CRITICAL SUCCESS: The enemy team is vanquished completely
+            Debug.Log("CRITICAL SUCCESS: The enemy team has been completely vanquished!");
+        }
+        else if (roll >= successThreshold)
+        {
+            // SUCCESS: The enemy team has been beaten and will move elsewhere
+            Debug.Log("SUCCESS: The enemy team has been beaten and will move to a different sector.");
+        }
+        else if (roll >= tieThreshold)
+        {
+            // TIE: Both teams get randomly lightly damaged
+            Debug.Log("TIE: Both teams have taken some damage.");
+        }
+        else if (roll >= failureThreshold)
+        {
+            // FAILURE: Squad members are randomly hurt and will retreat back home
+            Debug.Log("FAILURE: Squad members have been hurt and will retreat.");
+        }
+        else
+        {
+            // CRITICAL FAILURE: Some squad members are killed, and the rest will retreat
+            Debug.Log("CRITICAL FAILURE: Some squad members have been killed.");
+        }
+
+        enemy.StopCombat();
+    }
+
+    public int GetStrength() { return m_strength; }
 
     public void Process(NarratorSystem narrator, CommandLogManager commandLog)
     {
@@ -86,6 +169,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = type == ResourceType.NONE ? State.ARRIVAL : State.EXPLORATION;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.DEPARTURE,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
@@ -110,6 +201,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = State.ARRIVAL;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.EXPLORATION,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
@@ -127,8 +226,8 @@ public class Squad
                     Debug.Log($"squad {this} completed mission");
                     var data = new SquadArrivalEvent
                     {
-                        resources = m_resources,
-                        members = m_members,
+                        Resources = m_resources,
+                        Members = m_members,
                     };
                     narrator.TriggerEvent(ExplorationEvents.SQUAD_BACK_TO_BASE, data);
 
@@ -137,6 +236,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = State.IDLE;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.ARRIVAL,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
