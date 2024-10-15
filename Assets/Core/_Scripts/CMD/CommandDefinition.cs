@@ -10,6 +10,7 @@ public interface ICommandDefinition
     public int GetCommandParameterCount();
     public bool CheckIdentifier(string identifier);
     public void Execute(params object[] parameters);
+    public string GetParametersString();
     public bool TryConvertParameter(int index, string input, out object result);
 }
 
@@ -80,6 +81,33 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
     public void Execute(params object[] parameters)
     {
         m_commandAction?.DynamicInvoke(parameters);
+    }
+
+    public string GetParametersString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("(");
+
+        for (int i = 0; i < m_parameterInfo.Length; i++)
+        {
+            var param = m_parameterInfo[i];
+            string typeString = CommandSystem.GetTypeString(param.ParameterType);
+            sb.Append($"{typeString}");
+
+            if (param.HasDefaultValue)
+            {
+                sb.Append($" = {param.DefaultValue}");
+            }
+
+            if (i < m_parameterInfo.Length - 1)
+            {
+                sb.Append(", ");
+            }
+        }
+        sb.Append(")");
+
+        return sb.ToString();
     }
 
     public override string ToString()
