@@ -58,9 +58,9 @@ public class GameManager : Singleton<GameManager>
             })
         );
 
-        m_commandSystem.AddCommand(new CommandDefinition<Action<int>>("gettime",
+        m_commandSystem.AddCommand(new CommandDefinition<Action>("gettime",
             "Get the current day and week",
-            (int a) =>
+            () =>
             {
                 m_commandLogManager.AddLog($"day {m_timeManager.GetCurrentDay() + 1} of week {m_timeManager.GetCurrentWeek()}");
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
