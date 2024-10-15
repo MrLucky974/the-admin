@@ -1,7 +1,22 @@
 using System.Collections.Generic;
 
+using UnityEngine;
+
 public static class JRandom
 {
+    private const string ALPHANUMERIC_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    public static string GenerateRandomString(int size)
+    {
+        char[] stringChars = new char[size];
+        for (int i = 0; i < size; i++)
+        {
+            stringChars[i] = ALPHANUMERIC_CHARACTERS[Random.Range(0, ALPHANUMERIC_CHARACTERS.Length)];
+        }
+
+        return new string(stringChars);
+    }
+
     public static int RollDice(int n, int l, int s, System.Random random)
     {
         // Sum of N dice each of which goes from L to S

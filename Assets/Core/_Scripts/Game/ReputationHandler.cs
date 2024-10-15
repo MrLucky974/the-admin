@@ -25,6 +25,7 @@ public class ReputationHandler : MonoBehaviour
         }
     }
 
+
 #if UNITY_EDITOR
 
     public void SetReputation(int value)

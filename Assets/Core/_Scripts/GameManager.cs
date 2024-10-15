@@ -36,14 +36,16 @@ public class GameManager : Singleton<GameManager>
 
     public static System.Random RNG = new System.Random();
 
+    public event Action OnGameFinished;
+
     private void Start()
     {
-        // TODO : Apply seed
-        int seed = 0;
+        int seed = GameData.Seed;
         RNG = new System.Random(seed);
 
         m_inputActions = new PlayerInputActions();
         m_inputActions.Enable();
+        m_reputationHandler.OnReputationChanged+=CheckReputationValue;
 
         #region Initialize Commands
         m_commandSystem.AddCommand(new CommandDefinition<Action>("clear", () =>
@@ -195,6 +197,34 @@ public class GameManager : Singleton<GameManager>
     {
         m_inputActions.Dispose();
     }
+
+
+    private void DisableAllComponents()
+    {
+       foreach (Behaviour component in gameObject.GetComponents<Behaviour>())
+       {
+            if (component is SoundManager || component is AudioSource)
+            {
+                return;
+            }
+            component.enabled = false;
+        }
+    }
+
+    private void CheckReputationValue(int reputation)
+    {
+        if(reputation == ReputationHandler.MIN_REPUTATION)
+        {
+            OnGameFinished?.Invoke();
+        }
+    }
+
+    private void GameFinished()
+    {
+        OnGameFinished?.Invoke();
+        DisableAllComponents();
+    }
+
 
     public TimeManager GetTimeManager() => m_timeManager;
     public CommandSystem GetCommands() => m_commandSystem;

@@ -27,7 +27,7 @@ public class BaseCommandLineInputFieldController : MonoBehaviour
     void OnCommandSubmit(string input)
     {
         m_commandSystem.ParseCommand(input);
-        m_inputField.text = "";
+        m_inputField.SetTextWithoutNotify(string.Empty);
         m_inputField.ActivateInputField();
     }
 

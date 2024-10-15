@@ -32,6 +32,46 @@ public static class JUtils
         Debug.Log(sb);
     }
 
+    public static int StringToSeedFNV1a(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return 0;
+
+        const uint fnvPrime = 0x01000193;
+        uint hash = 0x811C9DC5;
+
+        foreach (char c in input)
+        {
+            hash ^= c;
+            hash *= fnvPrime;
+        }
+
+        // Ensure the seed is positive and fits in an integer
+        return (int)(hash & 0x7FFFFFFF);
+    }
+
+    public static string GenerateTextSlider(float normalizedValue, int count = 5)
+    {
+        normalizedValue = Mathf.Clamp01(normalizedValue);
+        int filledCount = Mathf.RoundToInt(normalizedValue * count);
+
+        StringBuilder sb = new StringBuilder();
+        sb.Append('[');
+        for (int i = 0; i < count; i++)
+        {
+            if (i < filledCount)
+            {
+                sb.Append('■');
+            }
+            else
+            {
+                sb.Append('□');
+            }
+        }
+        sb.Append(']');
+        return sb.ToString();
+    }
+
     public static string GenerateTextSlider(int value, int min, int max, int count = 5)
     {
         count = Mathf.Max(count, 0);
