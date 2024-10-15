@@ -15,7 +15,7 @@ public class RoomData : MonoBehaviour
     protected int m_durability = 100; // room hp 
     protected int m_maxDurability = MAX_DURABILITY; // max room hp
 
-    protected int m_repairCost = 5;
+    protected int m_repairCost = 1;
     protected ArrayList m_villagerInRoom = new ArrayList(); 
 
     public event Action<int> OnRoomRepaired;
