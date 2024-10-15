@@ -35,28 +35,28 @@ public class TimeManager : MonoBehaviour
 
         var commandSystem = GameManager.Instance.GetCommands();
         var commandLog = GameManager.Instance.GetCommandLog();
-        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipweeks", (int weeks) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipweeks", "[EDITOR ONLY] Skips a specified amount of weeks", (int weeks) =>
         {
             int skippedDays = WEEK_LENGTH_IN_DAYS * weeks;
             MadeInHeaven(skippedDays);
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action>("skipweek", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("skipweek", "[EDITOR ONLY] Skip only one week", () =>
         {
             MadeInHeaven(WEEK_LENGTH_IN_DAYS);
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipdays", (int days) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<int>>("skipdays", "[EDITOR ONLY] Skips a specified amount of days", (int days) =>
         {
             MadeInHeaven(days);
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action>("skipday", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("skipday", "[EDITOR ONLY] Skip only one day", () =>
         {
             MadeInHeaven(1);
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action<float>>("timescale", (float timeScale) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<float>>("timescale", "[EDITOR ONLY] Update the speed at which the time flows", (float timeScale) =>
         {
             if (timeScale < 0f)
             {

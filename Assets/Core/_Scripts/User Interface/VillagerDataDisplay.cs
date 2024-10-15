@@ -24,7 +24,7 @@ public class VillagerDataDisplay : MonoBehaviour
         var villagerManager = GameManager.Instance.GetVillagerManager();
         var commandLog = GameManager.Instance.GetCommandLog();
         var commandSystem = GameManager.Instance.GetCommands();
-        commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", (string identifier) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("checkup", "Displays the checkup panel on the screen for the specified villager", (string identifier) =>
         {
             var villager = villagerManager.GetVillagerByID(identifier);
             if (villager != null)
@@ -68,7 +68,7 @@ public class VillagerDataDisplay : MonoBehaviour
         m_ageLabel.SetText(string.Format("Age: {0}", data.GetAgeStage()));
         m_healthLabel.SetText(string.Format("Health Status: {0}", data.GetHealthStatus()));
         m_workingStatusLabel.SetText(string.Format("Working Status: {0}", data.GetWorkingStatus()));
-        m_fatigueLabel.SetText(string.Format("Fatigue: {0}", JUtils.GenerateTextSlider(data.GetFatigue(),VillagerData.MIN_FATIGUE, VillagerData.MAX_FATIGUE, 5)));
+        m_fatigueLabel.SetText(string.Format("Fatigue: {0}", JUtils.GenerateTextSlider(data.GetFatigue(), VillagerData.MIN_FATIGUE, VillagerData.MAX_FATIGUE, 5)));
         m_lastData = data;
     }
 }

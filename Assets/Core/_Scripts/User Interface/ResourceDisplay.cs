@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -29,7 +27,7 @@ public class ResourceDisplay : MonoBehaviour
     private void Start()
     {
         var commandSystem = GameManager.Instance.GetCommands();
-        commandSystem.AddCommand(new CommandDefinition<Action>("stock", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("stock", "Displays the stock panel on the screen", () =>
         {
             m_pages.Select(StatusPageIndex.STOCK);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);

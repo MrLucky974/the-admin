@@ -56,34 +56,33 @@ public class VillagerManager : MonoBehaviour
         var commandSystem = GameManager.Instance.GetCommands();
 
 #if UNITY_EDITOR
-        commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("initpop", (int child, int adults, int elders) =>
+        commandSystem.AddCommand(new CommandDefinition<Action<int, int, int>>("initpop", "[EDITOR ONLY] Generate random members and adds them to the population", (int child, int adults, int elders) =>
         {
             CreateRandomVillagers(child, adults, elders);
             ListPopulation();
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action>("getsick", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("getsick", "[EDITOR ONLY] Get a random member of the population sick", () =>
         {
             GetSick();
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action>("getpregnant", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("getpregnant", "[EDITOR ONLY] Get a random female member of the population pregnant", () =>
         {
             GetPregnant();
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action>("showid", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("showid", "[EDITOR ONLY] List all identifiers of the population in the Unity log", () =>
         {
             ShowIDs();
         }));
 
-        commandSystem.AddCommand(new CommandDefinition<Action<string>>("heal", (string ID) =>
-        {                        
-            HealOneVillager(ID);
-        }));
-
-
 #endif
+
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("heal", "Removes diseases and injuries at the cost of 1 meds per status", (string villagerID) =>
+        {
+            HealOneVillager(villagerID);
+        }));
     }
 
     #region Villager Gameplay Handlers
@@ -197,8 +196,6 @@ public class VillagerManager : MonoBehaviour
                         villager.RemoveHealthStatus(HealthStatus.SICK);
                         handler.ConsumeMeds(1);
                     }
-                    
-
                 }
 
                 if (handler.HasEnoughResources(0, 1, 0))
@@ -225,10 +222,10 @@ public class VillagerManager : MonoBehaviour
     {
         var rng = GameManager.RNG;
         var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
-        
+
         int plagueCount = rng.Next(2, villagers.Count - 1);
         int i = 0;
-        List <VillagerData> plaguedVillagers = new List<VillagerData>();
+        List<VillagerData> plaguedVillagers = new List<VillagerData>();
         while (i < plagueCount)
         {
             VillagerData randomVillager = villagers.PickRandom(rng);
@@ -361,9 +358,9 @@ public class VillagerManager : MonoBehaviour
 
     public void ReduceFatigueWithTime()
     {
-        foreach(VillagerData villager in m_population)
+        foreach (VillagerData villager in m_population)
         {
-            DecreaseFatigue(villager,villager.GetRecoveryValue());
+            DecreaseFatigue(villager, villager.GetRecoveryValue());
         }
     }
 
