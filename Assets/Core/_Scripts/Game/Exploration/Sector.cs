@@ -47,9 +47,12 @@ public class Sector
     }
 
     private readonly string m_identifier;
+
     private ResourceType m_resourceType;
     private int m_amount = 0;
     private bool m_isLooted;
+
+    private Enemy m_enemy;
 
     private Sector(string identifier)
     {
@@ -86,9 +89,24 @@ public class Sector
         }
         count = 1 + JMath.Min(rolls);
 
-        //rolls.Print();
-
         return count;
+    }
+
+    public bool HasEnemy() => m_enemy != null;
+
+    public Enemy GetEnemy()
+    {
+        return m_enemy;
+    }
+
+    public void SetEnemy(Enemy enemy)
+    {
+        m_enemy = enemy;
+    }
+
+    public void RemoveEnemy()
+    {
+        m_enemy = null;
     }
 
     public string GetIdentifier()
@@ -106,6 +124,8 @@ public class Sector
         {
             sb.Append($": {m_amount}");
         }
+        if (HasEnemy())
+            sb.Append($", enemy: {m_enemy.GetStrength()}");
         sb.Append(')');
         return sb.ToString();
     }
