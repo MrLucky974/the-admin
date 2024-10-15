@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static VillagerData;
 
@@ -93,6 +94,7 @@ public class VillagerManager : MonoBehaviour
         FeedPopulation();
         GetPregnant();
         HealPopulation();
+        LaunchDisease();
     }
 
     public void OnNewDay(int day)
@@ -209,10 +211,55 @@ public class VillagerManager : MonoBehaviour
                 }
             }
         }
+    }
 
+    public void OneVillagerGetSick()
+    {
+        var rng = GameManager.RNG;
+        var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
+        VillagerData randomVillager = villagers.PickRandom(rng);
+        randomVillager.ApplyHealthStatus(HealthStatus.SICK);
+    }
+
+    public void PlagueVillagers()
+    {
+        var rng = GameManager.RNG;
+        var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
         
+        int plagueCount = rng.Next(2, villagers.Count - 1);
+        int i = 0;
+        List <VillagerData> plaguedVillagers = new List<VillagerData>();
+        while (i < plagueCount)
+        {
+            VillagerData randomVillager = villagers.PickRandom(rng);
+            if (plaguedVillagers.Contains(randomVillager))
+            {
+                continue;
+            }
+            randomVillager.ApplyHealthStatus(HealthStatus.SICK);
+            plaguedVillagers.Add(randomVillager);
+            i++;
+        }
 
-       
+    }
+
+    public void LaunchDisease()
+    {
+        var diceRoll1 = JRandom.RollDice(1, 2, GameManager.RNG);
+        var diceRoll2 = JRandom.RollDice(1, 2, GameManager.RNG);
+        var value = Mathf.Min(diceRoll1, diceRoll2);
+        if (value == 0)
+        {
+            return;
+        }
+        if (value == 1)
+        {
+            OneVillagerGetSick();
+        }
+        if (value == 2)
+        {
+            PlagueVillagers();
+        }
     }
 
     public void GetPregnant()
