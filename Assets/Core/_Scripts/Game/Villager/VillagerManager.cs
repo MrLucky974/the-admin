@@ -76,6 +76,13 @@ public class VillagerManager : MonoBehaviour
         {
             ShowIDs();
         }));
+
+        commandSystem.AddCommand(new CommandDefinition<Action<string>>("heal", (string ID) =>
+        {                        
+            HealOneVillager(ID);
+        }));
+
+
 #endif
     }
 
@@ -85,6 +92,8 @@ public class VillagerManager : MonoBehaviour
     {
         FeedPopulation();
         GetPregnant();
+        HealPopulation();
+        LaunchDisease();
     }
 
     public void OnNewDay(int day)
@@ -105,7 +114,30 @@ public class VillagerManager : MonoBehaviour
         }
         OnPopulationChanged?.Invoke(m_population);
     }
+    public void HealPopulation()
+    {
+        ResourceHandler handler = GameManager.Instance.GetResourceHandler();
+        foreach (VillagerData villager in m_population.ToList())
+        {
+            if (handler.HasEnoughResources(0, 1, 0))
+            {
+                if (villager.HasHealthStatus(HealthStatus.SICK))
+                {
+                    villager.RemoveHealthStatus(HealthStatus.SICK);
+                    handler.ConsumeMeds(1);
+                }
+            }
+            if (handler.HasEnoughResources(0, 1, 0))
+            {
+                if (villager.HasHealthStatus(HealthStatus.INJURED))
+                {
+                    villager.RemoveHealthStatus(HealthStatus.INJURED);
+                    handler.ConsumeMeds(1);
+                }
+            }
 
+        }
+    }
     public void FeedPopulation()
     {
         ResourceHandler handler = GameManager.Instance.GetResourceHandler();
@@ -149,6 +181,85 @@ public class VillagerManager : MonoBehaviour
 #if UNITY_EDITOR
         ListPopulation();
 #endif
+    }
+
+    public void HealOneVillager(string villagerID)
+    {
+        ResourceHandler handler = GameManager.Instance.GetResourceHandler();
+        foreach (VillagerData villager in m_population)
+        {
+            if (villager.GetID() == villagerID)
+            {
+                if (handler.HasEnoughResources(0, 1, 0))
+                {
+                    if (villager.HasHealthStatus(HealthStatus.SICK))
+                    {
+                        villager.RemoveHealthStatus(HealthStatus.SICK);
+                        handler.ConsumeMeds(1);
+                    }
+                    
+
+                }
+
+                if (handler.HasEnoughResources(0, 1, 0))
+                {
+                    if (villager.HasHealthStatus(HealthStatus.INJURED))
+                    {
+                        villager.RemoveHealthStatus(HealthStatus.INJURED);
+                        handler.ConsumeMeds(1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void OneVillagerGetSick()
+    {
+        var rng = GameManager.RNG;
+        var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
+        VillagerData randomVillager = villagers.PickRandom(rng);
+        randomVillager.ApplyHealthStatus(HealthStatus.SICK);
+    }
+
+    public void PlagueVillagers()
+    {
+        var rng = GameManager.RNG;
+        var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
+        
+        int plagueCount = rng.Next(2, villagers.Count - 1);
+        int i = 0;
+        List <VillagerData> plaguedVillagers = new List<VillagerData>();
+        while (i < plagueCount)
+        {
+            VillagerData randomVillager = villagers.PickRandom(rng);
+            if (plaguedVillagers.Contains(randomVillager))
+            {
+                continue;
+            }
+            randomVillager.ApplyHealthStatus(HealthStatus.SICK);
+            plaguedVillagers.Add(randomVillager);
+            i++;
+        }
+
+    }
+
+    public void LaunchDisease()
+    {
+        var diceRoll1 = JRandom.RollDice(1, 2, GameManager.RNG);
+        var diceRoll2 = JRandom.RollDice(1, 2, GameManager.RNG);
+        var value = Mathf.Min(diceRoll1, diceRoll2);
+        if (value == 0)
+        {
+            return;
+        }
+        if (value == 1)
+        {
+            OneVillagerGetSick();
+        }
+        if (value == 2)
+        {
+            PlagueVillagers();
+        }
     }
 
     public void GetPregnant()
