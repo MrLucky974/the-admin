@@ -138,7 +138,7 @@ public class MainMenuSetup : MonoBehaviour
 
     public void LoadGamePlayScene()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     public void QuitGame()
