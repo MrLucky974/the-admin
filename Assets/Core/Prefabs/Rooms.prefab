@@ -147,7 +147,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6238342760579852091}
-  - component: {fileID: 6611379603869526557}
+  - component: {fileID: 1461949606198283508}
   m_Layer: 0
   m_Name: Room (2)
   m_TagString: Untagged
@@ -170,7 +170,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2757851844419143942}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6611379603869526557
+--- !u!114 &1461949606198283508
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -179,12 +179,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3307393599005992989}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 910be9377c7ead743a1b638dd4de70a1, type: 3}
+  m_Script: {fileID: 11500000, guid: fcea122053cb06f4699e8df12090ea90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_roomName: Salle de repos
   m_roomId: 
   m_roomType: 2
+  m_upgradeState: 0
+  m_upgradeCost: 5
+  m_upgradeTypes: 1
 --- !u!1 &3906951526887148032
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,3 +430,4 @@ MonoBehaviour:
   m_roomType: 5
   m_upgradeState: 0
   m_upgradeCost: 5
+  m_upgradeTypes: 0

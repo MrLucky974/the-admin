@@ -72,7 +72,7 @@ public class VillagerData
 
     public const int MIN_FATIGUE = 0;
     public const int MAX_FATIGUE = 10;
-    public const int DEFAULT_RECOVERY_SPEED = 5;
+    public const int DEFAULT_RECOVERY_VALUE = 1;
 
     public const int DEFAULT_WORKING_SPEED = 5;
 
@@ -81,6 +81,7 @@ public class VillagerData
     int m_age = DEFAULT_AGE;
     int m_fatigue = 0;
     int m_hunger = 0;
+    int m_recoveryValue = DEFAULT_RECOVERY_VALUE;
     private VillagerData m_mate;
     private int m_pregnancyDuration = 0;
 
@@ -229,6 +230,7 @@ public class VillagerData
         Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
 
+  
     public int GetFatigue()
     {
         return m_fatigue;
@@ -236,6 +238,29 @@ public class VillagerData
 
     #endregion
 
+    #region Recovery Handling Methods
+      
+    public int GetRecoveryValue()
+    {
+        return m_recoveryValue;
+    }
+
+    public void IncreaseRecoveryValue(int valueToAdd)
+    {
+        m_recoveryValue += valueToAdd;
+    }
+    public void DecreaseRecoveryValue(int valueToAdd)
+    {
+        m_recoveryValue -= valueToAdd;
+    }
+
+    public void ResetRecoveryValue()
+    {
+        m_recoveryValue = DEFAULT_RECOVERY_VALUE;
+    }
+
+    #endregion
+      
     #region Pregnancy Handling Methods
 
     public void Impregnate(VillagerData mate)
