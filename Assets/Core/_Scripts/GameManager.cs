@@ -61,16 +61,12 @@ public class GameManager : Singleton<GameManager>
         m_commandSystem.AddCommand(new CommandDefinition<Action>("help", () =>
         {
             m_commandLogManager.AddLog("Commands: ", GameManager.ORANGE);
-            foreach (var element in m_commandSystem.GetCommandHelp())
+            foreach (var element in m_commandSystem.GetCommandsList())
             {
-                var text = $"- {element.identifier}: {element.description}";
+                var text = $"- {element.identifier}{(string.IsNullOrEmpty(element.description) ? "" : $": {element.description}")}";
                 m_commandLogManager.AddLog(text, GameManager.ORANGE, format: false);
             }
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
-        }));
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String, String>>("repair", (String roomId, String villagerId) =>
-        {
-            m_villagerManager.SendVillagerRepairRoom(villagerId, roomId);
         }));
 
 #if UNITY_EDITOR
@@ -104,11 +100,6 @@ public class GameManager : Singleton<GameManager>
             var slider = JUtils.GenerateTextSlider(amount, min, max, 8);
             m_commandLogManager.AddLog($"{slider}", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
-        }));
-
-        m_commandSystem.AddCommand(new CommandDefinition<Action<String>>("upgrade", (String roomId) =>
-        {
-            m_roomManager.UpgradeRoom(roomId);
         }));
 
         m_commandSystem.AddCommand(new CommandDefinition<Action<bool>>("cursor", (bool enabled) =>
