@@ -36,6 +36,8 @@ public class GameManager : Singleton<GameManager>
 
     public static System.Random RNG = new System.Random();
 
+    public event Action OnGameFinished;
+
     private void Start()
     {
         int seed = GameData.Seed;
@@ -188,11 +190,29 @@ public class GameManager : Singleton<GameManager>
     {
         var deltaTime = Time.deltaTime;
         m_timeManager.UpdateTime(deltaTime);
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            OnGameFinished?.Invoke();
+            DisableAllComponents();
+        }
     }
 
     private void OnDestroy()
     {
         m_inputActions.Dispose();
+    }
+
+
+    private void DisableAllComponents()
+    {
+       foreach (Behaviour component in gameObject.GetComponents<Behaviour>())
+       {
+            if (component is SoundManager || component is AudioSource)
+            {
+                return;
+            }
+            component.enabled = false;
+        }
     }
 
     public TimeManager GetTimeManager() => m_timeManager;

@@ -139,11 +139,13 @@ public class MainMenuSetup : MonoBehaviour
     public void LoadGamePlayScene()
     {
         SceneManager.LoadScene(1);
+        SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
     }
 
     public void QuitGame()
     {
         Application.Quit();
+        SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
     }
 
     private void OnValueChanged(string input)
