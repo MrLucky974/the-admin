@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // TODO : Take care of the backlog of the squad expedition system
@@ -27,6 +28,7 @@ public class ExplorationSystem : MonoBehaviour
     {
         m_narrator = GameManager.Instance.GetNarrator();
         m_narrator.Subscribe<SquadArrivalEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, OnSquadArrival);
+        m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, OnSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
         m_timeManager.OnDayEnded += UpdateMap;
@@ -190,6 +192,7 @@ public class ExplorationSystem : MonoBehaviour
         // Generate a starting region on game start
         m_region = Region.Generate();
     }
+
     private void OnDestroy()
     {
         StopAllCoroutines();
@@ -211,9 +214,29 @@ public class ExplorationSystem : MonoBehaviour
         var enemies = m_region.GetEnemies();
         foreach (var enemy in enemies)
         {
+            foreach (var squad in m_activeSquads)
+            {
+                var squadSector = squad.GetActivitySector();
+                var enemySector = m_region.GetSector(enemy.GetLocation());
+
+                if (squadSector.Equals(enemySector) is false)
+                    continue;
+
+                if (squad.GetState().Equals(Squad.State.EXPLORATION) is false)
+                    break;
+
+                Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
+                squad.InitiateCombat(enemy);
+                break;
+            }
+
+            if (enemy.InCombat())
+                continue;
+
             var location = enemy.GetLocation();
 
             var adjacentSectors = m_region.GetAdjacentSectors(location);
+            adjacentSectors = adjacentSectors.Where(sector => !sector.HasEnemy()).ToList();
             if (adjacentSectors.Count < 1)
             {
                 continue;
@@ -227,6 +250,22 @@ public class ExplorationSystem : MonoBehaviour
             targetSector.SetEnemy(enemy);
 
             Debug.Log($"enemy moved from {originSector.GetIdentifier()} to {targetSector.GetIdentifier()}");
+
+            foreach (var squad in m_activeSquads)
+            {
+                var squadSector = squad.GetActivitySector();
+                var enemySector = m_region.GetSector(enemy.GetLocation());
+
+                if (squadSector.Equals(enemySector) is false)
+                    continue;
+
+                if (squad.GetState().Equals(Squad.State.EXPLORATION) is false)
+                    break;
+
+                Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
+                squad.InitiateCombat(enemy);
+                break;
+            }
         }
     }
 
@@ -235,7 +274,7 @@ public class ExplorationSystem : MonoBehaviour
         var villagerManager = GameManager.Instance.GetVillagerManager();
         var resourceHandler = GameManager.Instance.GetResourceHandler();
 
-        (ResourceType type, int amount) = @event.resources;
+        (ResourceType type, int amount) = @event.Resources;
         switch (type)
         {
             case ResourceType.NONE:
@@ -251,9 +290,29 @@ public class ExplorationSystem : MonoBehaviour
                 break;
         }
 
-        foreach (var member in @event.members)
+        foreach (var member in @event.Members)
         {
             villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.IDLE);
+        }
+    }
+
+    private void OnSquadStatusChanged(SquadStatusChangedEvent @event)
+    {
+        var enemies = m_region.GetEnemies();
+        foreach (var enemy in enemies)
+        {
+            var squad = @event.Squad;
+            var squadSector = squad.GetActivitySector();
+            var enemySector = m_region.GetSector(enemy.GetLocation());
+
+            if (squadSector.Equals(enemySector) is false)
+                continue;
+
+            if (@event.CurrentState.Equals(Squad.State.EXPLORATION) is false)
+                break;
+
+            Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
+            squad.InitiateCombat(enemy);
         }
     }
 

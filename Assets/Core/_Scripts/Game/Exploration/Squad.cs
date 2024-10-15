@@ -95,8 +95,9 @@ public class Squad
 
     public void InitiateCombat(Enemy enemy)
     {
-        // TODO : send combat outcome into a game event
+        enemy.MarkAsInCombat();
 
+        // TODO : send combat outcome into a game event
         // Determine combat result using random roll and strength comparison
         int strengthDifference = m_strength - enemy.GetStrength();
 
@@ -138,6 +139,8 @@ public class Squad
             // CRITICAL FAILURE: Some squad members are killed, and the rest will retreat
             Debug.Log("CRITICAL FAILURE: Some squad members have been killed.");
         }
+
+        enemy.StopCombat();
     }
 
     public int GetStrength() { return m_strength; }
@@ -166,6 +169,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = type == ResourceType.NONE ? State.ARRIVAL : State.EXPLORATION;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.DEPARTURE,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
@@ -190,6 +201,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = State.ARRIVAL;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.EXPLORATION,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
@@ -207,8 +226,8 @@ public class Squad
                     Debug.Log($"squad {this} completed mission");
                     var data = new SquadArrivalEvent
                     {
-                        resources = m_resources,
-                        members = m_members,
+                        Resources = m_resources,
+                        Members = m_members,
                     };
                     narrator.TriggerEvent(ExplorationEvents.SQUAD_BACK_TO_BASE, data);
 
@@ -217,6 +236,14 @@ public class Squad
 
                     m_progress = 0;
                     m_state = State.IDLE;
+
+                    var statusData = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.ARRIVAL,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
                 }
                 else
                 {
