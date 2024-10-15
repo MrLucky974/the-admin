@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    public const int DAY_IN_SECONDS = 5;//10 * 60;
+    public const int DAY_IN_SECONDS = 2;//10 * 60;
     public const int WEEK_LENGTH_IN_DAYS = 7;
     public static readonly string[] WEEK_DAYS =
     {

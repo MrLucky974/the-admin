@@ -47,8 +47,9 @@ public class EndSreen : MonoBehaviour
 
     void DisplayRecap()
     {
-        float[] realTime = ConvertSecToMinutes(m_timeManager.GetCurrentDay()*TimeManager.DAY_IN_SECONDS);
-        DisplayRecapLabel(m_daysLabel, $"- the colony survived {m_timeManager.GetCurrentDay()} days => {realTime[0]}:{realTime[1]}");
+        int dayNum = CalculateTotalDays(m_timeManager.GetCurrentDay(), m_timeManager.GetCurrentWeek());
+        float[] realTime = ConvertSecToMinutes(dayNum * TimeManager.DAY_IN_SECONDS);
+        DisplayRecapLabel(m_daysLabel, $"- the colony survived {dayNum} days => {realTime[0]}:{realTime[1]}");
         
     }
 
@@ -61,6 +62,13 @@ public class EndSreen : MonoBehaviour
         result[1] = remainingSeconds;
         return result;
      
+    }
+
+    int CalculateTotalDays(int startDay, int weeks)
+    {
+        int daysFromWeeks = weeks * 7; 
+        int totalDays = startDay + daysFromWeeks; 
+        return totalDays;
     }
 
 

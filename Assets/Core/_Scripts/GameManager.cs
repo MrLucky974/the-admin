@@ -45,6 +45,7 @@ public class GameManager : Singleton<GameManager>
 
         m_inputActions = new PlayerInputActions();
         m_inputActions.Enable();
+        m_reputationHandler.OnReputationChanged+=CheckReputationValue;
 
         #region Initialize Commands
         m_commandSystem.AddCommand(new CommandDefinition<Action>("clear", () =>
@@ -190,11 +191,6 @@ public class GameManager : Singleton<GameManager>
     {
         var deltaTime = Time.deltaTime;
         m_timeManager.UpdateTime(deltaTime);
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            OnGameFinished?.Invoke();
-            DisableAllComponents();
-        }
     }
 
     private void OnDestroy()
@@ -214,6 +210,21 @@ public class GameManager : Singleton<GameManager>
             component.enabled = false;
         }
     }
+
+    private void CheckReputationValue(int reputation)
+    {
+        if(reputation == ReputationHandler.MIN_REPUTATION)
+        {
+            OnGameFinished?.Invoke();
+        }
+    }
+
+    private void GameFinished()
+    {
+        OnGameFinished?.Invoke();
+        DisableAllComponents();
+    }
+
 
     public TimeManager GetTimeManager() => m_timeManager;
     public CommandSystem GetCommands() => m_commandSystem;
