@@ -100,6 +100,29 @@ public class VillagerData
         UpdateAgeStatus();
     }
 
+    public string GetName()
+    {
+        return m_name;
+    }
+
+    public void SetID(string newID)
+    {
+        m_identifier = newID;
+    }
+
+    public string GetID()
+    {
+        return m_identifier;
+    }
+
+    public int GetIDLastDigit()
+    {
+        int lastdigit = m_identifier[1];
+        return lastdigit;
+    }
+
+    #region Age Handling Methods
+
     public void UpdateAgeStatus()
     {
         if (m_age >= AGE_RANGE[AgeStage.KID].min && m_age <= AGE_RANGE[AgeStage.KID].max)
@@ -144,9 +167,23 @@ public class VillagerData
         UpdateAgeStatus();
     }
 
+    public int GetOlder()
+    {
+        m_age++;
+        UpdateAgeStatus();
+        return m_age;
+    }
+
+    #endregion
+
     public Gender GetGender()
     {
         return m_gender;
+    }
+
+    public bool IsMale()
+    {
+        return m_gender == Gender.MALE;
     }
 
     public Personality GetPersonality()
@@ -154,26 +191,7 @@ public class VillagerData
         return m_personality;
     }
 
-    public string GetName()
-    {
-        return m_name;
-    }
-
-    public void SetID(string newID)
-    {
-        m_identifier = newID;
-    }
-
-    public string GetID()
-    {
-        return m_identifier;
-    }
-
-    public int GetIDLastDigit()
-    {
-        int lastdigit = m_identifier[1];
-        return lastdigit;
-    }
+    #region Work Handling Methods
 
     public WorkingStatus GetWorkingStatus()
     {
@@ -195,7 +213,10 @@ public class VillagerData
         return m_workingStatus.Equals(WorkingStatus.IDLE);
     }
 
-    #region Handling Fatigue
+    #endregion
+
+    #region Fatigue Handling Methods
+
     public void DecreaseFatigue(int fatigueToRemove)
     {
         m_fatigue = m_fatigue - Mathf.Abs(fatigueToRemove);
@@ -212,7 +233,10 @@ public class VillagerData
     {
         return m_fatigue;
     }
+
     #endregion
+
+    #region Pregnancy Handling Methods
 
     public void Impregnate(VillagerData mate)
     {
@@ -225,10 +249,6 @@ public class VillagerData
     public VillagerData GetMate()
     {
         return (m_mate);
-    }
-    public bool IsMale()
-    {
-        return m_gender == Gender.MALE;
     }
 
     public int GetPregnancyDuration()
@@ -245,6 +265,10 @@ public class VillagerData
     {
         m_pregnancyDuration++;
     }
+
+    #endregion
+
+    #region Health Handling Methods
 
     public void ApplyHealthStatus(HealthStatus status)
     {
@@ -279,17 +303,12 @@ public class VillagerData
         return false;
     }
 
-    public int GetOlder()
-    {
-        m_age++;
-        UpdateAgeStatus();
-        return m_age;
-    }
-
     public HealthStatus GetHealthStatus()
     {
         return m_healthStatus;
     }
+
+    #endregion
 
     public override string ToString()
     {
