@@ -52,6 +52,13 @@ public class VillagerManager : MonoBehaviour
         m_timeManager.OnWeekEnded += OnNewWeek;
         m_timeManager.OnDayEnded += OnNewDay;
 
+        // Initialize population
+        var rng = GameManager.RNG;
+        const int adultCount = 3;
+        int childCount = rng.Next(2, 4); // 2-3 children (because max value is excluded)
+        int elderCount = rng.Next(0, 4); // 0-3 children (because max value is excluded)
+        CreateRandomVillagers(childCount, adultCount, elderCount);
+
         m_commandLog = GameManager.Instance.GetCommandLog();
         var commandSystem = GameManager.Instance.GetCommands();
 
@@ -237,7 +244,6 @@ public class VillagerManager : MonoBehaviour
             plaguedVillagers.Add(randomVillager);
             i++;
         }
-
     }
 
     public void LaunchDisease()

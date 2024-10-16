@@ -21,6 +21,11 @@ public class ResourceHandler : MonoBehaviour
         OnRationsChanged?.Invoke(m_rations);
         OnMedsChanged?.Invoke(m_meds);
         OnScrapsChanged?.Invoke(m_scraps);
+
+        // Initialize resources
+        AddRations(12);
+        AddMeds(7);
+        AddScraps(5);
     }
 
     // Properties with get/set methods
