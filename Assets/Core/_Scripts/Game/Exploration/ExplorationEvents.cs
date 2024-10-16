@@ -4,10 +4,11 @@ public static class ExplorationEvents
     public static readonly EventTypeIdentifier SQUAD_STATUS_CHANGED = EventTypeIdentifier.Create("Exploration.Squad.StatusChanged");
 }
 
-public struct SquadArrivalEvent : IGameEvent
+public struct SquadVoyageEndEvent : IGameEvent
 {
     public (ResourceType type, int amount) Resources;
     public VillagerData[] Members;
+    public Sector Sector;
 }
 
 public struct SquadStatusChangedEvent : IGameEvent

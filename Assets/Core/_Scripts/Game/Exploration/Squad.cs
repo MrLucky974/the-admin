@@ -224,13 +224,6 @@ public class Squad
                 if (m_progress >= TimeManager.DAY_IN_SECONDS)
                 {
                     Debug.Log($"squad {this} completed mission");
-                    var data = new SquadArrivalEvent
-                    {
-                        Resources = m_resources,
-                        Members = m_members,
-                    };
-                    narrator.TriggerEvent(ExplorationEvents.SQUAD_BACK_TO_BASE, data);
-
                     commandLog.AddLog($"info: squad from sector {m_sector.GetIdentifier()} is back to base", GameManager.ORANGE);
                     SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
 
@@ -244,6 +237,14 @@ public class Squad
                         Squad = this,
                     };
                     narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, statusData);
+
+                    var data = new SquadVoyageEndEvent
+                    {
+                        Resources = m_resources,
+                        Members = m_members,
+                        Sector = m_sector,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_BACK_TO_BASE, data);
                 }
                 else
                 {

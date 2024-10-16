@@ -202,4 +202,57 @@ public class Region
         // Return the list of adjacent sectors
         return adjacentSectors;
     }
+
+    /// <summary>
+    /// Converts a sector identifier (e.g., "A1") to a tuple representing the (x, y) coordinates.
+    /// </summary>
+    /// <param name="identifier">The sector identifier in the format "A1", "B2", etc.</param>
+    /// <returns>A tuple (x, y) representing the coordinates, or (-1, -1) if the identifier is invalid.</returns>
+    private (int x, int y) ConvertIdentifierToCoordinates(string identifier)
+    {
+        if (string.IsNullOrEmpty(identifier) || identifier.Length < 2)
+        {
+            Debug.LogError("Identifier must be in the format 'A1', 'B2', etc.");
+            return (-1, -1);
+        }
+
+        // Extract column letter and row number
+        char colChar = char.ToUpper(identifier[0]);
+        if (!int.TryParse(identifier.Substring(1), out int row) || row < 1 || row > m_size)
+        {
+            Debug.LogError($"Invalid row number. Must be between 1 and {m_size}");
+            return (-1, -1);
+        }
+
+        // Convert column letter to 0-based index
+        int col = colChar - 'A';
+        if (col < 0 || col >= m_size)
+        {
+            Debug.LogError($"Invalid column letter. Must be between A and {(char)('A' + m_size - 1)}");
+            return (-1, -1);
+        }
+
+        // Convert to 0-based (x, y) coordinates
+        int x = col;
+        int y = row - 1;
+
+        return (x, y);
+    }
+
+    /// <summary>
+    /// Gets the coordinates (x, y) of a given sector using its identifier.
+    /// </summary>
+    /// <param name="sector">The sector to get the coordinates for.</param>
+    /// <returns>A tuple (x, y) representing the coordinates, or (-1, -1) if the sector is invalid.</returns>
+    public (int x, int y) GetSectorCoordinates(Sector sector)
+    {
+        if (sector == null)
+        {
+            Debug.LogError("Sector cannot be null.");
+            return (-1, -1);
+        }
+
+        string identifier = sector.GetIdentifier();
+        return ConvertIdentifierToCoordinates(identifier);
+    }
 }

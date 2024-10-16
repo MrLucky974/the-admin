@@ -6,6 +6,22 @@ using UnityEngine;
 
 public class ExplorationSystem : MonoBehaviour
 {
+    public struct SectorEventData
+    {
+        public int x, y;
+        public (ResourceType resourceType, int amount) resource;
+        public bool hasEnemy;
+    }
+
+    public struct SquadStatusEventData
+    {
+        public int x, y;
+        public bool finishedExploration;
+        public float progress;
+        public bool isSectorScanned;
+        public (ResourceType resourceType, int amount) resource;
+    }
+
     private CommandLogManager m_commandLog;
     private NarratorSystem m_narrator;
     private TimeManager m_timeManager;
@@ -18,6 +34,9 @@ public class ExplorationSystem : MonoBehaviour
     private Coroutine m_scanCoroutine;
 
     private List<Sector> m_scannedSectors; // List of every sector already scanned on this current region
+    public event Action<SectorEventData> OnSectorScanned;
+    public event Action OnRegionRegeneration;
+    public event Action<SquadStatusEventData> OnSquadStatusChanged;
 
     // Exploration properties
     private Coroutine m_explorationLoopCoroutine;
@@ -26,8 +45,8 @@ public class ExplorationSystem : MonoBehaviour
     public void Initialize()
     {
         m_narrator = GameManager.Instance.GetNarrator();
-        m_narrator.Subscribe<SquadArrivalEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, OnSquadArrival);
-        m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, OnSquadStatusChanged);
+        m_narrator.Subscribe<SquadVoyageEndEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, HandleSquadVoyageEnded);
+        m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, HandleSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
         m_timeManager.OnDayEnded += UpdateMap;
@@ -59,6 +78,7 @@ public class ExplorationSystem : MonoBehaviour
 
                 // Generate a new region
                 m_region = Region.Generate();
+                OnRegionRegeneration?.Invoke();
 
                 modal.Close();
             })
@@ -190,6 +210,7 @@ public class ExplorationSystem : MonoBehaviour
 
         // Generate a starting region on game start
         m_region = Region.Generate();
+        OnRegionRegeneration?.Invoke();
     }
 
     private void OnDestroy()
@@ -268,7 +289,7 @@ public class ExplorationSystem : MonoBehaviour
         }
     }
 
-    private void OnSquadArrival(SquadArrivalEvent @event)
+    private void HandleSquadVoyageEnded(SquadVoyageEndEvent @event)
     {
         var villagerManager = GameManager.Instance.GetVillagerManager();
         var resourceHandler = GameManager.Instance.GetResourceHandler();
@@ -293,15 +314,41 @@ public class ExplorationSystem : MonoBehaviour
         {
             villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.IDLE);
         }
+
+        var sector = @event.Sector;
+        var coords = m_region.GetSectorCoordinates(sector);
+
+        var data = new SquadStatusEventData()
+        {
+            x = coords.x,
+            y = coords.y,
+            finishedExploration = true,
+            progress = 0f,
+            isSectorScanned = m_scannedSectors.Contains(sector),
+            resource = sector.GetResourceData(),
+        };
+        OnSquadStatusChanged?.Invoke(data);
     }
 
-    private void OnSquadStatusChanged(SquadStatusChangedEvent @event)
+    private void HandleSquadStatusChanged(SquadStatusChangedEvent @event)
     {
+        var squad = @event.Squad;
+        var squadSector = squad.GetActivitySector();
+        var coords = m_region.GetSectorCoordinates(squadSector);
+
+        var data = new SquadStatusEventData()
+        {
+            x = coords.x,
+            y = coords.y,
+            progress = (float)squad.GetProgress() / TimeManager.DAY_IN_SECONDS,
+            isSectorScanned = m_scannedSectors.Contains(squadSector),
+            resource = squadSector.GetResourceData(),
+        };
+        OnSquadStatusChanged?.Invoke(data);
+
         var enemies = m_region.GetEnemies();
         foreach (var enemy in enemies)
         {
-            var squad = @event.Squad;
-            var squadSector = squad.GetActivitySector();
             var enemySector = m_region.GetSector(enemy.GetLocation());
 
             if (squadSector.Equals(enemySector) is false)
@@ -336,6 +383,22 @@ public class ExplorationSystem : MonoBehaviour
             foreach (var squad in m_activeSquads)
             {
                 squad.Process(m_narrator, m_commandLog);
+
+                if (squad.GetState() != Squad.State.IDLE)
+                {
+                    var sector = squad.GetActivitySector();
+                    var coords = m_region.GetSectorCoordinates(sector);
+
+                    var data = new SquadStatusEventData()
+                    {
+                        x = coords.x,
+                        y = coords.y,
+                        progress = (float)squad.GetProgress() / TimeManager.DAY_IN_SECONDS,
+                        isSectorScanned = m_scannedSectors.Contains(sector),
+                        resource = sector.GetResourceData(),
+                    };
+                    OnSquadStatusChanged?.Invoke(data);
+                }
             }
             yield return null;
         }
@@ -358,7 +421,7 @@ public class ExplorationSystem : MonoBehaviour
         while (time < totalTime)
         {
             yield return null;
-            if (m_updateScanProgress) time += Time.deltaTime;
+            if (m_updateScanProgress) time += Time.deltaTime * m_timeManager.GetTimeScale();
         }
 
         // Send a message on the command log to signal the player a scan was completed
@@ -383,6 +446,15 @@ public class ExplorationSystem : MonoBehaviour
         }
 
         // Mark the sector as scanned
+        var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
+        var data = new SectorEventData()
+        {
+            x = coords.x,
+            y = coords.y,
+            resource = resourceData,
+            hasEnemy = m_currentSectorScan.HasEnemy(),
+        };
+        OnSectorScanned?.Invoke(data);
         m_scannedSectors.Add(m_currentSectorScan);
         m_currentSectorScan = null;
         m_scanCoroutine = null;
