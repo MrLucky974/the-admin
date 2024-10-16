@@ -1,11 +1,4 @@
 // TODO : Replace some OnPopulationChanged calls by a more individual focused event
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using UnityEngine;
-using static VillagerData;
-
 public class VillagerManager : MonoBehaviour
 {
     public enum DeathType
@@ -229,20 +222,22 @@ public class VillagerManager : MonoBehaviour
     {
         var rng = GameManager.RNG;
         var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
-
-        int plagueCount = rng.Next(2, villagers.Count - 1);
-        int i = 0;
-        List<VillagerData> plaguedVillagers = new List<VillagerData>();
-        while (i < plagueCount)
+        if (villagers.Count >= 2)
         {
-            VillagerData randomVillager = villagers.PickRandom(rng);
-            if (plaguedVillagers.Contains(randomVillager))
+            int plagueCount = rng.Next(2, villagers.Count - 1);
+            int i = 0;
+            List<VillagerData> plaguedVillagers = new List<VillagerData>();
+            while (i < plagueCount)
             {
-                continue;
+                VillagerData randomVillager = villagers.PickRandom(rng);
+                if (plaguedVillagers.Contains(randomVillager))
+                {
+                    continue;
+                }
+                randomVillager.ApplyHealthStatus(HealthStatus.SICK);
+                plaguedVillagers.Add(randomVillager);
+                i++;
             }
-            randomVillager.ApplyHealthStatus(HealthStatus.SICK);
-            plaguedVillagers.Add(randomVillager);
-            i++;
         }
     }
 
