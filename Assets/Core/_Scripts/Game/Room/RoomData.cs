@@ -101,7 +101,7 @@ public class RoomData : MonoBehaviour
     }
 
     protected void CheckIsDamaged(){ 
-        if(m_durability < m_maxDurability / 2)
+        if(m_durability <= m_maxDurability / 2)
         {
             SetRoomState(RoomState.DAMAGED);
         }

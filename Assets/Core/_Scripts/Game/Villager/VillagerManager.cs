@@ -72,13 +72,11 @@ public class VillagerManager : MonoBehaviour
             GetPregnant();
         }));
 
+#endif
         commandSystem.AddCommand(new CommandDefinition<Action>("showid", "[EDITOR ONLY] List all identifiers of the population in the Unity log", () =>
         {
             ShowIDs();
         }));
-
-#endif
-
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("heal", "Removes diseases and injuries at the cost of 1 meds per status", (string villagerID) =>
         {
             HealOneVillager(villagerID);
@@ -599,9 +597,14 @@ public class VillagerManager : MonoBehaviour
 
     public void ShowIDs()
     {
+        m_commandLog.AddLog("----------");
         foreach (VillagerData villager in m_population.ToList())
         {
             Debug.Log(villager.GetID());
+            m_commandLog.AddLog(villager.GetID()+" "+villager.GetName()+" | "+ villager.GetAgeStage());
+            //m_commandLog.AddLog(villager.GetAgeStage().ToString());
+            m_commandLog.AddLog("----------");
+
         }
     }
 
