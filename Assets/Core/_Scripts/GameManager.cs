@@ -47,6 +47,7 @@ public class GameManager : Singleton<GameManager>
         m_inputActions.Enable();
         m_reputationHandler.OnReputationChanged += CheckReputationValue;
 
+
         #region Initialize Commands
 
         m_commandSystem.AddCommand(new CommandDefinition<Action>("clear",
@@ -259,6 +260,8 @@ public class GameManager : Singleton<GameManager>
         OnGameFinished?.Invoke();
         DisableAllComponents();
     }
+
+
 
 
     public TimeManager GetTimeManager() => m_timeManager;

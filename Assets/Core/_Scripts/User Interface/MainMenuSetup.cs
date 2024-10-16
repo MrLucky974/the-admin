@@ -68,7 +68,7 @@ public class MainMenuSetup : MonoBehaviour
             currentLoadingValue += Time.deltaTime;
         }
         LoadGamePlayScene();
-        // TODO : Load gameplay scene
+
     }
 
     private void OnTextSubmit(string input)
