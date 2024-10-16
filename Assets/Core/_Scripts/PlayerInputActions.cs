@@ -71,6 +71,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PreviousCommand"",
+                    ""type"": ""Button"",
+                    ""id"": ""88c0b765-7e1b-4bd7-9692-43701fb13128"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,6 +181,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Erase"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ea5fea7-d6bf-410b-99bb-837b2c862b86"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PreviousCommand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +205,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Gameplay_Dismiss = m_Gameplay.FindAction("Dismiss", throwIfNotFound: true);
         m_Gameplay_Scroll = m_Gameplay.FindAction("Scroll", throwIfNotFound: true);
         m_Gameplay_Erase = m_Gameplay.FindAction("Erase", throwIfNotFound: true);
+        m_Gameplay_PreviousCommand = m_Gameplay.FindAction("PreviousCommand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +272,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Dismiss;
     private readonly InputAction m_Gameplay_Scroll;
     private readonly InputAction m_Gameplay_Erase;
+    private readonly InputAction m_Gameplay_PreviousCommand;
     public struct GameplayActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -260,6 +282,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Dismiss => m_Wrapper.m_Gameplay_Dismiss;
         public InputAction @Scroll => m_Wrapper.m_Gameplay_Scroll;
         public InputAction @Erase => m_Wrapper.m_Gameplay_Erase;
+        public InputAction @PreviousCommand => m_Wrapper.m_Gameplay_PreviousCommand;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +307,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Erase.started += instance.OnErase;
             @Erase.performed += instance.OnErase;
             @Erase.canceled += instance.OnErase;
+            @PreviousCommand.started += instance.OnPreviousCommand;
+            @PreviousCommand.performed += instance.OnPreviousCommand;
+            @PreviousCommand.canceled += instance.OnPreviousCommand;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -303,6 +329,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Erase.started -= instance.OnErase;
             @Erase.performed -= instance.OnErase;
             @Erase.canceled -= instance.OnErase;
+            @PreviousCommand.started -= instance.OnPreviousCommand;
+            @PreviousCommand.performed -= instance.OnPreviousCommand;
+            @PreviousCommand.canceled -= instance.OnPreviousCommand;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -327,5 +356,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnDismiss(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
         void OnErase(InputAction.CallbackContext context);
+        void OnPreviousCommand(InputAction.CallbackContext context);
     }
 }
