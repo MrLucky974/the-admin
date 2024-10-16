@@ -1,10 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using UnityEditor.SearchService;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class EndSreen : MonoBehaviour
@@ -37,8 +35,8 @@ public class EndSreen : MonoBehaviour
     }
 
 
-   
-    IEnumerator SelectButtonTimer(float time,Button button)
+
+    IEnumerator SelectButtonTimer(float time, Button button)
     {
         yield return new WaitForSeconds(time);
         SelectButton(button);
@@ -50,24 +48,24 @@ public class EndSreen : MonoBehaviour
         int dayNum = CalculateTotalDays(m_timeManager.GetCurrentDay(), m_timeManager.GetCurrentWeek());
         float[] realTime = ConvertSecToMinutes(dayNum * TimeManager.DAY_IN_SECONDS);
         DisplayRecapLabel(m_daysLabel, $"- the colony survived {dayNum} days => {realTime[0]}:{realTime[1]}");
-        
+
     }
 
     float[] ConvertSecToMinutes(float seconds)
     {
-        int minutes = Mathf.FloorToInt(seconds / 60f); 
-        int remainingSeconds = Mathf.FloorToInt(seconds % 60f); 
+        int minutes = Mathf.FloorToInt(seconds / 60f);
+        int remainingSeconds = Mathf.FloorToInt(seconds % 60f);
         float[] result = new float[2];
         result[0] = minutes;
         result[1] = remainingSeconds;
         return result;
-     
+
     }
 
     int CalculateTotalDays(int startDay, int weeks)
     {
-        int daysFromWeeks = weeks * 7; 
-        int totalDays = startDay + daysFromWeeks; 
+        int daysFromWeeks = weeks * 7;
+        int totalDays = startDay + daysFromWeeks;
         return totalDays;
     }
 
@@ -84,7 +82,7 @@ public class EndSreen : MonoBehaviour
         SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
     }
 
-    void DisplayRecapLabel(TextMeshProUGUI label ,string text)
+    void DisplayRecapLabel(TextMeshProUGUI label, string text)
     {
         label.text = text;
     }

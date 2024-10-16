@@ -80,7 +80,7 @@ public class VillagerManager : MonoBehaviour
         }));
 
 #endif
-        commandSystem.AddCommand(new CommandDefinition<Action>("showid", "[EDITOR ONLY] List all identifiers of the population in the Unity log", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("showid", "List all identifiers of the population in the Unity log", () =>
         {
             ShowIDs();
         }));
@@ -613,7 +613,7 @@ public class VillagerManager : MonoBehaviour
         foreach (VillagerData villager in m_population.ToList())
         {
             Debug.Log(villager.GetID());
-            m_commandLog.AddLog(villager.GetID()+" "+villager.GetName()+" | "+ villager.GetAgeStage());
+            m_commandLog.AddLog(villager.GetID() + " " + villager.GetName() + " | " + villager.GetAgeStage());
             //m_commandLog.AddLog(villager.GetAgeStage().ToString());
             m_commandLog.AddLog("----------");
 
