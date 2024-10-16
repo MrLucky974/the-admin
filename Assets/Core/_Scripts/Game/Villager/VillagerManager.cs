@@ -221,6 +221,10 @@ public class VillagerManager : MonoBehaviour
     {
         var rng = GameManager.RNG;
         var villagers = m_population.Where(villager => villager.HasHealthStatus(HealthStatus.SICK) != true).ToList();
+
+        if (villagers.Count < 1)
+            return;
+
         VillagerData randomVillager = villagers.PickRandom(rng);
         randomVillager.ApplyHealthStatus(HealthStatus.SICK);
     }
