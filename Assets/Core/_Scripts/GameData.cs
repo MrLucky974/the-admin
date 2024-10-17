@@ -10,6 +10,12 @@ public class GameData : PersistentSingleton<GameData>
         get => Instance.m_identifier;
     }
 
+    private string m_seedString = string.Empty;
+    public static string SeedString
+    {
+        get => Instance.m_seedString;
+    }
+
     private int m_seed = 0;
     public static int Seed
     {
@@ -24,5 +30,10 @@ public class GameData : PersistentSingleton<GameData>
     public static void SetIdentifier(string identifier)
     {
         Instance.m_identifier = identifier;
+    }
+
+    public static void SetSeedString(string seed)
+    {
+        Instance.m_seedString = seed;
     }
 }

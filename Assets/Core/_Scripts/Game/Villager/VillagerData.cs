@@ -223,13 +223,13 @@ public class VillagerData
     public void DecreaseFatigue(int fatigueToRemove)
     {
         m_fatigue = m_fatigue - Mathf.Abs(fatigueToRemove);
-        Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
+        m_fatigue = Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
 
     public void IncreaseFatigue(int fatigueToAdd)
     {
         m_fatigue = m_fatigue + Mathf.Abs(fatigueToAdd);
-        Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
+        m_fatigue = Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
 
 

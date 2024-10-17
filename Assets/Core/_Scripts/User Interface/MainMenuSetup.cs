@@ -35,6 +35,19 @@ public class MainMenuSetup : MonoBehaviour
 
     private void Start()
     {
+        // Lock player from using the cursor
+#if UNITY_EDITOR
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+#else
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+#endif
+
         m_logLabel.text = "";
         m_logLabel.text += "The Administrator - v0.1.0a";
         m_logLabel.text += "\nEnter username...";
@@ -103,10 +116,12 @@ public class MainMenuSetup : MonoBehaviour
                 {
                     var key = JRandom.GenerateRandomString(m_inputField.characterLimit);
                     Debug.Log($"Generated key: {key}");
+                    GameData.SetSeedString(key);
                     seed = JUtils.StringToSeedFNV1a(key);
                 }
                 else
                 {
+                    GameData.SetSeedString(input);
                     seed = JUtils.StringToSeedFNV1a(input);
                 }
 
