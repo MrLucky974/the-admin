@@ -7,8 +7,9 @@ public class ExplorationSystem : MonoBehaviour
 {
     public struct SectorEventData
     {
-        public int x, y;
-        public (ResourceType resourceType, int amount) resource;
+        public int X, Y;
+        public float Progress;
+        public (ResourceType resourceType, int amount) Resource;
     }
 
     public struct SquadStatusEventData
@@ -33,6 +34,7 @@ public class ExplorationSystem : MonoBehaviour
 
     private List<Sector> m_scannedSectors; // List of every sector already scanned on this current region
     public event Action<SectorEventData> OnSectorScanned;
+    public event Action<SectorEventData> OnCurrentSectorScan;
     public event Action OnRegionRegeneration;
     public event Action<SquadStatusEventData> OnSquadStatusChanged;
 
@@ -295,6 +297,8 @@ public class ExplorationSystem : MonoBehaviour
         Debug.Log("Starting scan...");
         m_commandLog.AddLog($"scan: prospecting data on sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
 
+        var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
+
         // Wait until the time value has reached the total time
         // Could use WaitForSeconds but me no likey
         float time = 0;
@@ -302,6 +306,15 @@ public class ExplorationSystem : MonoBehaviour
         {
             yield return null;
             if (m_updateScanProgress) time += Time.deltaTime * m_timeManager.GetTimeScale();
+
+            var sectorEventData = new SectorEventData()
+            {
+                Progress = time / totalTime,
+                X = coords.x,
+                Y = coords.y,
+                Resource = m_currentSectorScan.GetResourceData(),
+            };
+            OnCurrentSectorScan?.Invoke(sectorEventData);
         }
 
         // Send a message on the command log to signal the player a scan was completed
@@ -320,12 +333,11 @@ public class ExplorationSystem : MonoBehaviour
         }
 
         // Mark the sector as scanned
-        var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
         var data = new SectorEventData()
         {
-            x = coords.x,
-            y = coords.y,
-            resource = resourceData,
+            X = coords.x,
+            Y = coords.y,
+            Resource = resourceData,
         };
         OnSectorScanned?.Invoke(data);
         m_scannedSectors.Add(m_currentSectorScan);
