@@ -4,6 +4,51 @@ using UnityEngine;
 
 public static class JRandom
 {
+    public class WeightSumGenerator<T>
+    {
+        private readonly Dictionary<T, int> values = new();
+
+        public void Add(T element, int value)
+        {
+            if (values.ContainsKey(element))
+            {
+                values[element] = value;
+            }
+            else
+            {
+                values.Add(element, value);
+            }
+        }
+
+        public T Generate(int seed = 0)
+        {
+            var rng = new System.Random(seed);
+            return Generate(rng);
+        }
+
+        public T Generate(System.Random rng)
+        {
+            int weightedSum = 0;
+            foreach (var (_, chance) in values)
+            {
+                weightedSum += chance;
+            }
+
+            int r = rng.Next(weightedSum);
+            foreach (var (value, chance) in values)
+            {
+                if (r < chance && r > 0)
+                {
+                    return value;
+                }
+
+                r -= chance;
+            }
+
+            return default;
+        }
+    }
+
     private const string ALPHANUMERIC_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     public static string GenerateRandomString(int size)
