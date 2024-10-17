@@ -23,9 +23,9 @@ public class ResourceHandler : MonoBehaviour
         OnScrapsChanged?.Invoke(m_scraps);
 
         // Initialize resources
-        AddRations(12);
-        AddMeds(7);
-        AddScraps(5);
+        AddRations(24);
+        AddMeds(14);
+        AddScraps(20);
     }
 
     // Properties with get/set methods
