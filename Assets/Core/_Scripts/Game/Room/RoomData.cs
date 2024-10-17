@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class RoomData : MonoBehaviour
 {
@@ -16,19 +15,19 @@ public class RoomData : MonoBehaviour
     protected int m_maxDurability = MAX_DURABILITY; // max room hp
 
     protected int m_repairCost = 1;
-    protected ArrayList m_villagerInRoom = new ArrayList(); 
+    protected ArrayList m_villagerInRoom = new ArrayList();
 
-    public event Action<int> OnRoomRepaired;
     public event Action<int> OnDurabilityChanged;
     public event Action OnStateChanged;
     public event Action<RoomData> OnRoomDestroyed;
 
 
     [SerializeField] protected RoomType m_roomType;
-    
-    
+
+
     protected RoomState m_roomState = RoomState.FUNCTIONAL;
-    public enum RoomState {
+    public enum RoomState
+    {
         FUNCTIONAL,
         DAMAGED,
         REPAIRING,
@@ -47,7 +46,7 @@ public class RoomData : MonoBehaviour
 
     public RoomState roomState
     {
-        get { return m_roomState;}
+        get { return m_roomState; }
     }
 
     public int durability
@@ -66,7 +65,7 @@ public class RoomData : MonoBehaviour
     }
 
     public ArrayList GetVillagersInRoom() => m_villagerInRoom;
-  
+
 
     //--
 
@@ -83,34 +82,43 @@ public class RoomData : MonoBehaviour
         m_roomState = newState;
         OnStateChanged?.Invoke();
     }
+
+    public int GetRepairCost()
+    {
+        return m_repairCost;
+    }
+
     public void RepairRoom() // repair the room
     {
-        OnRoomRepaired?.Invoke(m_repairCost);
         m_durability = m_maxDurability;
         OnDurabilityChanged?.Invoke(m_durability);
         SetRoomState(RoomState.FUNCTIONAL);
         RemoveAllVillager();
     }
 
-    public void IncrementDurability(int value){ 
+    public void IncrementDurability(int value)
+    {
         m_durability += value;
         OnDurabilityChanged?.Invoke(m_durability);
-        m_durability = Mathf.Clamp(m_durability,0,m_maxDurability);
+        m_durability = Mathf.Clamp(m_durability, 0, m_maxDurability);
         CheckIsDamaged();
         CheckIsDestroy();
     }
 
-    protected void CheckIsDamaged(){ 
-        if(m_durability <= m_maxDurability / 2)
+    protected void CheckIsDamaged()
+    {
+        if (m_durability <= m_maxDurability / 2)
         {
             SetRoomState(RoomState.DAMAGED);
         }
     }
 
-    protected void CheckIsDestroy(){
+    protected void CheckIsDestroy()
+    {
         if (roomState == RoomState.DESTROYED) return;
-        if (m_durability <= 0){
-            DestroyRoom();           
+        if (m_durability <= 0)
+        {
+            DestroyRoom();
         }
     }
 
@@ -128,9 +136,10 @@ public class RoomData : MonoBehaviour
         m_villagerInRoom.Clear();
     }
 
-    virtual protected void DestroyRoom(){
+    virtual protected void DestroyRoom()
+    {
         SetRoomState(RoomState.DESTROYED);
         OnRoomDestroyed?.Invoke(this);
     }
-  
+
 }

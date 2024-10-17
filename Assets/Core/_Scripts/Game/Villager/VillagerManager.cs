@@ -478,7 +478,7 @@ public class VillagerManager : MonoBehaviour
                 clm.AddLog($"Room not found", GameManager.RED);
                 return;
             }
-            roomManager.TryToRepairRoom(villager, roomId, 5); // Check if can repair the room
+            roomManager.TryToRepairRoom(villager, roomId); // Check if can repair the room
         }
     }
 

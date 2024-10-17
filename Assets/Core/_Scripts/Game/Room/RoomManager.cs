@@ -250,40 +250,48 @@ public class RoomManager : MonoBehaviour
         return DEFAULT_FATIGUE_COST;
     }
 
-    public void TryToRepairRoom(VillagerData villager, string roomId, int scrapsCost)
+    public void TryToRepairRoom(VillagerData villager, string roomId)
     {
+        var room = GetRoomWithId(roomId);
+        int scrapsCost = room.GetRepairCost();
+
         if (villager.GetAgeStage() == VillagerData.AgeStage.KID)
         {
             m_gm.GetCommandLog().AddLogError($"you cant repair {roomId} {villager.GetID()} is a kid");
             return;
         }
-        if (GetRoomWithId(roomId).GetVillagersInRoom().Count != 0)
+
+        if (room.GetVillagersInRoom().Count != 0)
         {
-            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed someone is repairing this room");
+            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed someone is repairing this room");
             return;
         }
-        if (GetRoomWithId(roomId).roomState == RoomData.RoomState.DESTROYED)
+
+        if (room.roomState == RoomData.RoomState.DESTROYED)
         {
             scrapsCost = scrapsCost * 2;
         }
+
         if (villager.GetWorkingStatus() != VillagerData.WorkingStatus.IDLE)
         {
             m_gm.GetCommandLog().AddLogError($"villager {villager.GetID()} is occupied");
             return;
         }
+
         if (!m_resourceHandler.HasEnoughResources(0, 0, scrapsCost)) // --Check for ressources
         {
-            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed not enough resources");
+            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed not enough resources");
             return;
         }
-        if (GetRoomWithId(roomId).roomState != RoomData.RoomState.FUNCTIONAL) // --Check if room can be repaired 
+
+        if (room.roomState != RoomData.RoomState.FUNCTIONAL) // --Check if room can be repaired 
         {
-            GetRoomWithId(roomId).AddVillagerInRoom(villager); // --Add villager to room
+            room.AddVillagerInRoom(villager); // --Add villager to room
             StartRepairRoom(roomId, scrapsCost, villager);
         }
         else
         {
-            m_gm.GetCommandLog().AddLogError($"repair {GetRoomWithId(roomId).roomId} failed");
+            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed");
             return;
         }
     }
