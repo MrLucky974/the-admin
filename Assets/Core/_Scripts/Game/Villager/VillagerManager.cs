@@ -31,9 +31,8 @@ public class VillagerManager : MonoBehaviour
     private ModalBox m_modalBox;
 
     public event Action OnNewVillagerAccepted;
-
-
     public const int VISITOR_MAX_CHANCE = 5;
+
     public ReadOnlyCollection<VillagerData> GetPopulation()
     {
         return m_population.AsReadOnly();
@@ -59,7 +58,7 @@ public class VillagerManager : MonoBehaviour
         m_narratorSystem = GameManager.Instance.GetNarrator();
         m_timeManager.OnDayEnded += OnNewDay;
         // Events
-        m_narratorSystem.Subscribe<VillagerAtDoorEvent>(VillagerEvents.VILLAGER_AT_DOOR,OnVillagerAtDoor);
+        m_narratorSystem.Subscribe<VillagerAtDoorEvent>(VillagerEvents.VILLAGER_AT_DOOR, OnVillagerAtDoor);
         m_modalBox = GameManager.Instance.GetModal();
         // Initialize population
         var rng = GameManager.RNG;
@@ -648,10 +647,10 @@ public class VillagerManager : MonoBehaviour
     #region Villager Events
     public void SomeoneAtDoor()
     {
-        int rng = GameManager.RNG.Next(0, VISITOR_MAX_CHANCE+1);
-        if(rng == 0)
+        int rng = GameManager.RNG.Next(0, VISITOR_MAX_CHANCE + 1);
+        if (rng == 0)
         {
-            AgeStage ageRng = (AgeStage)GameManager.RNG.Next(0,3);
+            AgeStage ageRng = (AgeStage)GameManager.RNG.Next(0, 3);
             CreateRandomVillager(ageRng);
             var data = new VillagerAtDoorEvent
             {
@@ -677,9 +676,9 @@ public class VillagerManager : MonoBehaviour
         .SetBody($"{data.newVillager.GetName()} || {data.newVillager.GetAgeStage()}\n give permission to let him in")
         .SetDismissAction((modal) =>
         {
-            if(data.newVillager.GetAgeStage() == 0)  // Is a child 
+            if (data.newVillager.GetAgeStage() == 0)  // Is a child 
             {
-             
+
                 const int reputMalus = 5;
                 reputation.DecreaseReputation(reputMalus);
             }
