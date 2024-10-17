@@ -93,54 +93,9 @@ public class Squad
         m_strength = Mathf.Max(m_strength, 0); // Ensure value cannot get under zero
     }
 
-    public void InitiateCombat(Enemy enemy)
+    public void InitiateCombat()
     {
-        enemy.MarkAsInCombat();
 
-        // TODO : send combat outcome into a game event
-        // Determine combat result using random roll and strength comparison
-        int strengthDifference = m_strength - enemy.GetStrength();
-
-        var rng = GameManager.RNG;
-        int roll = rng.Next(1, 101); // Roll between 1 and 100
-
-        // Adjust roll by the relative strength difference
-        roll += strengthDifference / 2;
-
-        // Determine outcome thresholds (adjusted to increase tie frequency)
-        const int criticalSuccessThreshold = 90;
-        const int successThreshold = 65;
-        const int tieThreshold = 35; // Tie range is wider to increase the chances
-        const int failureThreshold = 15;
-
-        // Determine the outcome based on adjusted thresholds
-        if (roll >= criticalSuccessThreshold)
-        {
-            // CRITICAL SUCCESS: The enemy team is vanquished completely
-            Debug.Log("CRITICAL SUCCESS: The enemy team has been completely vanquished!");
-        }
-        else if (roll >= successThreshold)
-        {
-            // SUCCESS: The enemy team has been beaten and will move elsewhere
-            Debug.Log("SUCCESS: The enemy team has been beaten and will move to a different sector.");
-        }
-        else if (roll >= tieThreshold)
-        {
-            // TIE: Both teams get randomly lightly damaged
-            Debug.Log("TIE: Both teams have taken some damage.");
-        }
-        else if (roll >= failureThreshold)
-        {
-            // FAILURE: Squad members are randomly hurt and will retreat back home
-            Debug.Log("FAILURE: Squad members have been hurt and will retreat.");
-        }
-        else
-        {
-            // CRITICAL FAILURE: Some squad members are killed, and the rest will retreat
-            Debug.Log("CRITICAL FAILURE: Some squad members have been killed.");
-        }
-
-        enemy.StopCombat();
     }
 
     public int GetStrength() { return m_strength; }

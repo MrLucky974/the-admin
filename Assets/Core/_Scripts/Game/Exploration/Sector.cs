@@ -52,8 +52,6 @@ public class Sector
     private int m_amount = 0;
     private bool m_isLooted;
 
-    private Enemy m_enemy;
-
     private Sector(string identifier)
     {
         m_identifier = identifier;
@@ -92,23 +90,6 @@ public class Sector
         return count;
     }
 
-    public bool HasEnemy() => m_enemy != null;
-
-    public Enemy GetEnemy()
-    {
-        return m_enemy;
-    }
-
-    public void SetEnemy(Enemy enemy)
-    {
-        m_enemy = enemy;
-    }
-
-    public void RemoveEnemy()
-    {
-        m_enemy = null;
-    }
-
     public string GetIdentifier()
     {
         return m_identifier;
@@ -124,9 +105,6 @@ public class Sector
         {
             sb.Append($": {m_amount}");
         }
-        if (HasEnemy())
-            sb.Append($", enemy: {m_enemy.GetStrength()}");
-        sb.Append(')');
         return sb.ToString();
     }
 }

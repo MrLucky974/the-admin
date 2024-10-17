@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class ExplorationSystem : MonoBehaviour
@@ -10,7 +9,6 @@ public class ExplorationSystem : MonoBehaviour
     {
         public int x, y;
         public (ResourceType resourceType, int amount) resource;
-        public bool hasEnemy;
     }
 
     public struct SquadStatusEventData
@@ -222,71 +220,9 @@ public class ExplorationSystem : MonoBehaviour
     {
         var rng = GameManager.RNG;
 
-        // Move enemies on the map
-        MoveEnemyUnits(rng);
 
         // TODO : Send an event to update the expedition UI
         m_region.GetSectors().Print();
-    }
-
-    private void MoveEnemyUnits(System.Random rng)
-    {
-        var enemies = m_region.GetEnemies();
-        foreach (var enemy in enemies)
-        {
-            foreach (var squad in m_activeSquads)
-            {
-                var squadSector = squad.GetActivitySector();
-                var enemySector = m_region.GetSector(enemy.GetLocation());
-
-                if (squadSector.Equals(enemySector) is false)
-                    continue;
-
-                if (squad.GetState().Equals(Squad.State.EXPLORATION) is false)
-                    break;
-
-                Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
-                squad.InitiateCombat(enemy);
-                break;
-            }
-
-            if (enemy.InCombat())
-                continue;
-
-            var location = enemy.GetLocation();
-
-            var adjacentSectors = m_region.GetAdjacentSectors(location);
-            adjacentSectors = adjacentSectors.Where(sector => !sector.HasEnemy()).ToList();
-            if (adjacentSectors.Count < 1)
-            {
-                continue;
-            }
-
-            var originSector = m_region.GetSector(location);
-            var targetSector = adjacentSectors.PickRandom(rng);
-
-            originSector.RemoveEnemy();
-            enemy.SetLocation(targetSector.GetIdentifier());
-            targetSector.SetEnemy(enemy);
-
-            Debug.Log($"enemy moved from {originSector.GetIdentifier()} to {targetSector.GetIdentifier()}");
-
-            foreach (var squad in m_activeSquads)
-            {
-                var squadSector = squad.GetActivitySector();
-                var enemySector = m_region.GetSector(enemy.GetLocation());
-
-                if (squadSector.Equals(enemySector) is false)
-                    continue;
-
-                if (squad.GetState().Equals(Squad.State.EXPLORATION) is false)
-                    break;
-
-                Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
-                squad.InitiateCombat(enemy);
-                break;
-            }
-        }
     }
 
     private void HandleSquadVoyageEnded(SquadVoyageEndEvent @event)
@@ -345,21 +281,6 @@ public class ExplorationSystem : MonoBehaviour
             resource = squadSector.GetResourceData(),
         };
         OnSquadStatusChanged?.Invoke(data);
-
-        var enemies = m_region.GetEnemies();
-        foreach (var enemy in enemies)
-        {
-            var enemySector = m_region.GetSector(enemy.GetLocation());
-
-            if (squadSector.Equals(enemySector) is false)
-                continue;
-
-            if (@event.CurrentState.Equals(Squad.State.EXPLORATION) is false)
-                break;
-
-            Debug.Log($"combat on sector {squadSector.GetIdentifier()}");
-            squad.InitiateCombat(enemy);
-        }
     }
 
     private IEnumerator Tick()
@@ -439,12 +360,6 @@ public class ExplorationSystem : MonoBehaviour
             m_commandLog.AddLog($"Found {resourceData.amount} {resourceData.resourceType}!", GameManager.ORANGE, false);
         }
 
-        if (m_currentSectorScan.HasEnemy())
-        {
-            var enemy = m_currentSectorScan.GetEnemy();
-            m_commandLog.AddLog($"alert: enemy movement detected (estimated strength: {enemy.GetStrength()})", GameManager.RED);
-        }
-
         // Mark the sector as scanned
         var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
         var data = new SectorEventData()
@@ -452,7 +367,6 @@ public class ExplorationSystem : MonoBehaviour
             x = coords.x,
             y = coords.y,
             resource = resourceData,
-            hasEnemy = m_currentSectorScan.HasEnemy(),
         };
         OnSectorScanned?.Invoke(data);
         m_scannedSectors.Add(m_currentSectorScan);

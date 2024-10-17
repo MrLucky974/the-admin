@@ -50,7 +50,7 @@ public class ExplorationGridDisplay : MonoBehaviour
 
     private void HandleScannedSector(ExplorationSystem.SectorEventData data)
     {
-        var text = JUtils.FormatColor($"{data.resource}", data.hasEnemy ? GameManager.RED : GameManager.GREEN);
+        var text = JUtils.FormatColor($"{data.resource}", GameManager.GREEN);
         m_grid.SetCell(data.x, data.y, text);
     }
 }
