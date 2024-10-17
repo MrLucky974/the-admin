@@ -137,6 +137,7 @@ public class TextGrid : MonoBehaviour
         m_grid.cellSize = Vector2.one * gridCellSize;
         m_grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         m_grid.constraintCount = 5;
+        m_grid.padding.top = 64;
         GenerateGrid();
     }
 
