@@ -50,7 +50,7 @@ MonoBehaviour:
   m_upgradeState: 0
   m_upgradeCost: 5
   m_ressValue: 1
-  m_generateRessTime: 5
+  m_generateRessTime: 100
   m_ressourceType: 2
 --- !u!1 &1828742354173883202
 GameObject:
@@ -331,7 +331,7 @@ MonoBehaviour:
   m_upgradeState: 0
   m_upgradeCost: 5
   m_ressValue: 1
-  m_generateRessTime: 5
+  m_generateRessTime: 100
   m_ressourceType: 1
 --- !u!1 &6210359595516835894
 GameObject:
