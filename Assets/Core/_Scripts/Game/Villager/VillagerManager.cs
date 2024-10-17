@@ -336,6 +336,9 @@ public class VillagerManager : MonoBehaviour
                 villager.RemoveHealthStatus(HealthStatus.PREGNANT);
                 var baby = CreateBaby(villager, villager.GetMate());
                 AddVillagerToPopulation();
+
+                var reputationHandler = GameManager.Instance.GetReputationHandler();
+                reputationHandler.IncreaseReputation(5);
                 m_commandLog.AddLog($"villager: {baby.GetName()} is born!", GameManager.ORANGE);
             }
         }
