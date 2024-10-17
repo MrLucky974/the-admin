@@ -39,10 +39,10 @@ public class RoomManager : MonoBehaviour
 
     public void InitAccidentList()
     {
-        ACCIDENT_LIST.Add("there was a fire");
-        ACCIDENT_LIST.Add("there was a flood");
-        ACCIDENT_LIST.Add("there was a collapse");
-        ACCIDENT_LIST.Add("there was an explosion");
+        ACCIDENT_LIST.Add("info: a fire burnt down {0}!");
+        ACCIDENT_LIST.Add("info: {0} was flooded due to bad piping!");
+        ACCIDENT_LIST.Add("info: {0}'s structure collapsed!");
+        ACCIDENT_LIST.Add("info: there was an explosion in {0}!");
     }
 
     public void Initialize()
@@ -458,7 +458,7 @@ public class RoomManager : MonoBehaviour
         RoomData room = GetRoomOfType(data.roomType);
         ApplyDamageToRoomWithID(room.roomId, data.damage);
         string accident = ACCIDENT_LIST[GameManager.RNG.Next(0, ACCIDENT_LIST.Count)];
-        m_gm.GetCommandLog().AddLog($"{accident} that damaged {GetRoomOfType(data.roomType).roomId}", GameManager.ORANGE);
+        m_gm.GetCommandLog().AddLog(string.Format(accident, room.roomId), GameManager.ORANGE);
     }
 
     public void RandomDamagedRoomEvent(int day)
