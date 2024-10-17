@@ -137,12 +137,26 @@ public class RoomManager : MonoBehaviour
     {
         RoomData room = GetRoomOfType(roomType);
         room.IncrementDurability(-damage);
+        CheckIfRoomHasBeenDestroyed(room);
     }
+
 
     public void ApplyDamageToRoomWithID(String id, int damage)
     {
         RoomData room = GetRoomWithId(id);
         room.IncrementDurability(-damage);
+        CheckIfRoomHasBeenDestroyed(room);
+    }
+
+    public bool CheckIfRoomHasBeenDestroyed(RoomData room)
+    {
+        CommandLogManager commandLog = m_gm.GetCommandLog();
+        if (room.roomState == RoomData.RoomState.DESTROYED)
+        {
+            commandLog.AddLog($"info: room {room.roomId} has been destroyed!",GameManager.ORANGE);
+            return true;
+        }
+        return false;
     }
 
     public void StartRepairRoom(string roomId, int scrapsCost, VillagerData vill)
@@ -181,7 +195,9 @@ public class RoomManager : MonoBehaviour
             {  // compute injured chance
                 vm.ApplyHealthStatus(villager, VillagerData.HealthStatus.INJURED);
             }
-            vm.IncreaseFatigue(villager, ComputeRepairFatigueCost(villager));
+            int amount = ComputeRepairFatigueCost(villager);
+            vm.IncreaseFatigue(villager, amount);
+            Debug.Log($"i have {villager.GetFatigue()} i lose{amount}");
             vm.SetWorkingStatus(villager, VillagerData.WorkingStatus.IDLE);
             m_gm.GetCommandLog().AddLog($"{room.roomId} repaired", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -309,7 +325,7 @@ public class RoomManager : MonoBehaviour
                 {
                     if (room.roomState == RoomData.RoomState.DESTROYED)
                     {
-                        m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed this room is destroyed");
+                        m_gm.GetCommandLog().AddLogError($"upgrade:room {room.roomId} failed this room is destroyed");
                         return;
                     }
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
