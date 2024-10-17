@@ -236,7 +236,6 @@ public class GameManager : Singleton<GameManager>
         m_inputActions.Dispose();
     }
 
-
     private void DisableAllComponents()
     {
         foreach (Behaviour component in gameObject.GetComponents<Behaviour>())

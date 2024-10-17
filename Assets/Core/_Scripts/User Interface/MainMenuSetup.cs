@@ -35,6 +35,19 @@ public class MainMenuSetup : MonoBehaviour
 
     private void Start()
     {
+        // Lock player from using the cursor
+#if UNITY_EDITOR
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+#else
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+#endif
+
         m_logLabel.text = "";
         m_logLabel.text += "The Administrator - v0.1.0a";
         m_logLabel.text += "\nEnter username...";
