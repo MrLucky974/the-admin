@@ -8,18 +8,19 @@ public class CommandLogManager : MonoBehaviour
     private const string COMMAND_HISTORY_LOG_FORMAT = "[{0}] {1}";
 
     private List<string> m_commandHistory = new List<string>();
-    private Action m_historyChanged;
+    private event Action OnHistoryChanged;
 
     private TimeManager m_timeManager;
 
     private void Start()
     {
         m_timeManager = GameManager.Instance.GetTimeManager();
+        OnHistoryChanged?.Invoke();
     }
 
     private void OnDestroy()
     {
-        m_historyChanged = null;
+        OnHistoryChanged = null;
     }
 
     public ReadOnlyCollection<string> GetCommandHistory()
@@ -40,6 +41,9 @@ public class CommandLogManager : MonoBehaviour
 
     public void AddLog(string message, Color color, bool format = true)
     {
+        if (m_timeManager == null)
+            m_timeManager = GameManager.Instance.GetTimeManager();
+
         string text = "";
         if (format is true)
         {
@@ -51,22 +55,22 @@ public class CommandLogManager : MonoBehaviour
         }
 
         m_commandHistory.Add(JUtils.FormatColor(text, color));
-        m_historyChanged?.Invoke();
+        OnHistoryChanged?.Invoke();
     }
 
     public void Clear()
     {
         m_commandHistory.Clear();
-        m_historyChanged?.Invoke();
+        OnHistoryChanged?.Invoke();
     }
 
     public void RegisterOnHistoryChanged(Action action)
     {
-        m_historyChanged += action;
+        OnHistoryChanged += action;
     }
 
     public void UnregisterOnHistoryChanged(Action action)
     {
-        m_historyChanged -= action;
+        OnHistoryChanged -= action;
     }
 }

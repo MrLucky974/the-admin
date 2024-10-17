@@ -221,6 +221,8 @@ public class GameManager : Singleton<GameManager>
         m_villagerManager.Initialize();
         m_roomManager.Initialize();
         m_narratorSystem.Initialize();
+
+        m_commandLogManager.AddLog($"Welcome back, {GameData.Identifier}! Type \"help\" to list all commands.", GameManager.GREEN);
     }
 
     private void Update()

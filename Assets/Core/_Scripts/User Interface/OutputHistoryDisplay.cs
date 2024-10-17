@@ -18,7 +18,8 @@ public class OutputHistoryDisplay : MonoBehaviour
         m_commandLog = GameManager.Instance.GetCommandLog();
         m_commandLog.RegisterOnHistoryChanged(OnHistoryChanged);
 
-        m_historyTextField.text = "";
+        //m_historyTextField.text = "";
+        OnHistoryChanged();
     }
 
     private void Update()
