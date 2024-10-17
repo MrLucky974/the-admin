@@ -48,7 +48,7 @@ MonoBehaviour:
   m_roomId: 
   m_roomType: 2
   m_upgradeState: 0
-  m_upgradeCost: 5
+  m_upgradeCost: 15
   m_ressValue: 1
   m_generateRessTime: 100
   m_ressourceType: 2
@@ -329,7 +329,7 @@ MonoBehaviour:
   m_roomId: 
   m_roomType: 3
   m_upgradeState: 0
-  m_upgradeCost: 5
+  m_upgradeCost: 15
   m_ressValue: 1
   m_generateRessTime: 100
   m_ressourceType: 1
