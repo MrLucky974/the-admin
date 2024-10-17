@@ -1,27 +1,21 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-
-
 public class RoomManager : MonoBehaviour
 {
-
     private NarratorSystem m_narrator;
 
     ResourceHandler m_resourceHandler;
     ReputationHandler m_reputationHandler;
     RoomData[] m_roomArray;
 
-
     ArrayList m_ids = new ArrayList();
     ArrayList m_roomNames = new ArrayList();
 
     public List<string> ACCIDENT_LIST;
-
 
     Coroutine m_degradeCoroutine;
     Coroutine m_ressCoroutine;
@@ -42,7 +36,6 @@ public class RoomManager : MonoBehaviour
 
     GameManager m_gm;
     TimeManager m_timeManager;
-
 
     public void InitAccidentList()
     {
@@ -252,18 +245,19 @@ public class RoomManager : MonoBehaviour
 
     public void TryToRepairRoom(VillagerData villager, string roomId)
     {
+        var commandLog = m_gm.GetCommandLog();
         var room = GetRoomWithId(roomId);
         int scrapsCost = room.GetRepairCost();
 
         if (villager.GetAgeStage() == VillagerData.AgeStage.KID)
         {
-            m_gm.GetCommandLog().AddLogError($"you cant repair {roomId} {villager.GetID()} is a kid");
+            commandLog.AddLogError($"repair: cannot repair room {roomId} with {villager.GetID()}, because it's a kid!");
             return;
         }
 
         if (room.GetVillagersInRoom().Count != 0)
         {
-            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed someone is repairing this room");
+            commandLog.AddLogError($"repair: cannot repair room {roomId}, someone is already fixing this room!");
             return;
         }
 
@@ -274,13 +268,13 @@ public class RoomManager : MonoBehaviour
 
         if (villager.GetWorkingStatus() != VillagerData.WorkingStatus.IDLE)
         {
-            m_gm.GetCommandLog().AddLogError($"villager {villager.GetID()} is occupied");
+            commandLog.AddLogError($"repair: villager {villager.GetID()} is occupied!");
             return;
         }
 
         if (!m_resourceHandler.HasEnoughResources(0, 0, scrapsCost)) // --Check for ressources
         {
-            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed not enough resources");
+            commandLog.AddLogError($"repair: cannot repair room {roomId}, not enough resources (needs {scrapsCost} SCRAPS)!");
             return;
         }
 
@@ -291,7 +285,7 @@ public class RoomManager : MonoBehaviour
         }
         else
         {
-            m_gm.GetCommandLog().AddLogError($"repair {roomId} failed");
+            commandLog.AddLogError($"repair: room {roomId} is functionnal!");
             return;
         }
     }
