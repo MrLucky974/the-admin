@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 /// <summary>
 /// Data class containing data for exploration gameplay elements (resources gathering).
@@ -77,16 +79,24 @@ public class Sector
     private static int DistributeResources(System.Random rng)
     {
         const int rollCount = 6;
-        var rolls = new int[rollCount];
+        var rolls = new List<int>();
 
         int count = 0;
         for (int i = 0; i < rollCount; i++)
         {
-            count += rolls[i] = JRandom.RollDice(2, 3, rng);
-            count += rolls[i] = JRandom.RollDice(2, 3, rng);
-        }
-        count = 1 + JMath.Min(rolls);
+            var x = new int[3];
+            count += x[0] = JRandom.RollDice(2, 3, rng);
+            count += x[1] = JRandom.RollDice(2, 3, rng);
+            count += x[2] = JRandom.RollDice(2, 3, rng);
 
+            foreach (var value in x)
+            {
+                rolls.Add(value);
+            }
+        }
+        rolls.Print();
+        count = 1 + rolls.PickRandom();
+        Debug.Log($"final count: {count}");
         return count;
     }
 
@@ -105,6 +115,7 @@ public class Sector
         {
             sb.Append($": {m_amount}");
         }
+        sb.Append(')');
         return sb.ToString();
     }
 }
