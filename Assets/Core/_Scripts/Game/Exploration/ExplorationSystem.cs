@@ -225,15 +225,6 @@ public class ExplorationSystem : MonoBehaviour
         StopAllCoroutines();
     }
 
-    private void UpdateMap(int previousDay)
-    {
-        var rng = GameManager.RNG;
-
-
-        // TODO : Send an event to update the expedition UI
-        m_region.GetSectors().Print();
-    }
-
     private void HandleSquadStatusChanged(SquadStatusChangedEvent @event)
     {
         var squad = @event.Squad;
