@@ -182,19 +182,27 @@ public class ExplorationSystem : MonoBehaviour
                 {
                     if (sector.GetIdentifier().Equals(identifier) && sector.IsLooted())
                     {
-                        m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} has already been looted");
+                        m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} has already been looted!");
                         return;
                     }
+                }
+
+                var resourceHandler = GameManager.Instance.GetResourceHandler();
+                if (resourceHandler.HasEnoughResources(Squad.SQUAD_SIZE, 0, 0) is false)
+                {
+                    m_commandLog.AddLogError($"error: not enough rations to send a squad (need {Squad.SQUAD_SIZE})!");
+                    return;
                 }
 
                 // Send the squad into expedition
                 Squad newSquad = Squad.Create(selectedSector);
                 if (newSquad == null)
                 {
-                    m_commandLog.AddLogError($"error: not enough population to send a squad");
+                    m_commandLog.AddLogError($"error: not enough population to send a squad (need {Squad.SQUAD_SIZE})!");
                     return;
                 }
 
+                resourceHandler.ConsumeRations(Squad.SQUAD_SIZE);
                 m_activeSquads.Add(newSquad);
                 m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()} (estimated strength: {newSquad.GetStrength()})", GameManager.ORANGE);
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -280,6 +288,23 @@ public class ExplorationSystem : MonoBehaviour
                         resource = sector.GetResourceData(),
                     };
                     OnSquadStatusChanged?.Invoke(data);
+                }
+                else
+                {
+                    var reputationHandler = GameManager.Instance.GetReputationHandler();
+                    var members = squad.GetMembers();
+
+                    int remainingMembers = Squad.SQUAD_SIZE;
+                    foreach (var member in members)
+                    {
+                        if (member.IsDead())
+                        {
+                            remainingMembers--;
+                            continue;
+                        }
+                    }
+
+                    reputationHandler.IncreaseReputation(remainingMembers * 2);
                 }
             }
             yield return null;
