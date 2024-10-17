@@ -81,7 +81,10 @@ public class VillagerManager : MonoBehaviour
         {                        
             HealOneVillager(ID);
         }));
-
+        commandSystem.AddCommand(new CommandDefinition<Action>("feedpop", () =>
+        {
+            FeedPopulation();
+        }));
 
 #endif
     }
@@ -142,12 +145,27 @@ public class VillagerManager : MonoBehaviour
     {
         ResourceHandler handler = GameManager.Instance.GetResourceHandler();
         bool famine = false;
-
+        int debug = 0;
         foreach (VillagerData villager in m_population.ToList())
         {
             if (handler.HasEnoughResources(2, 0, 0) && famine == false)
             {
-                handler.ConsumeRations(2);
+                if (villager.GetAgeStage() == VillagerData.AgeStage.KID)
+                {
+                    handler.ConsumeRations(1);
+                    debug++;
+                }
+                if (villager.GetAgeStage() == VillagerData.AgeStage.ADULT)
+                {
+                    handler.ConsumeRations(2);
+                    debug += 2;
+                }
+                if (villager.GetAgeStage() == VillagerData.AgeStage.ELDER)
+                {
+                    handler.ConsumeRations(1);
+                    debug++;
+                }
+
                 if (villager.HasAnyHealthStatus(VillagerData.HealthStatus.HUNGRY,
                     VillagerData.HealthStatus.STARVED))
                 {
@@ -174,6 +192,7 @@ public class VillagerManager : MonoBehaviour
                     villager.ApplyHealthStatus(VillagerData.HealthStatus.HUNGRY);
                 }
             }
+            Debug.Log($"{debug} ont était dépencés");
         }
 
         OnPopulationChanged?.Invoke(m_population);
