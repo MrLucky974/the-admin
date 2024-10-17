@@ -12,7 +12,8 @@ public class VillagerManager : MonoBehaviour
     {
         AGE,
         STARVATION,
-        SICKNESS
+        SICKNESS,
+        COMBAT,
     }
 
     public event Action<List<VillagerData>> OnPopulationChanged;
@@ -358,10 +359,16 @@ public class VillagerManager : MonoBehaviour
                 m_commandLog.AddLog($"villager: {data.GetName()} died of sickness.", GameManager.RED);
                 reputationHandler.DecreaseReputation(5);
                 break;
+            case DeathType.COMBAT:
+                m_commandLog.AddLog($"villager: {data.GetName()} died in combat.", GameManager.RED);
+                reputationHandler.DecreaseReputation(10);
+                break;
             default:
                 m_commandLog.AddLog($"villager: {data.GetName()} died in mysterious circumstances.", GameManager.RED);
                 break;
         }
+
+        data.MarkAsDead();
 
         OnPopulationChanged?.Invoke(m_population);
     }
