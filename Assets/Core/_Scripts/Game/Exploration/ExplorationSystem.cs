@@ -48,7 +48,6 @@ public class ExplorationSystem : MonoBehaviour
         m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, HandleSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
-        //m_timeManager.OnDayEnded += UpdateMap;
 
         m_scannedSectors = new List<Sector>();
         m_activeSquads = new List<Squad>();
