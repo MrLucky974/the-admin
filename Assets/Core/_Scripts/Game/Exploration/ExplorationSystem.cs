@@ -113,7 +113,7 @@ public class ExplorationSystem : MonoBehaviour
                         // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
                         // Begin coroutine and mark sector as being scanned
                         m_currentSectorScan = selectedSector;
-                        m_scanCoroutine = StartCoroutine(ScanSector(3));
+                        m_scanCoroutine = StartCoroutine(ScanSector(TimeManager.DAY_IN_SECONDS / 2));
                         m_updateScanProgress = true;
 
                         modal.Close();
@@ -131,7 +131,7 @@ public class ExplorationSystem : MonoBehaviour
                     // TODO : Add the ability for multiple scans (e.g. satellite upgrades)
                     // Begin coroutine and mark sector as being scanned
                     m_currentSectorScan = selectedSector;
-                    m_scanCoroutine = StartCoroutine(ScanSector(3));
+                    m_scanCoroutine = StartCoroutine(ScanSector(TimeManager.DAY_IN_SECONDS / 2));
                     m_updateScanProgress = true;
                 }
             }
