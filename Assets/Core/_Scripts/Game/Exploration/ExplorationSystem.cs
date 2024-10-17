@@ -7,8 +7,9 @@ public class ExplorationSystem : MonoBehaviour
 {
     public struct SectorEventData
     {
-        public int x, y;
-        public (ResourceType resourceType, int amount) resource;
+        public int X, Y;
+        public float Progress;
+        public (ResourceType resourceType, int amount) Resource;
     }
 
     public struct SquadStatusEventData
@@ -33,6 +34,7 @@ public class ExplorationSystem : MonoBehaviour
 
     private List<Sector> m_scannedSectors; // List of every sector already scanned on this current region
     public event Action<SectorEventData> OnSectorScanned;
+    public event Action<SectorEventData> OnCurrentSectorScan;
     public event Action OnRegionRegeneration;
     public event Action<SquadStatusEventData> OnSquadStatusChanged;
 
@@ -46,7 +48,7 @@ public class ExplorationSystem : MonoBehaviour
         m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, HandleSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
-        m_timeManager.OnDayEnded += UpdateMap;
+        //m_timeManager.OnDayEnded += UpdateMap;
 
         m_scannedSectors = new List<Sector>();
         m_activeSquads = new List<Squad>();
@@ -180,19 +182,27 @@ public class ExplorationSystem : MonoBehaviour
                 {
                     if (sector.GetIdentifier().Equals(identifier) && sector.IsLooted())
                     {
-                        m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} has already been looted");
+                        m_commandLog.AddLogError($"error: sector {sector.GetIdentifier()} has already been looted!");
                         return;
                     }
+                }
+
+                var resourceHandler = GameManager.Instance.GetResourceHandler();
+                if (resourceHandler.HasEnoughResources(Squad.SQUAD_SIZE, 0, 0) is false)
+                {
+                    m_commandLog.AddLogError($"error: not enough rations to send a squad (need {Squad.SQUAD_SIZE})!");
+                    return;
                 }
 
                 // Send the squad into expedition
                 Squad newSquad = Squad.Create(selectedSector);
                 if (newSquad == null)
                 {
-                    m_commandLog.AddLogError($"error: not enough population to send a squad");
+                    m_commandLog.AddLogError($"error: not enough population to send a squad (need {Squad.SQUAD_SIZE})!");
                     return;
                 }
 
+                resourceHandler.ConsumeRations(Squad.SQUAD_SIZE);
                 m_activeSquads.Add(newSquad);
                 m_commandLog.AddLog($"send: squad sent to sector {identifier.ToUpper()} (estimated strength: {newSquad.GetStrength()})", GameManager.ORANGE);
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -279,6 +289,23 @@ public class ExplorationSystem : MonoBehaviour
                     };
                     OnSquadStatusChanged?.Invoke(data);
                 }
+                else
+                {
+                    var reputationHandler = GameManager.Instance.GetReputationHandler();
+                    var members = squad.GetMembers();
+
+                    int remainingMembers = Squad.SQUAD_SIZE;
+                    foreach (var member in members)
+                    {
+                        if (member.IsDead())
+                        {
+                            remainingMembers--;
+                            continue;
+                        }
+                    }
+
+                    reputationHandler.IncreaseReputation(remainingMembers * 2);
+                }
             }
             yield return null;
         }
@@ -295,6 +322,8 @@ public class ExplorationSystem : MonoBehaviour
         Debug.Log("Starting scan...");
         m_commandLog.AddLog($"scan: prospecting data on sector {m_currentSectorScan.GetIdentifier()}", GameManager.ORANGE);
 
+        var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
+
         // Wait until the time value has reached the total time
         // Could use WaitForSeconds but me no likey
         float time = 0;
@@ -302,6 +331,15 @@ public class ExplorationSystem : MonoBehaviour
         {
             yield return null;
             if (m_updateScanProgress) time += Time.deltaTime * m_timeManager.GetTimeScale();
+
+            var sectorEventData = new SectorEventData()
+            {
+                Progress = time / totalTime,
+                X = coords.x,
+                Y = coords.y,
+                Resource = m_currentSectorScan.GetResourceData(),
+            };
+            OnCurrentSectorScan?.Invoke(sectorEventData);
         }
 
         // Send a message on the command log to signal the player a scan was completed
@@ -320,12 +358,11 @@ public class ExplorationSystem : MonoBehaviour
         }
 
         // Mark the sector as scanned
-        var coords = m_region.GetSectorCoordinates(m_currentSectorScan);
         var data = new SectorEventData()
         {
-            x = coords.x,
-            y = coords.y,
-            resource = resourceData,
+            X = coords.x,
+            Y = coords.y,
+            Resource = resourceData,
         };
         OnSectorScanned?.Invoke(data);
         m_scannedSectors.Add(m_currentSectorScan);

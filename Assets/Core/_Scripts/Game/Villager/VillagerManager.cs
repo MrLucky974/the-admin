@@ -30,7 +30,6 @@ public class VillagerManager : MonoBehaviour
     private CommandLogManager m_commandLog;
     private ModalBox m_modalBox;
 
-    public event Action OnNewVillagerAccepted;
     public const int VISITOR_MAX_CHANCE = 5;
 
     public ReadOnlyCollection<VillagerData> GetPopulation()
@@ -57,9 +56,12 @@ public class VillagerManager : MonoBehaviour
         m_timeManager = GameManager.Instance.GetTimeManager();
         m_narratorSystem = GameManager.Instance.GetNarrator();
         m_timeManager.OnDayEnded += OnNewDay;
+        m_timeManager.OnWeekEnded += OnNewWeek;
+
         // Events
         m_narratorSystem.Subscribe<VillagerAtDoorEvent>(VillagerEvents.VILLAGER_AT_DOOR, OnVillagerAtDoor);
         m_modalBox = GameManager.Instance.GetModal();
+
         // Initialize population
         var rng = GameManager.RNG;
         const int adultCount = 3;
@@ -87,6 +89,11 @@ public class VillagerManager : MonoBehaviour
             GetPregnant();
         }));
 
+        commandSystem.AddCommand(new CommandDefinition<Action>("feedpop", "[EDITOR ONLY] Feed every member of the population", () =>
+        {
+            FeedPopulation();
+        }));
+
 #endif
         commandSystem.AddCommand(new CommandDefinition<Action>("showid", "List all identifiers of the population in the Unity log", () =>
         {
@@ -102,6 +109,7 @@ public class VillagerManager : MonoBehaviour
 
     public void OnNewWeek(int week)
     {
+        Debug.Log("[VILLAGER MANAGER] new week started");
         FeedPopulation();
         GetPregnant();
         HealPopulation();
@@ -151,22 +159,30 @@ public class VillagerManager : MonoBehaviour
 
         }
     }
+
     public void FeedPopulation()
     {
+        Debug.Log("trying to feed population");
+        int debug = 0;
+
         ResourceHandler handler = GameManager.Instance.GetResourceHandler();
         bool famine = false;
 
         foreach (VillagerData villager in m_population.ToList())
         {
-            if (handler.HasEnoughResources(2, 0, 0) && famine == false)
+            Debug.Log($"trying to feed {villager.GetName()}");
+            var amount = villager.IsAdult() ? 2 : 1;
+            debug += amount;
+
+            if (handler.HasEnoughResources(amount, 0, 0) && famine == false)
             {
-                handler.ConsumeRations(2);
                 if (villager.HasAnyHealthStatus(VillagerData.HealthStatus.HUNGRY,
                     VillagerData.HealthStatus.STARVED))
                 {
                     villager.RemoveHealthStatus(VillagerData.HealthStatus.HUNGRY);
                     villager.RemoveHealthStatus(VillagerData.HealthStatus.STARVED);
                 }
+                handler.ConsumeRations(amount);
             }
             else
             {
@@ -189,6 +205,7 @@ public class VillagerManager : MonoBehaviour
             }
         }
 
+        Debug.Log($"{debug} ont était dépencés");
         OnPopulationChanged?.Invoke(m_population);
 
 #if UNITY_EDITOR
@@ -337,6 +354,9 @@ public class VillagerManager : MonoBehaviour
                 villager.RemoveHealthStatus(HealthStatus.PREGNANT);
                 var baby = CreateBaby(villager, villager.GetMate());
                 AddVillagerToPopulation();
+
+                var reputationHandler = GameManager.Instance.GetReputationHandler();
+                reputationHandler.IncreaseReputation(5);
                 m_commandLog.AddLog($"villager: {baby.GetName()} is born!", GameManager.ORANGE);
             }
         }

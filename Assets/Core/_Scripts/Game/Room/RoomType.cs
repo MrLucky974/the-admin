@@ -1,14 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum RoomType{
-    REPOSITORY,
-    WTRAITMENT,
-    RESTROOM,
+public enum RoomType
+{
+    WATER_TREATMENT_PLANT,
+    BREAK_ROOM,
     INFIRMARY,
-    LUNCHROOM,
+    CAFETERIA,
     GENERATORS,
-    PUBROOM,
-    JAIL  
+    COMMUNAL_ROOM,
+    JAIL
 }

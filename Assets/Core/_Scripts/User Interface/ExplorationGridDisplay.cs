@@ -12,12 +12,24 @@ public class ExplorationGridDisplay : MonoBehaviour
         m_explorer = GameManager.Instance.GetExplorer();
         m_explorer.OnRegionRegeneration += HandleRegionRegeneration;
         m_explorer.OnSectorScanned += HandleScannedSector;
+        m_explorer.OnCurrentSectorScan += HandleCurrentScan;
         m_explorer.OnSquadStatusChanged += HandleSquadStatus;
     }
 
     private void OnDestroy()
     {
+        m_explorer.OnRegionRegeneration -= HandleRegionRegeneration;
         m_explorer.OnSectorScanned -= HandleScannedSector;
+        m_explorer.OnCurrentSectorScan -= HandleCurrentScan;
+        m_explorer.OnSquadStatusChanged -= HandleSquadStatus;
+    }
+
+    private void HandleCurrentScan(ExplorationSystem.SectorEventData data)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine(JUtils.FormatColor("SCAN", GameManager.ORANGE));
+        sb.AppendLine(JUtils.FormatColor(JUtils.GenerateTextSlider(data.Progress, 6), GameManager.ORANGE));
+        m_grid.SetCell(data.X, data.Y, sb.ToString());
     }
 
     private void HandleRegionRegeneration()
@@ -49,7 +61,7 @@ public class ExplorationGridDisplay : MonoBehaviour
 
     private void HandleScannedSector(ExplorationSystem.SectorEventData data)
     {
-        var text = JUtils.FormatColor($"{data.resource}", GameManager.GREEN);
-        m_grid.SetCell(data.x, data.y, text);
+        var text = JUtils.FormatColor($"{data.Resource}", GameManager.GREEN);
+        m_grid.SetCell(data.X, data.Y, text);
     }
 }
