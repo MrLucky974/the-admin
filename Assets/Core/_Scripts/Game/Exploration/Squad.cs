@@ -209,6 +209,12 @@ public class Squad
                         case CombatIssue.TIE:
                             commandLog.AddLog($"info: squad managed to fend off enemies, with little to no harm", GameManager.ORANGE);
                             m_state = State.EXPLORATION;
+
+                            foreach (var member in m_members)
+                            {
+                                int fatigue = rng.Next(0, 2);
+                                member.IncreaseFatigue(fatigue);
+                            }
                             break;
                         case CombatIssue.SUCCESS:
                             commandLog.AddLog($"info: squad managed to kill off enemies", GameManager.ORANGE);
@@ -244,6 +250,10 @@ public class Squad
                             {
                                 var member = members.PickRandom(rng);
                                 member.ApplyHealthStatus(VillagerData.HealthStatus.INJURED);
+
+                                int fatigue = rng.Next(2, 5);
+                                member.IncreaseFatigue(fatigue);
+
                                 members.Remove(member);
                             }
                             m_state = State.ARRIVAL;
@@ -266,7 +276,11 @@ public class Squad
                                 if (member.IsDead())
                                 {
                                     remainingMembers -= 1;
+                                    continue;
                                 }
+
+                                int fatigue = rng.Next(2, 5);
+                                member.IncreaseFatigue(fatigue);
                             }
 
                             if (remainingMembers <= 0)
@@ -340,6 +354,11 @@ public class Squad
 
                     m_timeSpent = 0;
                     m_state = State.IDLE;
+
+                    foreach (var member in m_members)
+                    {
+                        member.IncreaseFatigue(2);
+                    }
 
                     var data = new SquadStatusChangedEvent()
                     {
