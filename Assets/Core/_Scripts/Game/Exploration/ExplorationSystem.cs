@@ -73,6 +73,7 @@ public class ExplorationSystem : MonoBehaviour
                 {
                     StopCoroutine(m_scanCoroutine);
                     m_currentSectorScan = null;
+                    m_scanCoroutine = null;
                 }
 
                 // Generate a new region
