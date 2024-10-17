@@ -330,7 +330,6 @@ public class RoomManager : MonoBehaviour
                     }
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     UpgradeRoom(room); //Upgrade 
-                    m_gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
                     return;
                 }
                 else
@@ -354,11 +353,18 @@ public class RoomManager : MonoBehaviour
 
     public void UpgradeRoom(UpgradableRoomData room)
     {
+        m_gm.GetCommandLog().AddLog($"{room.roomId} upgraded", GameManager.ORANGE);
         room.Upgrade();
+        CommandLogManager commandLogManager = GameManager.Instance.GetCommandLog();
         if (room is VillagerUpgradeRoomData)
         {
             VillagerUpgradeRoomData upRoom = room.GetComponent<VillagerUpgradeRoomData>();
             UpgradeVillRoom(upRoom);
+        }
+        if (room is ResourceUpgradeRoomData)
+        {
+            ResourceUpgradeRoomData ressRoom = room.GetComponent<ResourceUpgradeRoomData>();
+            m_gm.GetCommandLog().AddLog($"upgrade: room {room.roomId} generate {ressRoom.ressourceType}",GameManager.ORANGE);
         }
     }
 
