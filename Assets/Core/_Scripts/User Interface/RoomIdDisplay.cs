@@ -10,11 +10,14 @@ public class RoomIdDisplay : RoomDisplay
     {
         m_rm = FindObjectOfType<RoomManager>();
         m_tmPro = gameObject.GetComponent<TextMeshProUGUI>();
+ 
     }
     void Start()
     {
         Init();
     }
+
+ 
 
     new void Init()
     {
@@ -27,6 +30,7 @@ public class RoomIdDisplay : RoomDisplay
     {
         string newId = m_room.roomId;
         m_tmPro.SetText($"[{newId}]");
+        ChangeColor();
     }
 
 

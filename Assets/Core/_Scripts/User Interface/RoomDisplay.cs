@@ -9,27 +9,27 @@ public class RoomDisplay : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI m_tmPro;
     [SerializeField] protected RoomManager m_rm;
     protected RoomData m_room;
+
+    protected bool m_isInit = false;
+
     private void Awake()
     {
         m_rm = FindObjectOfType<RoomManager>();
         m_tmPro = gameObject.GetComponent<TextMeshProUGUI>();
-        CheckChild();
-    }
-
-
-    void Start()
-    {
-        
         Init();
     }
 
+
+
     protected void Init()
     {
+        CheckChild();
         m_room = m_rm.GetRoomOfType(m_roomType);
         m_room.OnStateChanged += ChangeColor;  
         m_tmPro.color = GameManager.GREEN;
         m_tmPro.alignment = TextAlignmentOptions.Center;
         DisplayName();
+        m_isInit=true;
     }
 
     protected void CheckChild()
@@ -50,7 +50,13 @@ public class RoomDisplay : MonoBehaviour
     }
 
 
-    void ChangeColor()
+    protected void OnEnable()
+    {
+        if (!m_isInit) { Init(); }
+        ChangeColor();
+    }
+
+    protected void ChangeColor()
     {
         switch (m_room.roomState) {
             case RoomData.RoomState.FUNCTIONAL:

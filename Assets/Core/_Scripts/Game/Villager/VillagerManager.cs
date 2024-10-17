@@ -26,8 +26,14 @@ public class VillagerManager : MonoBehaviour
     private List<VillagerData> m_villagerQueue;
 
     private TimeManager m_timeManager;
+    private NarratorSystem m_narratorSystem;
     private CommandLogManager m_commandLog;
+    private ModalBox m_modalBox;
 
+    public event Action OnNewVillagerAccepted;
+
+
+    public const int VISITOR_MAX_CHANCE = 5;
     public ReadOnlyCollection<VillagerData> GetPopulation()
     {
         return m_population.AsReadOnly();
@@ -50,9 +56,11 @@ public class VillagerManager : MonoBehaviour
         m_villagerQueue = new List<VillagerData>();
 
         m_timeManager = GameManager.Instance.GetTimeManager();
-        m_timeManager.OnWeekEnded += OnNewWeek;
+        m_narratorSystem = GameManager.Instance.GetNarrator();
         m_timeManager.OnDayEnded += OnNewDay;
-
+        // Events
+        m_narratorSystem.Subscribe<VillagerAtDoorEvent>(VillagerEvents.VILLAGER_AT_DOOR,OnVillagerAtDoor);
+        m_modalBox = GameManager.Instance.GetModal();
         // Initialize population
         var rng = GameManager.RNG;
         const int adultCount = 3;
@@ -106,6 +114,7 @@ public class VillagerManager : MonoBehaviour
         AgePopulation();
         UpdatePregnantWomenStatus();
         ReduceFatigueWithTime();
+        SomeoneAtDoor();
     }
 
     public void AgePopulation()
@@ -633,6 +642,51 @@ public class VillagerManager : MonoBehaviour
         m_population.Print();
     }
 #endif
+
+    #endregion
+
+    #region Villager Events
+    public void SomeoneAtDoor()
+    {
+        int rng = GameManager.RNG.Next(0, VISITOR_MAX_CHANCE+1);
+        if(rng == 0)
+        {
+            AgeStage ageRng = (AgeStage)GameManager.RNG.Next(0,3);
+            CreateRandomVillager(ageRng);
+            var data = new VillagerAtDoorEvent
+            {
+                newVillager = m_currentVillager
+            };
+            m_narratorSystem.TriggerEvent<VillagerAtDoorEvent>(VillagerEvents.VILLAGER_AT_DOOR, data);
+        }
+    }
+
+    public void OnVillagerAtDoor(VillagerAtDoorEvent data)
+    {
+        var reputation = GameManager.Instance.GetReputationHandler();
+        m_modalBox.Init("SOMEONE KNOCKS AT THE DOOR", (modal) =>
+        {
+            if (data.newVillager.GetAgeStage() == 0)  // Is a child 
+            {
+                const int reputBonus = 5;
+                reputation.IncreaseReputation(reputBonus);
+            }
+            AddVillagerToPopulation();
+            modal.Close();
+        })
+        .SetBody($"{data.newVillager.GetName()} || {data.newVillager.GetAgeStage()}\n give permission to let him in")
+        .SetDismissAction((modal) =>
+        {
+            if(data.newVillager.GetAgeStage() == 0)  // Is a child 
+            {
+             
+                const int reputMalus = 5;
+                reputation.DecreaseReputation(reputMalus);
+            }
+            modal.Close();
+        })
+        .Open();
+    }
 
     #endregion
 }

@@ -66,8 +66,10 @@ public class RoomManager : MonoBehaviour
         m_ressCoroutine = StartCoroutine(GenerateRessources());
         m_timeManager.OnDayEnded+=RandomDamagedRoomEvent;
 
-
+        //--- Events
         m_narrator.Subscribe<DamagedRoomEvent>(RoomEvents.DAMAGED_ROOM, OnRoomDamaged);
+
+        //---
         if (m_roomArray.Length == 0)
         {
             Debug.LogError("No room in this scene", this.gameObject);
@@ -451,7 +453,8 @@ public class RoomManager : MonoBehaviour
     #region Events
     public void OnRoomDamaged(DamagedRoomEvent data)
     {
-        ApplyDamageToRoomType(data.roomType, data.damage);
+        RoomData room = GetRoomOfType(data.roomType);
+        ApplyDamageToRoomWithID(room.roomId, data.damage);
         string accident = ACCIDENT_LIST[GameManager.RNG.Next(0,ACCIDENT_LIST.Count)]; 
         m_gm.GetCommandLog().AddLog($"{accident} that damaged {GetRoomOfType(data.roomType).roomId}",GameManager.ORANGE);
     }
