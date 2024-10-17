@@ -319,7 +319,7 @@ public class RoomManager : MonoBehaviour
                 }
                 else
                 {
-                    m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed not enough resources");
+                    m_gm.GetCommandLog().AddLogError($"upgrade: room {room.roomId} failed, not enough resources (needs {room.upgradeCost} SCRAPS)!");
                     return;
                 }
             }
@@ -327,12 +327,12 @@ public class RoomManager : MonoBehaviour
             {
                 if (roomId == "")
                 {
-                    m_gm.GetCommandLog().AddLogError($"specify room id example: upgrade R1");
+                    m_gm.GetCommandLog().AddLogError($"error: specify room id example: upgrade R1!");
                     return;
                 }
             }
         }
-        m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
+        m_gm.GetCommandLog().AddLogError($"upgrade: room {roomId} failed, you cannot upgrade this room!");
         return;
     }
 
@@ -343,7 +343,6 @@ public class RoomManager : MonoBehaviour
         {
             UpVillRoomData upRoom = room.GetComponent<UpVillRoomData>();
             UpgradeVillRoom(upRoom);
-
         }
     }
 
