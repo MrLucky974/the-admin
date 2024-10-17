@@ -30,7 +30,6 @@ public class VillagerManager : MonoBehaviour
     private CommandLogManager m_commandLog;
     private ModalBox m_modalBox;
 
-    public event Action OnNewVillagerAccepted;
     public const int VISITOR_MAX_CHANCE = 5;
 
     public ReadOnlyCollection<VillagerData> GetPopulation()

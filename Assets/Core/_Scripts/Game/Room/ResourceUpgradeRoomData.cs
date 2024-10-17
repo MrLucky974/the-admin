@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class RessUpRoomData : UpRoomData
+public class ResourceUpgradeRoomData : UpgradableRoomData
 {
-    [SerializeField]  int m_ressValue = 1; // generated ressources value
+    [SerializeField] int m_ressValue = 1; // generated ressources value
     [SerializeField] float m_generateRessTime = 5; // time to generate ressources
     [SerializeField] ResourceType m_ressourceType;
 

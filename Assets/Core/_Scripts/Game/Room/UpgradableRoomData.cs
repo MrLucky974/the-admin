@@ -1,17 +1,13 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class UpRoomData : RoomData
+public class UpgradableRoomData : RoomData
 {
-
     public const int COST_FACTOR = 5;
 
     [SerializeField] UpgradeState m_upgradeState = UpgradeState.NONE;
     [SerializeField] int m_upgradeCost = 5;
-    String m_message;
-
+    string m_message;
 
     public enum UpgradeState
     {
@@ -54,7 +50,8 @@ public class UpRoomData : RoomData
         OnRoomUpgraded?.Invoke();
     }
 
-    override protected void DestroyRoom(){
+    override protected void DestroyRoom()
+    {
         base.DestroyRoom();
         m_upgradeCost = COST_FACTOR;
     }

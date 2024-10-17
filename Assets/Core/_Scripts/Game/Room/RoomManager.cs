@@ -124,9 +124,9 @@ public class RoomManager : MonoBehaviour
 
     public void RoomWasDestroyed(RoomData roomDestroyed)
     {
-        if (roomDestroyed is UpVillRoomData) //for villager upgrades
+        if (roomDestroyed is VillagerUpgradeRoomData) //for villager upgrades
         {
-            UpVillRoomData room = roomDestroyed.GetComponent<UpVillRoomData>();
+            VillagerUpgradeRoomData room = roomDestroyed.GetComponent<VillagerUpgradeRoomData>();
             CancelVillRoomUpgrade(room);
         }
         m_reputationHandler.DecreaseReputation(DESTROY_REPUTATION_COST);
@@ -299,8 +299,8 @@ public class RoomManager : MonoBehaviour
 
     public void UpgradeRoom(string roomId)
     {
-        UpRoomData[] ressRooms = FindObjectsOfType<UpRoomData>();
-        foreach (UpRoomData room in ressRooms)
+        UpgradableRoomData[] ressRooms = FindObjectsOfType<UpgradableRoomData>();
+        foreach (UpgradableRoomData room in ressRooms)
         {
             //TODO create a function try to upgrade 
             if (room.roomId == roomId)
@@ -336,37 +336,37 @@ public class RoomManager : MonoBehaviour
         return;
     }
 
-    public void UpgradeRoom(UpRoomData room)
+    public void UpgradeRoom(UpgradableRoomData room)
     {
         room.Upgrade();
-        if (room is UpVillRoomData)
+        if (room is VillagerUpgradeRoomData)
         {
-            UpVillRoomData upRoom = room.GetComponent<UpVillRoomData>();
+            VillagerUpgradeRoomData upRoom = room.GetComponent<VillagerUpgradeRoomData>();
             UpgradeVillRoom(upRoom);
 
         }
     }
 
-    public void UpgradeVillRoom(UpVillRoomData room)
+    public void UpgradeVillRoom(VillagerUpgradeRoomData room)
     {
         switch (room.UpgradeType)
         {
-            case UpVillRoomData.UpgradeTypes.REPAIR_SPEED:
+            case VillagerUpgradeRoomData.UpgradeTypes.REPAIR_SPEED:
                 UpgradeRepairSpeed(room);
                 break;
-            case UpVillRoomData.UpgradeTypes.FATIGUE_REREN:
+            case VillagerUpgradeRoomData.UpgradeTypes.FATIGUE_REGEN:
                 UpgradeFatigueRegen(room);
                 break;
         }
     }
 
-    public void UpgradeRepairSpeed(UpVillRoomData room)
+    public void UpgradeRepairSpeed(VillagerUpgradeRoomData room)
     {
         IncreaseGlobalRepairSpeed(room.BonusValue);
         m_gm.GetCommandLog().AddLog($"reparation time is faster", GameManager.ORANGE);
     }
 
-    public void UpgradeFatigueRegen(UpVillRoomData room)
+    public void UpgradeFatigueRegen(VillagerUpgradeRoomData room)
     {
         VillagerManager vm = FindObjectOfType<VillagerManager>();
         ReadOnlyCollection<VillagerData> population = vm.GetPopulation();
@@ -378,14 +378,14 @@ public class RoomManager : MonoBehaviour
         m_gm.GetCommandLog().AddLog($"the population rests faster ", GameManager.ORANGE);
     }
 
-    public void CancelVillRoomUpgrade(UpVillRoomData room)
+    public void CancelVillRoomUpgrade(VillagerUpgradeRoomData room)
     {
         switch (room.UpgradeType)
         {
-            case UpVillRoomData.UpgradeTypes.REPAIR_SPEED:
+            case VillagerUpgradeRoomData.UpgradeTypes.REPAIR_SPEED:
                 m_repairTimeBonus = 0;
                 break;
-            case UpVillRoomData.UpgradeTypes.FATIGUE_REREN:
+            case VillagerUpgradeRoomData.UpgradeTypes.FATIGUE_REGEN:
                 VillagerManager vm = FindObjectOfType<VillagerManager>();
                 ReadOnlyCollection<VillagerData> population = vm.GetPopulation();
                 foreach (VillagerData villager in population)
@@ -496,10 +496,10 @@ public class RoomManager : MonoBehaviour
     }
     IEnumerator GenerateRessources()
     {
-        RessUpRoomData[] ressRooms = FindObjectsOfType<RessUpRoomData>();
-        foreach (RessUpRoomData room in ressRooms)
+        ResourceUpgradeRoomData[] ressRooms = FindObjectsOfType<ResourceUpgradeRoomData>();
+        foreach (ResourceUpgradeRoomData room in ressRooms)
         {
-            if (room.upgradeState == RessUpRoomData.UpgradeState.UPGRADED) // check if the room is upgraded
+            if (room.upgradeState == ResourceUpgradeRoomData.UpgradeState.UPGRADED) // check if the room is upgraded
             {
                 switch (room.ressourceType) // check 
                 {
