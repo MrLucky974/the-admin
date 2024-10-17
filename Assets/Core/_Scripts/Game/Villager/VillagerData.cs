@@ -70,30 +70,32 @@ public class VillagerData
     public const Personality DEFAULT_PERSONALITY = Personality.NORMAL;
     #endregion
 
+    // Constants
     public const int MIN_FATIGUE = 0;
     public const int MAX_FATIGUE = 10;
     public const int DEFAULT_RECOVERY_VALUE = 1;
 
     public const int DEFAULT_WORKING_SPEED = 5;
 
+    // Identity
     string m_identifier = "None";
     string m_name;
     int m_age = DEFAULT_AGE;
+    AgeStage m_ageStage;
+    Gender m_gender = DEFAULT_GENDER;
+    Personality m_personality = DEFAULT_PERSONALITY;
+
+    // Working Abilities
     int m_fatigue = 0;
-    int m_hunger = 0;
     int m_recoveryValue = DEFAULT_RECOVERY_VALUE;
-    private VillagerData m_mate;
-    private int m_pregnancyDuration = 0;
-
-
-
+    WorkingStatus m_workingStatus = WorkingStatus.IDLE;
     RoomData m_currentRoom;
 
-    Gender m_gender = DEFAULT_GENDER;
+    // Health & Pregnancy
     HealthStatus m_healthStatus = HealthStatus.HEALTHY;
-    Personality m_personality = DEFAULT_PERSONALITY;
-    AgeStage m_ageStage;
-    WorkingStatus m_workingStatus = WorkingStatus.IDLE;
+    private VillagerData m_mate;
+    private int m_pregnancyDuration = 0;
+    private bool m_isDead;
 
     public VillagerData(string name)
     {
@@ -230,7 +232,7 @@ public class VillagerData
         Mathf.Clamp(m_fatigue, MIN_FATIGUE, MAX_FATIGUE);
     }
 
-  
+
     public int GetFatigue()
     {
         return m_fatigue;
@@ -239,7 +241,7 @@ public class VillagerData
     #endregion
 
     #region Recovery Handling Methods
-      
+
     public int GetRecoveryValue()
     {
         return m_recoveryValue;
@@ -260,7 +262,7 @@ public class VillagerData
     }
 
     #endregion
-      
+
     #region Pregnancy Handling Methods
 
     public void Impregnate(VillagerData mate)
@@ -332,6 +334,13 @@ public class VillagerData
     {
         return m_healthStatus;
     }
+
+    public void MarkAsDead()
+    {
+        m_isDead = true;
+    }
+
+    public bool IsDead() => m_isDead;
 
     #endregion
 
