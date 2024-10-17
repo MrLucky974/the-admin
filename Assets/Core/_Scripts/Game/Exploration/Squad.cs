@@ -386,6 +386,7 @@ public class Squad
 
     public Sector GetActivitySector() => m_sector;
     public State GetState() => m_state;
+    public VillagerData[] GetMembers() => m_members;
     public int GetTimeSpent() => m_timeSpent;
     public float GetProgress() => (float)m_timeSpent / m_maxTotalTime;
 
