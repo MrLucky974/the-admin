@@ -85,7 +85,7 @@ public class Squad
 
         m_sector = sector;
         m_members = members;
-        m_maxTotalTime = TimeManager.DAY_IN_SECONDS;
+        m_maxTotalTime = TimeManager.DAY_IN_SECONDS / 2;
 
         // Caculate force value used in combat to determine the outcome.
         m_strength = DEFAULT_FORCE_POINTS;
