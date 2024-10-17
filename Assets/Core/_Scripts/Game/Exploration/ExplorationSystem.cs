@@ -43,7 +43,6 @@ public class ExplorationSystem : MonoBehaviour
     public void Initialize()
     {
         m_narrator = GameManager.Instance.GetNarrator();
-        m_narrator.Subscribe<SquadVoyageEndEvent>(ExplorationEvents.SQUAD_BACK_TO_BASE, HandleSquadVoyageEnded);
         m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, HandleSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
@@ -225,47 +224,6 @@ public class ExplorationSystem : MonoBehaviour
         m_region.GetSectors().Print();
     }
 
-    private void HandleSquadVoyageEnded(SquadVoyageEndEvent @event)
-    {
-        var villagerManager = GameManager.Instance.GetVillagerManager();
-        var resourceHandler = GameManager.Instance.GetResourceHandler();
-
-        (ResourceType type, int amount) = @event.Resources;
-        switch (type)
-        {
-            case ResourceType.NONE:
-                break;
-            case ResourceType.RATIONS:
-                resourceHandler.AddRations(amount);
-                break;
-            case ResourceType.MEDS:
-                resourceHandler.AddMeds(amount);
-                break;
-            case ResourceType.SCRAPS:
-                resourceHandler.AddScraps(amount);
-                break;
-        }
-
-        foreach (var member in @event.Members)
-        {
-            villagerManager.SetWorkingStatus(member, VillagerData.WorkingStatus.IDLE);
-        }
-
-        var sector = @event.Sector;
-        var coords = m_region.GetSectorCoordinates(sector);
-
-        var data = new SquadStatusEventData()
-        {
-            x = coords.x,
-            y = coords.y,
-            finishedExploration = true,
-            progress = 0f,
-            isSectorScanned = m_scannedSectors.Contains(sector),
-            resource = sector.GetResourceData(),
-        };
-        OnSquadStatusChanged?.Invoke(data);
-    }
-
     private void HandleSquadStatusChanged(SquadStatusChangedEvent @event)
     {
         var squad = @event.Squad;
@@ -276,7 +234,8 @@ public class ExplorationSystem : MonoBehaviour
         {
             x = coords.x,
             y = coords.y,
-            progress = (float)squad.GetProgress() / TimeManager.DAY_IN_SECONDS,
+            finishedExploration = squad.GetState() == Squad.State.IDLE,
+            progress = squad.GetProgress(),
             isSectorScanned = m_scannedSectors.Contains(squadSector),
             resource = squadSector.GetResourceData(),
         };
@@ -314,7 +273,7 @@ public class ExplorationSystem : MonoBehaviour
                     {
                         x = coords.x,
                         y = coords.y,
-                        progress = (float)squad.GetProgress() / TimeManager.DAY_IN_SECONDS,
+                        progress = squad.GetProgress(),
                         isSectorScanned = m_scannedSectors.Contains(sector),
                         resource = sector.GetResourceData(),
                     };

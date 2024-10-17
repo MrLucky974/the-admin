@@ -59,7 +59,8 @@ public class Squad
     private readonly int m_enemyChance;
 
     private State m_state = State.DEPARTURE;
-    private int m_progress;
+    private int m_timeSpent;
+    private int m_maxTotalTime;
     private (ResourceType resourceType, int amount) m_resources;
 
     private Squad(Sector sector, VillagerData[] members)
@@ -84,6 +85,7 @@ public class Squad
 
         m_sector = sector;
         m_members = members;
+        m_maxTotalTime = TimeManager.DAY_IN_SECONDS;
 
         // Caculate force value used in combat to determine the outcome.
         m_strength = DEFAULT_FORCE_POINTS;
@@ -148,9 +150,9 @@ public class Squad
         switch (m_state)
         {
             case State.DEPARTURE: // Going to the sector
-                m_progress++;
+                m_timeSpent++;
 
-                if (m_progress >= TimeManager.DAY_IN_SECONDS)
+                if (m_timeSpent >= m_maxTotalTime)
                 {
                     Debug.Log($"squad {this} arrived on sector");
 
@@ -164,7 +166,7 @@ public class Squad
                         SoundManager.PlaySound(SoundType.ERROR);
                     }
 
-                    m_progress = 0;
+                    m_timeSpent = 0;
 
                     int enemyChance = rng.Next(0, 101);
                     Debug.Log($"{enemyChance} | {m_enemyChance}");
@@ -177,10 +179,18 @@ public class Squad
                     }
 
                     m_state = type == ResourceType.NONE ? State.ARRIVAL : State.EXPLORATION;
+
+                    var data = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.DEPARTURE,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, data);
                 }
                 else
                 {
-                    if (m_progress % (TimeManager.DAY_IN_SECONDS / 2) == 0)
+                    if (m_timeSpent % (m_maxTotalTime / 2) == 0)
                     {
                         commandLog.AddLog($"info: squad travel status on sector {m_sector.GetIdentifier()} is at 50%", GameManager.ORANGE);
                         SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -188,9 +198,9 @@ public class Squad
                 }
                 break;
             case State.COMBAT:
-                m_progress++;
+                m_timeSpent++;
 
-                if (m_progress % 8 == 0)
+                if (m_timeSpent % 8 == 0)
                 {
                     CombatIssue combatIssue = InitiateCombat(rng);
                     var members = new List<VillagerData>(m_members);
@@ -271,12 +281,12 @@ public class Squad
                             }
                             break;
                     }
-                    m_progress = 0;
+                    m_timeSpent = 0;
                 }
                 break;
             case State.EXPLORATION: // Gathering resources
-                m_progress++;
-                if (m_progress >= TimeManager.DAY_IN_SECONDS)
+                m_timeSpent++;
+                if (m_timeSpent >= m_maxTotalTime)
                 {
                     Debug.Log($"resources {m_sector.GetResourceData()} gathered by {this}");
 
@@ -286,12 +296,20 @@ public class Squad
                     m_resources = m_sector.GetResourceData();
                     m_sector.Loot();
 
-                    m_progress = 0;
+                    m_timeSpent = 0;
                     m_state = State.ARRIVAL;
+
+                    var data = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.DEPARTURE,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, data);
                 }
                 else
                 {
-                    if (m_progress % (TimeManager.DAY_IN_SECONDS / 2) == 0)
+                    if (m_timeSpent % (m_maxTotalTime / 2) == 0)
                     {
                         commandLog.AddLog($"info: squad gathering status on sector {m_sector.GetIdentifier()} is at 50%", GameManager.ORANGE);
                         SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -299,8 +317,8 @@ public class Squad
                 }
                 break;
             case State.ARRIVAL: // Coming back from the sector
-                m_progress++;
-                if (m_progress >= TimeManager.DAY_IN_SECONDS)
+                m_timeSpent++;
+                if (m_timeSpent >= m_maxTotalTime)
                 {
                     Debug.Log($"squad {this} completed mission");
                     commandLog.AddLog($"info: squad from sector {m_sector.GetIdentifier()} is back to base", GameManager.ORANGE);
@@ -320,12 +338,20 @@ public class Squad
                             break;
                     }
 
-                    m_progress = 0;
+                    m_timeSpent = 0;
                     m_state = State.IDLE;
+
+                    var data = new SquadStatusChangedEvent()
+                    {
+                        PreviousState = State.DEPARTURE,
+                        CurrentState = m_state,
+                        Squad = this,
+                    };
+                    narrator.TriggerEvent(ExplorationEvents.SQUAD_STATUS_CHANGED, data);
                 }
                 else
                 {
-                    if (m_progress % (TimeManager.DAY_IN_SECONDS / 2) == 0)
+                    if (m_timeSpent % (m_maxTotalTime / 2) == 0)
                     {
                         commandLog.AddLog($"info: squad from {m_sector.GetIdentifier()} return mission is at 50%", GameManager.ORANGE);
                         SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
@@ -341,10 +367,11 @@ public class Squad
 
     public Sector GetActivitySector() => m_sector;
     public State GetState() => m_state;
-    public int GetProgress() => m_progress;
+    public int GetTimeSpent() => m_timeSpent;
+    public float GetProgress() => (float)m_timeSpent / m_maxTotalTime;
 
     public override string ToString()
     {
-        return $"Squad({m_sector.GetIdentifier()} | State = {m_state} ({Mathf.RoundToInt(((float)m_progress / TimeManager.DAY_IN_SECONDS) * 100)}%))";
+        return $"Squad({m_sector.GetIdentifier()} | State = {m_state} ({Mathf.RoundToInt(((float)m_timeSpent / TimeManager.DAY_IN_SECONDS) * 100)}%))";
     }
 }
