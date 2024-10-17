@@ -143,7 +143,7 @@ public class ModalBox : MonoBehaviour
             m_modalBoxTransform.localScale = new Vector3(xScale, yScale, 1f);
 
             yield return null;
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
         }
 
         m_modalBoxTransform.localScale = Vector3.one;
@@ -164,7 +164,7 @@ public class ModalBox : MonoBehaviour
             m_modalBoxTransform.localScale = new Vector3(xScale, yScale, 1f);
 
             yield return null;
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
         }
 
         m_modalBoxTransform.localScale = new Vector3(0f, 0f, 1f);

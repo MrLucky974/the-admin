@@ -1,6 +1,7 @@
 ﻿using LuckiusDev.Utils;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1000)]
 [DisallowMultipleComponent]
@@ -79,6 +80,38 @@ public class GameManager : Singleton<GameManager>
                     m_commandLogManager.AddLog(text, GameManager.ORANGE, format: false);
                 }
                 SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+            })
+        );
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action>("quit",
+            "Go back to main menu (or ALT+F4)",
+            () =>
+            {
+                Time.timeScale = 0f;
+
+                m_modalBox.Init("Are you sure?", (modalBox) =>
+                {
+                    modalBox.Close();
+                    Time.timeScale = 1f;
+                    SceneManager.LoadScene(0);
+                })
+                .SetBody("Doing so will bring you back to the main menu.")
+                .SetDismissAction((modalBox) =>
+                {
+                    modalBox.Close();
+                    Time.timeScale = 1f;
+                })
+                .Open();
+            })
+        );
+
+        m_commandSystem.AddCommand(new CommandDefinition<Action>("seed",
+            "Prints the seed of this game",
+            () =>
+            {
+                m_commandLogManager.AddLog($"seed: {GameData.SeedString} (copied to your clipboard)");
+                SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
+                GUIUtility.systemCopyBuffer = GameData.SeedString;
             })
         );
 
