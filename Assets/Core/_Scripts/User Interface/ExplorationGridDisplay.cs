@@ -39,7 +39,6 @@ public class ExplorationGridDisplay : MonoBehaviour
             sb.AppendLine(JUtils.FormatColor($"{data.resource}", GameManager.GREEN));
         }
 
-        Debug.Log(data.finishedExploration);
         if (data.finishedExploration is false)
         {
             sb.AppendLine(JUtils.FormatColor(JUtils.GenerateTextSlider(data.progress), GameManager.ORANGE));
