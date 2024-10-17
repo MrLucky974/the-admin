@@ -41,7 +41,7 @@ public class ExplorationGridDisplay : MonoBehaviour
 
         if (data.finishedExploration is false)
         {
-            sb.AppendLine(JUtils.FormatColor(JUtils.GenerateTextSlider(data.progress), GameManager.ORANGE));
+            sb.AppendLine(JUtils.FormatColor(JUtils.GenerateTextSlider(data.progress, 6), GameManager.ORANGE));
         }
 
         m_grid.SetCell(data.x, data.y, sb.ToString());
