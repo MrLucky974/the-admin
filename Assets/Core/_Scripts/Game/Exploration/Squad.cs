@@ -168,7 +168,7 @@ public class Squad
 
                     int enemyChance = rng.Next(0, 101);
                     Debug.Log($"{enemyChance} | {m_enemyChance}");
-                    if (enemyChance >= 0)
+                    if (enemyChance >= m_enemyChance)
                     {
                         Debug.Log("initiating combat");
                         commandLog.AddLog($"info: squad engaged combat with enemy", GameManager.ORANGE);
