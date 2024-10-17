@@ -32,12 +32,16 @@ public class BaseCommandLineInputFieldController : MonoBehaviour
 
     private void Update()
     {
-        if (m_actions.PreviousCommand.WasPressedThisFrame() && m_commands.Count > 0)
+        if (m_actions.PreviousCommand.WasPressedThisFrame())
         {
-            m_commandIndex = (m_commandIndex + 1) % m_commands.Count;
-            var command = m_commands[^((m_commandIndex % m_commands.Count) + 1)];
-            m_inputField.SetTextWithoutNotify(command);
-            m_inputField.MoveToEndOfLine(ctrl: false, shift: false);
+            if (m_commands.Count > 0)
+            {
+                m_commandIndex = (m_commandIndex + 1) % m_commands.Count;
+                var command = m_commands[^((m_commandIndex % m_commands.Count) + 1)];
+                m_inputField.SetTextWithoutNotify(command);
+                m_inputField.MoveToEndOfLine(ctrl: false, shift: false);
+            }
+            m_inputField.ActivateInputField();
         }
     }
 
