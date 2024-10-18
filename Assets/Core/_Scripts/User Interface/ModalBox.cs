@@ -50,7 +50,10 @@ public class ModalBox : MonoBehaviour
         m_modalBox = m_modalBoxTransform.gameObject;
         m_modalBox.SetActive(false);
 
-        m_actions = GameManager.Instance.GetInputActions().Gameplay;
+        var input = GameManager.Instance.GetInputActions();
+        m_actions = input.Gameplay;
+        Debug.Log(input);
+        Debug.Log(m_actions);
         m_actions.Accept.performed += OnAccept;
         m_actions.Dismiss.performed += OnDismiss;
     }

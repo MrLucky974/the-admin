@@ -16,7 +16,7 @@ public static class JUtils
             sb.Append(i < array.Length - 1 ? ", " : "");
         }
         sb.Append("]");
-        Debug.Log(sb);
+        Debug.Log(sb.ToString());
     }
 
     public static void Print<T>(this List<T> list)
@@ -29,7 +29,7 @@ public static class JUtils
             sb.Append(i < list.Count - 1 ? ", " : "");
         }
         sb.Append("]");
-        Debug.Log(sb);
+        Debug.Log(sb.ToString());
     }
 
     public static int StringToSeedFNV1a(string input)
