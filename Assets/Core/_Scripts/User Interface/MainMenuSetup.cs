@@ -20,6 +20,7 @@ public class MainMenuSetup : MonoBehaviour
     {
         IDENTIFIER,
         SEED,
+        MENU
     }
 
     [SerializeField] private TMP_Text m_logLabel;
@@ -133,11 +134,10 @@ public class MainMenuSetup : MonoBehaviour
                 m_prefixLabel.gameObject.SetActive(false);
                 m_inputField.gameObject.SetActive(false);
                 DisplayButtonMenu();
-                //StartCoroutine(nameof(LoadingScreen));
+                m_state = State.MENU;
                 break;
         }
     }
-
 
     void DisplayButtonMenu()
     {

@@ -48,7 +48,6 @@ public class ExplorationSystem : MonoBehaviour
         m_narrator.Subscribe<SquadStatusChangedEvent>(ExplorationEvents.SQUAD_STATUS_CHANGED, HandleSquadStatusChanged);
 
         m_timeManager = GameManager.Instance.GetTimeManager();
-        //m_timeManager.OnDayEnded += UpdateMap;
 
         m_scannedSectors = new List<Sector>();
         m_activeSquads = new List<Squad>();
@@ -73,6 +72,7 @@ public class ExplorationSystem : MonoBehaviour
                 {
                     StopCoroutine(m_scanCoroutine);
                     m_currentSectorScan = null;
+                    m_scanCoroutine = null;
                 }
 
                 // Generate a new region
@@ -223,15 +223,6 @@ public class ExplorationSystem : MonoBehaviour
     private void OnDestroy()
     {
         StopAllCoroutines();
-    }
-
-    private void UpdateMap(int previousDay)
-    {
-        var rng = GameManager.RNG;
-
-
-        // TODO : Send an event to update the expedition UI
-        m_region.GetSectors().Print();
     }
 
     private void HandleSquadStatusChanged(SquadStatusChangedEvent @event)

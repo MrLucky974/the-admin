@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MainMenuBtn : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
@@ -17,7 +15,6 @@ public class MainMenuBtn : MonoBehaviour, ISelectHandler, IDeselectHandler
     {
         Selected();
     }
-
 
     public void OnDeselect(BaseEventData eventData)
     {
@@ -43,7 +40,4 @@ public class MainMenuBtn : MonoBehaviour, ISelectHandler, IDeselectHandler
     {
         m_label.text = m_baseText;
     }
-
-
-
 }

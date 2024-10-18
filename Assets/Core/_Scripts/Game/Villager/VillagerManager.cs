@@ -95,10 +95,11 @@ public class VillagerManager : MonoBehaviour
         }));
 
 #endif
-        commandSystem.AddCommand(new CommandDefinition<Action>("showid", "List all identifiers of the population in the Unity log", () =>
+        commandSystem.AddCommand(new CommandDefinition<Action>("showid", "List all identifiers of the population in the command log", () =>
         {
             ShowIDs();
         }));
+
         commandSystem.AddCommand(new CommandDefinition<Action<string>>("heal", "Removes diseases and injuries at the cost of 1 meds per status", (string villagerID) =>
         {
             HealOneVillager(villagerID);
