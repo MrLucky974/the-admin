@@ -20,8 +20,8 @@ public class RoomManager : MonoBehaviour
     Coroutine m_degradeCoroutine;
     Coroutine m_ressCoroutine;
 
-    public const int DEGRADATION = 4;
-    public const float TIMEDEGRADE = 1f;
+    public const int DEGRADATION = 8;
+    public const float TIME_TO_DEGRADE = 1f;
     public const int DESTROY_REPUTATION_COST = 15;
 
     public const int DEFAULT_FATIGUE_COST = 2;
@@ -137,12 +137,26 @@ public class RoomManager : MonoBehaviour
     {
         RoomData room = GetRoomOfType(roomType);
         room.IncrementDurability(-damage);
+        CheckIfRoomHasBeenDestroyed(room);
     }
+
 
     public void ApplyDamageToRoomWithID(String id, int damage)
     {
         RoomData room = GetRoomWithId(id);
         room.IncrementDurability(-damage);
+        CheckIfRoomHasBeenDestroyed(room);
+    }
+
+    public bool CheckIfRoomHasBeenDestroyed(RoomData room)
+    {
+        CommandLogManager commandLog = m_gm.GetCommandLog();
+        if (room.roomState == RoomData.RoomState.DESTROYED)
+        {
+            commandLog.AddLog($"info: room {room.roomId} has been destroyed!",GameManager.ORANGE);
+            return true;
+        }
+        return false;
     }
 
     public void StartRepairRoom(string roomId, int scrapsCost, VillagerData vill)
@@ -176,14 +190,17 @@ public class RoomManager : MonoBehaviour
         VillagerManager vm = m_gm.GetVillagerManager();
         foreach (VillagerData villager in room.GetVillagersInRoom())
         {
+            m_gm.GetCommandLog().AddLog($"info: {room.roomId} repaired", GameManager.ORANGE);
             //Increase fatigue to villager in room
-            if (IsInjured(villager))
+            if (VillagerIsInjured(villager))
             {  // compute injured chance
                 vm.ApplyHealthStatus(villager, VillagerData.HealthStatus.INJURED);
+                m_gm.GetCommandLog().AddLog($"info: {villager.GetName()} injured himself during repairs!", GameManager.ORANGE);
             }
-            vm.IncreaseFatigue(villager, ComputeRepairFatigueCost(villager));
+            int amount = ComputeRepairFatigueCost(villager);
+            vm.IncreaseFatigue(villager, amount);
+            Debug.Log($"i have {villager.GetFatigue()} i lose{amount}");
             vm.SetWorkingStatus(villager, VillagerData.WorkingStatus.IDLE);
-            m_gm.GetCommandLog().AddLog($"{room.roomId} repaired", GameManager.ORANGE);
             SoundManager.PlaySound(SoundType.ACTION_CONFIRM);
         }
         room.RepairRoom();
@@ -205,17 +222,17 @@ public class RoomManager : MonoBehaviour
         return repairSpeed;
     }
 
-    public bool IsInjured(VillagerData villager)
+    public bool VillagerIsInjured(VillagerData villager)
     {
-        int factor = villager.GetFatigue();
-        int chance = GameManager.RNG.Next(0, VillagerData.MAX_FATIGUE);
+        int factor = villager.GetFatigue()+1;
+        int chance = GameManager.RNG.Next(-1, VillagerData.MAX_FATIGUE);
         if (chance < factor)
         {
             villager.ApplyHealthStatus(VillagerData.HealthStatus.INJURED);
-            Debug.Log("AIIIE " + factor + " - " + chance);
+            Debug.Log("AIIIE " + chance + " - " + factor );
             return true;
         }
-        Debug.Log("TRANQUILLE " + factor + " - " + chance);
+        Debug.Log("TRANQUILLE " + chance + " - " + factor);
         return false;
     }
 
@@ -282,6 +299,7 @@ public class RoomManager : MonoBehaviour
         {
             room.AddVillagerInRoom(villager); // --Add villager to room
             StartRepairRoom(roomId, scrapsCost, villager);
+            commandLog.AddLog($"repair: repairing room {roomId}...",GameManager.ORANGE);
         }
         else
         {
@@ -309,17 +327,16 @@ public class RoomManager : MonoBehaviour
                 {
                     if (room.roomState == RoomData.RoomState.DESTROYED)
                     {
-                        m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed this room is destroyed");
+                        m_gm.GetCommandLog().AddLogError($"upgrade:room {room.roomId} failed this room is destroyed");
                         return;
                     }
                     m_resourceHandler.ConsumeScraps(room.upgradeCost);
                     UpgradeRoom(room); //Upgrade 
-                    m_gm.GetCommandLog().AddLog($"{roomId} upgraded", GameManager.ORANGE);
                     return;
                 }
                 else
                 {
-                    m_gm.GetCommandLog().AddLogError($"upgrade {room.roomId} failed not enough resources");
+                    m_gm.GetCommandLog().AddLogError($"upgrade: room {room.roomId} failed, not enough resources (needs {room.upgradeCost} SCRAPS)!");
                     return;
                 }
             }
@@ -327,23 +344,29 @@ public class RoomManager : MonoBehaviour
             {
                 if (roomId == "")
                 {
-                    m_gm.GetCommandLog().AddLogError($"specify room id example: upgrade R1");
+                    m_gm.GetCommandLog().AddLogError($"error: specify room id example: upgrade R1!");
                     return;
                 }
             }
         }
-        m_gm.GetCommandLog().AddLogError($"upgrade {roomId} failed you cant upgrade this room");
+        m_gm.GetCommandLog().AddLogError($"upgrade: room {roomId} failed, you cannot upgrade this room!");
         return;
     }
 
     public void UpgradeRoom(UpgradableRoomData room)
     {
+        m_gm.GetCommandLog().AddLog($"{room.roomId} upgraded", GameManager.ORANGE);
         room.Upgrade();
+        CommandLogManager commandLogManager = GameManager.Instance.GetCommandLog();
         if (room is VillagerUpgradeRoomData)
         {
             VillagerUpgradeRoomData upRoom = room.GetComponent<VillagerUpgradeRoomData>();
             UpgradeVillRoom(upRoom);
-
+        }
+        if (room is ResourceUpgradeRoomData)
+        {
+            ResourceUpgradeRoomData ressRoom = room.GetComponent<ResourceUpgradeRoomData>();
+            m_gm.GetCommandLog().AddLog($"upgrade: room {room.roomId} generate {ressRoom.ressourceType}",GameManager.ORANGE);
         }
     }
 
@@ -363,7 +386,7 @@ public class RoomManager : MonoBehaviour
     public void UpgradeRepairSpeed(VillagerUpgradeRoomData room)
     {
         IncreaseGlobalRepairSpeed(room.BonusValue);
-        m_gm.GetCommandLog().AddLog($"reparation time is faster", GameManager.ORANGE);
+        m_gm.GetCommandLog().AddLog($"upgrade: rooms repair times are now faster!", GameManager.ORANGE);
     }
 
     public void UpgradeFatigueRegen(VillagerUpgradeRoomData room)
@@ -375,7 +398,7 @@ public class RoomManager : MonoBehaviour
             vm.IncreaseRecoveryValue(villager, room.BonusValue);
             Debug.Log(villager.GetName() + "-" + villager.GetRecoveryValue());
         }
-        m_gm.GetCommandLog().AddLog($"the population rests faster ", GameManager.ORANGE);
+        m_gm.GetCommandLog().AddLog($"upgrade: the population's recovery time is faster!", GameManager.ORANGE);
     }
 
     public void CancelVillRoomUpgrade(VillagerUpgradeRoomData room)
@@ -481,6 +504,7 @@ public class RoomManager : MonoBehaviour
     IEnumerator DegradeRoom()
     {
         RoomData room = PickRandomRoom();
+        CommandLogManager cm = GameManager.Instance.GetCommandLog();
         for (int i = 0; i < m_roomArray.Length; i++)
         {
             room = PickRandomRoom();
