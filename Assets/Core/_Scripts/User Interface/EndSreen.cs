@@ -11,6 +11,7 @@ public class EndSreen : MonoBehaviour
     [SerializeField] Button m_restartButton;
     [SerializeField] Button m_quitButton;
     [SerializeField] TextMeshProUGUI m_daysLabel;
+    [SerializeField] GameObject m_panel;
 
     GameManager m_gm;
     TimeManager m_timeManager;
@@ -18,10 +19,9 @@ public class EndSreen : MonoBehaviour
 
     private void Awake()
     {
-        m_gm = FindObjectOfType<GameManager>();
+        m_gm = GameManager.Instance;
+        m_timeManager = GameManager.Instance.GetTimeManager();
         m_gm.OnGameFinished += ShowGameOverPanel;
-        m_timeManager = FindObjectOfType<TimeManager>();
-        gameObject.SetActive(false);
     }
 
 
@@ -29,7 +29,7 @@ public class EndSreen : MonoBehaviour
     void ShowGameOverPanel()
     {
         Debug.Log("CACA");
-        gameObject.SetActive(true);
+        m_panel.gameObject.SetActive(true);
         StartCoroutine(SelectButtonTimer(1, m_restartButton));
         DisplayRecap();
     }
