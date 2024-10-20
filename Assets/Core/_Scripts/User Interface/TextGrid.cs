@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,31 +19,49 @@ public class TextGrid : MonoBehaviour
     private TMP_Text m_label;
     private ContentSizeFitter m_sizeFitter;
     private GridLayoutGroup m_grid;
-    private TMP_Text[] m_cells;
+    private List<TextMeshProUGUI> m_cells = new List<TextMeshProUGUI>();
 
     private void Start()
     {
         LoadComponents();
+        InitializeCells();
     }
 
-    public string GetCell(int x, int y)
+    private void InitializeCells()
     {
-        int index = y * m_gridSize + x;
-
-        // Prevent the code from executing if the index given is outside the maximum possible range of values
-        if (index < 0 || index >= (m_gridSize * m_gridSize))
-            return null;
-
         // Initialize cells array if it's null or not matching the expected size
-        if (m_cells == null || m_cells.Length != m_gridSize * m_gridSize)
+        if (m_cells == null)
         {
-            m_cells = new TMP_Text[m_gridSize * m_gridSize];
+            m_cells = new List<TextMeshProUGUI>();
         }
 
-        if (m_cells[index] == null)
-            return null;
+        m_cells.Print();
 
-        return m_cells[index].text;
+        for (int i = 0; i < m_gridSize * m_gridSize; i++)
+        {
+            GameObject cellObject = new GameObject($"Cell_{i / m_gridSize}_{i % m_gridSize}");
+            cellObject.transform.SetParent(m_grid.transform, false);
+            TextMeshProUGUI cellText = cellObject.AddComponent<TextMeshProUGUI>();
+
+            // Set default font size and style for the new cell
+            cellText.fontSize = 18;
+            cellText.alignment = TextAlignmentOptions.Center;
+            cellText.font = m_font;
+            cellText.color = m_defaultColor;
+            m_cells.Add(cellText);
+
+#if UNITY_EDITOR
+            cellObject.hideFlags = HideFlags.NotEditable;
+#endif
+        }
+    }
+
+    public void ClearCells()
+    {
+        foreach (var cell in m_cells)
+        {
+            cell.text = "";
+        }
     }
 
     public void SetCell(int x, int y, string text)
@@ -54,27 +73,27 @@ public class TextGrid : MonoBehaviour
             return;
 
         // Initialize cells array if it's null or not matching the expected size
-        if (m_cells == null || m_cells.Length != m_gridSize * m_gridSize)
+        if (m_cells == null)
         {
-            m_cells = new TMP_Text[m_gridSize * m_gridSize];
+            m_cells = new List<TextMeshProUGUI>();
         }
 
         // Create any missing cells up to the specified index
-        for (int i = 0; i <= index; i++)
+        for (int i = 0; i < index; i++)
         {
             // If the cell at the index is null, create a new GameObject and add a TextMeshProUGUI component
             if (m_cells[i] == null)
             {
                 GameObject cellObject = new GameObject($"Cell_{i / m_gridSize}_{i % m_gridSize}");
                 cellObject.transform.SetParent(m_grid.transform, false);
-                TMP_Text cellText = cellObject.AddComponent<TextMeshProUGUI>();
+                TextMeshProUGUI cellText = cellObject.AddComponent<TextMeshProUGUI>();
 
                 // Set default font size and style for the new cell
                 cellText.fontSize = 18;
                 cellText.alignment = TextAlignmentOptions.Center;
                 cellText.font = m_font;
                 cellText.color = m_defaultColor;
-                m_cells[i] = cellText;
+                m_cells.Add(cellText);
 
 #if UNITY_EDITOR
                 cellObject.hideFlags = HideFlags.NotEditable;

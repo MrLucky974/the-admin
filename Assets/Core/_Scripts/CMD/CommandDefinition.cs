@@ -87,25 +87,27 @@ public class CommandDefinition<IDelegate> : ICommandDefinition where IDelegate :
     {
         StringBuilder sb = new StringBuilder();
 
-        sb.Append("(");
+        //sb.Append("(");
 
         for (int i = 0; i < m_parameterInfo.Length; i++)
         {
             var param = m_parameterInfo[i];
             string typeString = CommandSystem.GetTypeString(param.ParameterType);
-            sb.Append($"{typeString}");
+            sb.Append($"<");
+            sb.Append($"{typeString}:{param.Name}");
 
             if (param.HasDefaultValue)
             {
                 sb.Append($" = {param.DefaultValue}");
             }
+            sb.Append($">");
 
             if (i < m_parameterInfo.Length - 1)
             {
-                sb.Append(", ");
+                sb.Append(" ");
             }
         }
-        sb.Append(")");
+        //sb.Append(")");
 
         return sb.ToString();
     }

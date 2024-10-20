@@ -34,13 +34,7 @@ public class ExplorationGridDisplay : MonoBehaviour
 
     private void HandleRegionRegeneration()
     {
-        for (int x = 0; x < 5; x++)
-        {
-            for (int y = 0; y < 5; y++)
-            {
-                m_grid.SetCell(x, y, "");
-            }
-        }
+        m_grid.ClearCells();
     }
 
     private void HandleSquadStatus(ExplorationSystem.SquadStatusEventData data)
